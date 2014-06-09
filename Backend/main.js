@@ -28,4 +28,4 @@ spotify.on({
     ready: ready
 });
 
-spotify.login('we4sz', 'john1991', false, false);
+spotify.login('anv', 'pass', false, false);
