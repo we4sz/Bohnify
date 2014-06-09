@@ -28,4 +28,4 @@ spotify.on({
     ready: ready
 });
 
-spotify.login('anv', 'pass', false, false);
+spotify.login(process.argv[2], process.argv[3], false, false);
