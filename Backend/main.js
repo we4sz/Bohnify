@@ -1,7 +1,7 @@
 var options = {
     settingsFolder: 'settings',
     cacheFolder: 'cache',
-    traceFile: 'trace.txt' //default is empty,
+    traceFile: 'trace.txt', //default is empty,
     appkeyFile: 'spotify_appkey.key' //required
 }
 
@@ -22,7 +22,7 @@ var play = function(uri){
 
 
 };
-x
+
 
 spotify.on({
     ready: ready
