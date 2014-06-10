@@ -10,23 +10,34 @@ server.listen(1650);
 
 var wss = new WebSocketServer({server: server});
 wss.on('connection', function(ws) {
-  console.log("asd");
+  ws.send(JSON.stringify(loginstatus));
 
-  ws.on('message', function() {
+  ws.on('message', function(message) {
+    var msg = JSON.parse(message);
 
+    if(msg.login){
+      login(msg.login.username,msg.login.password,ws);
+    }
   });
 
   ws.on('close', function() {
 
   });
-
 });
 
+wss.broadcast = function(data) {
+    for(var i in this.clients)
+        this.clients[i].send(data);
+};
 
 
+var loginstatus = {
+  login : false,
+  logingin : false,
+  user : undefined
+};
 
-
-
+var loginsocket = undefined;
 
 var options = {
     settingsFolder: 'settings',
@@ -287,6 +298,10 @@ var search = function(query){
 
 
 var ready = function(){
+  loginstatus.logingin = false;
+  loginstatus.login = true;
+  loginstatus.user = {uri : spotify.sessionUser.link, name: spotify.sessionUser.displayName};
+  wss.broadcast(JSON.stringify(loginstatus));
   search("spotify:album:59c6n3KjcLWLKqESPFtfHd");
 }
 
@@ -299,8 +314,23 @@ var play = function(uri){
 
 spotify.on({
     ready: function(){
+      loginsocket = undefined;
       setTimeout(ready,2000);
+    },logout :function(){
+      if(loginstatus.logingin && loginsocket){
+        loginsocket.send(JSON.stringify({loginerror: "Bad username or password!"}));
+      }
+      loginsocket = undefined;
+      loginstatus.logingin = false;
+      loginstatus.login = false;
+      loginstatus.user = undefined;
+      wss.broadcast(JSON.stringify(loginstatus));
     }
 });
 
-spotify.login(process.argv[2], process.argv[3], false, false);
+var login = function(username, password, ws){
+  loginsocket = ws;
+  loginstatus.logingin = true;
+  wss.broadcast(JSON.stringify(loginstatus));
+  spotify.login(username, password, false, false);
+}

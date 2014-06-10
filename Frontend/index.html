@@ -1,11 +1,44 @@
 <html>
 
 <head>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="underscore.js"></script>
+  <script type="text/javascript" src="backbone.js"></script>
+
+   <script>
+      var init = function(){
+        console.log("init");
+      var host = window.document.location.host.replace(/:.*/, '');
+      console.log(host);
+      var ws = new WebSocket('ws://' + host + ':1650');
+      ws.onmessage = function (data) {
+        console.log(data.data);
+
+
+      };
+
+
+      $("#login").bind('submit',function(){
+        var u = $("#username").val();
+        var p = $("#password").val();
+        var s = JSON.stringify({login : {username : u,password:p}});
+        ws.send(s);
+        return false;;
+      });
+
+  }
+
+    </script>
+
 </head>
 
-<body>
+<body onload="init();">
 
-
+<form id="login">
+<input id="username" type="text"/>
+<input id="password" type="text"/>
+<button>Login</button>
+</form>
 
 </body>
 </html>
