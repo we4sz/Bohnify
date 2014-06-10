@@ -6,24 +6,35 @@
   <script type="text/javascript" src="backbone.js"></script>
   <script type="text/javascript" src="HeaderView.js"></script>
   <script type="text/javascript" src="ControllerView.js"></script>
+  <script type="text/javascript" src="LoginView.js"></script>
   <link rel="stylesheet" type="text/css" href="css/style.css">
 
    <script>
       var init = function(){
-        var header = new HeaderView({el : $("#header")});
-        var control = new ControllerView({el : $("#bottom")});
-
-        header.render();
-        control.render();
         var host = window.document.location.host.replace(/:.*/, '');
         var ws = new WebSocket('ws://' + host + ':1650');
-        ws.onmessage = function (msg) {
-            var data = JSON.parse(msg.data);
-            if(data.loginstatus){
+        ws.onopen = function(){
+          var loginview = new LoginView({el : $("#loginview"), ws : ws});
+          var header = new HeaderView({el : $("#header"), ws : ws});
+          var control = new ControllerView({el : $("#bottom"), ws : ws});
+          ws.onmessage = function (msg) {
+              var data = JSON.parse(msg.data);
+              console.log(data);
+              if(data.loginstatus){
+                if(data.loginstatus.login){
+                  header.render();
+                  control.render();
+                  loginview.remove();
+                }else{
+                  loginview.options.loginstatus = data.loginstatus;
+                  loginview.render();
+                }
+              }
+          };
+        }
 
-            }
 
-        };
+
 
 
         $("#login").bind('submit',function(){
@@ -47,6 +58,7 @@
   <div id="playtrack"></div>
   <div id="result"></div>
   <div id="bottom"></div>
+  <div id="loginview"></div>
 </div>
 </body>
 </html>
