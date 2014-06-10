@@ -318,19 +318,19 @@ spotify.on({
       setTimeout(ready,2000);
     },logout :function(){
       if(loginstatus.logingin && loginsocket){
-        loginsocket.send(JSON.stringify({loginerror: "Bad username or password!"}));
+        loginsocket.send(JSON.stringify({loginstatus : {loginerror: "Bad username or password!"}}));
       }
       loginsocket = undefined;
       loginstatus.logingin = false;
       loginstatus.login = false;
       loginstatus.user = undefined;
-      wss.broadcast(JSON.stringify(loginstatus));
+      wss.broadcast(JSON.stringify({loginstatus : loginstatus}));
     }
 });
 
 var login = function(username, password, ws){
   loginsocket = ws;
   loginstatus.logingin = true;
-  wss.broadcast(JSON.stringify(loginstatus));
+  wss.broadcast(JSON.stringify({loginstatus : loginstatus}));
   spotify.login(username, password, false, false);
 }
