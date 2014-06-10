@@ -5,6 +5,12 @@ body{
   padding: 0px;
 }
 
+/*
+  --------------------------------------------------------------
+  Main Content
+  --------------------------------------------------------------
+*/
+
 #bohnifycontainer {
   width:100%;
   height: 100%;
@@ -72,41 +78,208 @@ body{
 }
 
 
+/*
+  --------------------------------------------------------------
+  Header Content
+  --------------------------------------------------------------
+*/
 
+.head{
+  float: left;
+}
 
 #headback {
-  float: left;
   width: 8px;
   height: 12px;
   margin-left: 16px;
   margin-top: 13px;
+}
+
+#headback.disable{
   background-image: url("/images/back_dis.png");
 }
 
+#headback.active{
+  background-image: url("/images/back_act.png");
+}
+
 #headfoward {
-  float: left;
   width: 8px;
   height: 12px;
   margin-left: 20px;
   margin-top: 13px;
+}
+
+#headfoward.disable{
   background-image: url("/images/foward_dis.png");
 }
 
+#headfoward.active{
+  background-image: url("/images/foward_act.png");
+}
+
 #search {
-  float: left;
   width: 235px;
   margin-left: 19px;
   margin-top: 7px;
   border-radius: 12px;
   height: 24px;
-
 }
 
 
+/*
+  --------------------------------------------------------------
+  Controller Content
+  --------------------------------------------------------------
+*/
+
+.controller{
+  position: absolute;
+}
+
+#controllprev {
+  left: 20px;
+  top: 14px;
+  width: 10px;
+  height: 12px;
+}
+
+#controllprev.disable{
+  background-image: url("/images/prev.png");
+}
+
+#controllprev.active{
+  background-image: url("/images/prev.png");
+}
 
 
+#controllpause {
+  left: 41px;
+  top: 5px;
+  width: 32px;
+  height: 31px;
+}
 
+#controllpause.disable{
+  background-image: url("/images/play.png");
+}
 
+#controllpause.active{
+  background-image: url("/images/pause.png");
+}
+
+#controllnext {
+  left: 84px;
+  top: 14px;
+  width: 10px;
+  height: 12px;
+}
+
+#controllnext.disable{
+  background-image: url("/images/next.png");
+}
+
+#controllnext.active{
+  background-image: url("/images/next.png");
+}
+
+#controllvolume {
+  left: 123px;
+  top: 18px;
+  width: 83px;
+  background-color: #88898c;
+}
+
+#controllspeaker {
+  left: 217px;
+  top: 15px;
+  width: 17px;
+  height: 13px;
+  background-image: url("/images/speaker.png");
+}
+
+#controlltime {
+  left: 254px;
+  top: 14px;
+  font-size: 12px;
+  color: #eaf2f1;
+}
+
+#controllposition {
+  left: 297px;
+  width: calc(100% - 450px);
+  top: 18px;
+  background-color: #3d3d3f;
+}
+
+#controllduration {
+  right: 107px;
+  top: 14px;
+  font-size: 12px;
+  color: #eaf2f1;
+}
+
+#controllshuffle{
+  right: 51px;
+  width: 14px;
+  height: 14px;
+  top: 15px;
+}
+
+#controllshuffle.disable{
+  background-image: url("/images/shuffle_dis.png");
+}
+
+#controllshuffle.active{
+  background-image: url("/images/shuffle_act.png");
+}
+
+#controllrepeat{
+  right: 22px;
+  width: 14px;
+  height: 14px;
+  top: 15px;
+}
+
+#controllrepeat.disable{
+  background-image: url("/images/repeat_dis.png");
+}
+
+#controllrepeat.active{
+  background-image: url("/images/repeat_act.png");
+}
+
+/*
+  --------------------------------------------------------------
+  Slider
+  --------------------------------------------------------------
+*/
+
+input[type="range"]{
+  -webkit-appearance: none !important;
+   height: 3px;
+ }
+
+input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance: none !important;
+   width: 15px;
+   height: 15px;
+   background-image: url("/images/thumb_dis.png");
+}
+
+input[type="range"]::-webkit-slider-thumb:active{
+   background-image: url("/images/thumb_act.png");
+ }
+
+input[type="range"]:focus {
+  outline: none;
+}
+
+/*
+  --------------------------------------------------------------
+  Scrollbar
+  --------------------------------------------------------------
+*/
 
 ::-webkit-scrollbar {
     width: 12px;

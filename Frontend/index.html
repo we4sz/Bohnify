@@ -5,12 +5,16 @@
   <script type="text/javascript" src="underscore.js"></script>
   <script type="text/javascript" src="backbone.js"></script>
   <script type="text/javascript" src="HeaderView.js"></script>
+  <script type="text/javascript" src="ControllerView.js"></script>
   <link rel="stylesheet" type="text/css" href="css/style.css">
 
    <script>
       var init = function(){
         var header = new HeaderView({el : $("#header")});
+        var control = new ControllerView({el : $("#bottom")});
+
         header.render();
+        control.render();
         var host = window.document.location.host.replace(/:.*/, '');
         var ws = new WebSocket('ws://' + host + ':1650');
         ws.onmessage = function (msg) {

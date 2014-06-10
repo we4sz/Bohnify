@@ -5,9 +5,9 @@ var HeaderView = Backbone.View.extend({
     'click #headfoward' : 'foward'
   },
   render : function(){
-      var html =  " <div id='headback'></div>"
-                  + "<div id='headfoward'></div>"
-                  + " <input id='search' results=0 type='search' placeholder='Search'/>";
+      var html =  " <div id='headback' class='disable head'></div>"
+                  + "<div id='headfoward' class='disable head'></div>"
+                  + " <input id='search' results=0 type='search' placeholder='Search'  class='head'/>";
       this.$el.html(html);
       return this;
   },
