@@ -218,3 +218,4 @@ pip-log.txt
 Backend/cache
 Backend/settings
 Backend/trace.txt
+node_modules/

@@ -1,3 +1,33 @@
+var WebSocketServer = require('ws').Server
+  , http = require('http')
+  , express = require('express')
+  , app = express();
+
+app.use(express.static(__dirname +"/../Frontend"));
+
+var server = http.createServer(app);
+server.listen(1650);
+
+var wss = new WebSocketServer({server: server});
+wss.on('connection', function(ws) {
+  console.log("asd");
+
+  ws.on('message', function() {
+
+  });
+
+  ws.on('close', function() {
+
+  });
+
+});
+
+
+
+
+
+
+
 var options = {
     settingsFolder: 'settings',
     cacheFolder: 'cache',
@@ -10,6 +40,7 @@ var spotify = require('../Spotify/spotify')(options);
 var standardqueue = [];
 var manualqueue = [];
 var orginalqueue = [];
+var history = [];
 
 var status= {
   random : true,
