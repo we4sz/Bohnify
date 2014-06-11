@@ -1,12 +1,13 @@
 var TrackView = Backbone.View.extend({
   events : {
     'dblclick .track' : 'play',
-    'click .track' : 'select'
+    'click .track' : 'select',
+    'select' : 'select'
   },
   render : function(){
     var artists = "";
     _.each(this.model.get("artists").toArray(), function(artist, i) {
-        artists += "<div class='trackartist'>"+artist.get("name")+"</div><span class='trackartistsseparator'>,&nbsp;</span>";
+        artists += "<span class='trackartist'>"+artist.get("name")+"</span><span class='trackartistsseparator'>,&nbsp;</span>";
     });
     artists = artists.substring(0,artists.length-50);
 
@@ -19,10 +20,11 @@ var TrackView = Backbone.View.extend({
     this.$el.html(html);
     return this;
   },play : function(){
-    alert(this.model.get("uri"));
+
   },select: function(){
     $(".track.selected").removeClass("selected");
     $(".track.passiveselected").removeClass("passiveselected");
     passiveSelectAll(this.$el.find(".track"));
+    takeInFocus(this.$el.parent(),this.$el);
   }
 });

@@ -125,6 +125,18 @@
         select.addClass("selected");
       }
 
+      var takeInFocus = function (parent, select){
+        var h = parent.innerHeight();
+        var s = parent.scrollTop();
+        var oh = select.outerHeight();
+        var o = select.offset().top - parent.offset().top;
+        if(o+oh>h){
+          parent.scrollTop(o+oh-h+s);
+        }else if(o < 0){
+          parent.scrollTop(s+o);
+        }
+      }
+
     </script>
 </head>
 

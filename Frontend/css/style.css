@@ -112,8 +112,6 @@ body{
     background-color: #454545;
 }
 
-
-
 .tracktitle,
 .trackartists,
 .trackalbum,
@@ -127,7 +125,6 @@ body{
   text-overflow: ellipsis;
 }
 
-
 .tracktitle{
   margin-left: 10px;
   width: 30%;
@@ -137,10 +134,12 @@ body{
   margin-left: 10px;
   width: 30%;
 }
+
 .trackduration{
   margin-left: 10px;
   color: #cbcfe0;
 }
+
 .trackalbum{
   margin-left: 10px;
   width: 30%;
@@ -151,19 +150,9 @@ body{
   cursor: pointer;
 }
 
-.trackartistsseparator{
-  float:left;
-}
-.trackartist{
-  float:left;
-
-}
-
 .trackartist:hover{
-  float:left;
   text-decoration: underline;
   cursor: pointer;
-
 }
 
 
@@ -179,19 +168,16 @@ body{
   height: 30px;
 }
 
-
-
 .playlist:hover {
   background-color: #323336;
 }
 .playlist.selected {
-  background-color: #878787;
+  background-color: #536535;
 }
 
 .playlist.passiveselected {
   background-color: #454545;
 }
-
 
 .playlistnote {
   margin-left: 20px;
@@ -213,8 +199,6 @@ body{
   width: calc(100% - 67px);
   text-overflow: ellipsis;
 }
-
-
 
 /*
   --------------------------------------------------------------
