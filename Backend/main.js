@@ -1,3 +1,7 @@
+var fs = require('fs-extra');
+fs.remove("./cache");
+fs.remove("./settings");
+
 var WebSocketServer = require('ws').Server
   , http = require('http')
   , express = require('express')
@@ -11,7 +15,9 @@ server.listen(1650);
 var wss = new WebSocketServer({server: server});
 wss.on('connection', function(ws) {
   ws.send(JSON.stringify({loginstatus : loginstatus}));
-
+  if(cache_playlists){
+    ws.send(JSON.stringify({playlists:cache_playlists}));
+  }
   ws.on('message', function(message) {
     var msg = JSON.parse(message);
 
@@ -55,6 +61,8 @@ var standardqueue = [];
 var manualqueue = [];
 var orginalqueue = [];
 var history = [];
+var cache_playlists = undefined;
+
 
 var status= {
   random : true,
@@ -66,22 +74,26 @@ var status= {
 
 
 var toTracks = function(ts,ca){
-  var tracks = [];
-  var fun = function(track, i){
-    tracks.push({track:track,index:i});
-    if(ts.length == tracks.length){
-      tracks.sort(function(a,b){
-        return a.index - b.index;
-      });
-      tracks = tracks.map(function(t){
-        return t.track;
-      });
-      ca(tracks);
+  if(ts.length == 0){
+    ca([]);
+  }else{
+    var tracks = [];
+    var fun = function(track, i){
+      tracks.push({track:track,index:i});
+      if(ts.length == tracks.length){
+        tracks.sort(function(a,b){
+          return a.index - b.index;
+        });
+        tracks = tracks.map(function(t){
+          return t.track;
+        });
+        ca(tracks);
+      }
     }
+    ts.forEach(function(track,index){
+      toTrack(track,fun,index);
+    });
   }
-  ts.forEach(function(track,index){
-    toTrack(track,fun,index);
-  });
 }
 
 var toTrack = function(t,ca,i){
@@ -240,6 +252,39 @@ var toAlbum = function(a,ca, browse,i){
   }
 }
 
+var toPlaylists = function(a,ca){
+  var playlists = [];
+  var temp = [];
+  a.forEach(function(pl,index){
+    temp.push({pl:pl,index:index});
+  });
+
+  var fun = function(playlist, i){
+      playlists.push({playlist:playlist,index:i});
+      for(var k = 0;k<temp.length;k++){
+        if(temp[k].index == i){
+          temp.splice(k,1);
+        }
+      }
+      if(playlists.length == a.length){
+        playlists.sort(function(a,b){
+          return a.index - b.index;
+        })
+
+        playlists = playlists.map(function(playlist){
+          return playlist.playlist;
+        })
+        return ca(playlists);
+      }
+  }
+
+  a.forEach(function(playlist,index){
+      toPlaylist(playlist,fun,index);
+  });
+};
+
+
+
 var toPlaylist = function(pl,ca,i){
   i = typeof i !== 'undefined' ? i : -1;
   var playlist = {};
@@ -247,41 +292,48 @@ var toPlaylist = function(pl,ca,i){
   playlist.uri = pl.link;
   playlist.collaborative = pl.collaborative;
   playlist.description = pl.description;
-  toTracks(pl.getTracks(),function(ts){
-    playlist.tracks = ts;
-    ca(playlist);
-  });
+  var tracks = pl.getTracks();
+  if(tracks.length>0){
+    var j = 0;
+    spotify.waitForLoaded(tracks,function(a){
+      j++;
+      if(j == tracks.length){
+        toTracks(tracks,function(ts){
+          playlist.tracks = ts;
+          ca(playlist,i);
+        });
+      }
+    });
+  }else{
+    playlist.tracks = [];
+    ca(playlist,i);
+  }
 }
 
-var search = function(query){
+var search = function(query,ws){
     if(query.indexOf("spotify:track")==0){
       var track = spotify.createFromLink(query);
       toTrack(track,function(track){
-
-
+        ws.send(JSON.stringify(track));
       });
     }else if(query.indexOf("spotify:album")==0){
       var album = spotify.createFromLink(query);
         album.browse(function(err, ba){
           toAlbum(ba,function(ta){
-
-
+            ws.send(JSON.stringify(ta));
           },true);
         });
     }else if(query.indexOf("spotify:artist")==0){
       var artist = spotify.createFromLink(query);
       artist.browse( spotify.constants.ARTISTBROWSE_FULL,function(err, ba){
         toArtist(ba,function(ta){
-
-
-
+          ws.send(JSON.stringify(ta));
         },true);
       });
     }else if(query.indexOf(":playlist:")!=-1){
         var playlist = spotify.createFromLink(query);
         toPlaylist(playlist,function(pl){
-
-
+          ws.send(JSON.stringify(pl));
         });
     }else if(query.indexOf("spotify:user")==0){
 
@@ -292,11 +344,33 @@ var search = function(query){
       search.playlistLimit = 0;
       search.execute( function(err, searchResult) {
         toTracks(searchResult.tracks,function(tracks){
-
-
+          ws.send(JSON.stringify(tracks));
         });
       });
     }
+}
+
+var fixPlaylists = function(){
+  var con = spotify.playlistContainer;
+  var pls = con.getPlaylists();
+  var i = 0;
+  pls.forEach(function(pl,index){
+    spotify.waitForLoaded([pl],function(){
+      for(var j = 0;j<pls.length;j++){
+        if(pls[j].type==1||pls[j].type==2){
+          pls.splice(j,1);
+        }
+      }
+      i++;
+      if(i == pls.length){
+        toPlaylists(pls, function(tp){
+          cache_playlists = tp;
+          wss.broadcast(JSON.stringify({playlists : tp}));
+        });
+      }
+
+    });
+  });
 }
 
 
@@ -305,7 +379,7 @@ var ready = function(){
   loginstatus.login = true;
   loginstatus.user = {uri : spotify.sessionUser.link, name: spotify.sessionUser.displayName};
   wss.broadcast(JSON.stringify({loginstatus: loginstatus}));
-  search("spotify:album:59c6n3KjcLWLKqESPFtfHd");
+  fixPlaylists();
 }
 
 

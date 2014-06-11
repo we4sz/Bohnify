@@ -33,14 +33,15 @@ var ControllerView = Backbone.View.extend({
   },position : function(ss){
     var s = ss.currentTarget;
     var val = ($(s).val() - $(s).attr('min')) / ($(s).attr('max') - $(s).attr('min'));
+    //84bd00
     $(s).css('background-image',
                 '-webkit-gradient(linear, left top, right top, '
-                + 'color-stop(' + val + ', #84bd00), '
+                + 'color-stop(' + val + ', #ab11a9), '
                 + 'color-stop(' + val + ', #3d3d3f)'
                 + ')'
                 );
   }, prev : function(){
-    
+
   },next : function(){
 
   },pause : function(){

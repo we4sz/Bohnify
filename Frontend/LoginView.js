@@ -6,7 +6,6 @@ var LoginView = Backbone.View.extend({
     this.options = options || {};
     this.options.un = "";
     this.options.pass = "";
-
   },
   render : function(){
       var html = "";
@@ -44,7 +43,6 @@ var LoginView = Backbone.View.extend({
                   + "</div>"
                   + "</div>";
       }
-    //  console.log(html);
       this.$el.html(html);
       return this;
   },login : function(){

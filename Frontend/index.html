@@ -7,6 +7,18 @@
   <script type="text/javascript" src="HeaderView.js"></script>
   <script type="text/javascript" src="ControllerView.js"></script>
   <script type="text/javascript" src="LoginView.js"></script>
+  <script type="text/javascript" src="PlaylistView.js"></script>
+  <script type="text/javascript" src="LeftMenu.js"></script>
+  <script type="text/javascript" src="ResultView.js"></script>
+  <script type="text/javascript" src="Playlist.js"></script>
+  <script type="text/javascript" src="Track.js"></script>
+  <script type="text/javascript" src="Album.js"></script>
+  <script type="text/javascript" src="Artist.js"></script>
+  <script type="text/javascript" src="PlaylistCollection.js"></script>
+  <script type="text/javascript" src="TrackCollection.js"></script>
+  <script type="text/javascript" src="AlbumCollection.js"></script>
+  <script type="text/javascript" src="ArtistCollection.js"></script>
+  <script type="text/javascript" src="TrackView.js"></script>
   <link rel="stylesheet" type="text/css" href="css/style.css">
 
    <script>
@@ -15,7 +27,10 @@
         var ws = new WebSocket('ws://' + host + ':1650');
         ws.onopen = function(){
           var loginview = new LoginView({el : $("#loginview"), ws : ws});
+          var resultview = new ResultView({el : $("#result"), ws : ws});
           var header = new HeaderView({el : $("#header"), ws : ws});
+          var playlists = new PlaylistCollection();
+          var leftmenu = new LeftMenu({model : playlists, el : $("#leftmenu"), ws : ws, resultView : resultview});
           var control = new ControllerView({el : $("#bottom"), ws : ws});
           ws.onmessage = function (msg) {
               var data = JSON.parse(msg.data);
@@ -29,32 +44,98 @@
                   loginview.options.loginstatus = data.loginstatus;
                   loginview.render();
                 }
+              }else if(data.search){
+
+              }else if(data.playlists){
+                var list = [];
+                data.playlists.forEach(function(playlist){
+                  list.push(toPlaylist(playlist));
+                });
+                playlists.reset(list);
+              }else if(data.update){
+
               }
           };
         }
+      }
 
 
+      var toPlaylist = function(playlist){
+        var p = new Playlist();
+        p.set("name",playlist.name);
+        p.set("description",playlist.description);
+        p.set("tracks",toTrackCollection(playlist.tracks));
+        p.set("collaborative",playlist.collaborative);
+        p.set("uri",playlist.uri);
+        return p;
+      }
 
+      var toAlbum = function(album){
+        var a = new Album();
+        a.set('title', album.title);
+        a.set('uri', album.uri);
+        return a;
+      }
 
+      var toTrack = function(track){
+        var t = new Track();
+        t.set('title',track.title);
+        t.set('uri',track.uri);
+        t.set('artists',toArtistCollection(track.artists));
+        t.set('album',toAlbum(track.album));
+        t.set('popularity',track.popularity);
+        t.set('duration',track.duration);
+        return t;
+      }
 
-        $("#login").bind('submit',function(){
-          var u = $("#username").val();
-          var p = $("#password").val();
-          var s = JSON.stringify({login : {username : u,password:p}});
-          ws.send(s);
-          return false;;
+      var toArtist = function(artist){
+        var a = new Artist();
+        a.set('name',artist.name);
+        a.set('uri',artist.uri);
+        return a;
+      }
+
+      var toArtistCollection = function(artists){
+        var col = new ArtistCollection();
+        artists.forEach(function(artist){
+          col.add(toArtist(artist));
         });
+        return col;
+      }
 
-  }
+      var toTrackCollection = function(tracks){
+        var col = new TrackCollection();
+        tracks.forEach(function(track){
+          col.add(toTrack(track));
+        });
+        return col;
+      }
+
+      var toMinutesAndSeconds = function(time){
+        var time = parseInt(time);
+        var minutes = parseInt(time/60);
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        var seconds = time%60;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+        return minutes+":"+seconds;
+      }
+
+      var passiveSelectAll = function(select){
+        $(".selected").removeClass("selected").addClass("passiveselected");
+        select.addClass("selected");
+      }
 
     </script>
-
 </head>
+
+
+
+
 
 <body onload="init();">
 <div id="bohnifycontainer">
   <div id="header"></div>
-  <div id="leftmenu-large"></div>
+  <div id="leftmenu" class="leftmenu-large"></div>
   <div id="playtrack"></div>
   <div id="result"></div>
   <div id="bottom"></div>
