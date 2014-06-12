@@ -8,6 +8,8 @@
   <script type="text/javascript" src="ControllerView.js"></script>
   <script type="text/javascript" src="LoginView.js"></script>
   <script type="text/javascript" src="PlaylistView.js"></script>
+  <script type="text/javascript" src="BrowseHeader.js"></script>
+  <script type="text/javascript" src="PlaylistItem.js"></script>
   <script type="text/javascript" src="LeftMenu.js"></script>
   <script type="text/javascript" src="ResultView.js"></script>
   <script type="text/javascript" src="Playlist.js"></script>
@@ -88,7 +90,9 @@
         var a = new Album();
         a.set('title', album.title);
         a.set('uri', album.uri);
+        a.set('cover', album.cover);
         if(browse){
+          a.set('year', album.year);
           a.set('artists', toArtistCollection(album.artists));
           a.set('tracks', toTrackCollection(album.tracks));
         }

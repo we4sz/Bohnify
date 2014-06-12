@@ -1,7 +1,12 @@
+var HashMap = require('hashmap').HashMap;
+var albummap = new HashMap();
+var trackmap = new HashMap();
+var artistmap = new HashMap();
+
 var fs = require('fs-extra');
 fs.remove("./cache");
 fs.remove("./settings");
-
+var request = require('request');
 var WebSocketServer = require('ws').Server
   , http = require('http')
   , express = require('express')
@@ -140,23 +145,30 @@ var toTracks = function(ts,ca){
 
 var toTrack = function(t,ca,i){
   i = typeof i !== 'undefined' ? i : -1;
-  var track = {};
-  track.title =  t.name;
-  track.popularity = t.popularity;
-  track.duration = t.duration;
-  track.uri = t.link;
-  toAlbum(t.album, function(album){
-    track.album = album;
-    if(track.artists){
-      ca(track,i);
-    }
-  },false);
-  toArtists(t.artists, function(artists){
-    track.artists = artists;
-    if(track.album){
-      ca(track,i);
-    }
-  },false);
+  var track = trackmap.get(t.link);
+  if(track){
+    ca(track,i);
+  }else{
+    track = {};
+    track.title =  t.name;
+    track.popularity = t.popularity;
+    track.duration = t.duration;
+    track.uri = t.link;
+    toAlbum(t.album, function(album){
+      track.album = album;
+      if(track.artists){
+        trackmap.set(track.uri,track);
+        ca(track,i);
+      }
+    },false);
+    toArtists(t.artists, function(artists){
+      track.artists = artists;
+      if(track.album){
+        trackmap.set(track.uri,track);
+        ca(track,i);
+      }
+    },false);
+  }
 }
 
 var toArtists = function(a,ca,browse){
@@ -180,34 +192,50 @@ var toArtists = function(a,ca,browse){
   });
 };
 
+var uriToOpen = function(uri){
+  var open = "http://open.spotify.com/";
+  var uri = uri.substring(8);
+  uri = uri.replace(":","/");
+  return open+uri;
+}
+
 
 var toArtist = function(a,ca, browse,i){
   i = typeof i !== 'undefined' ? i : -1;
-  var artist = {};
-  artist.name = a.name;
-  artist.uri = a.link;
-  if(browse){
-    artist.bio = a.biography;
-    toTracks(a.tracks,function(tracks){
-      artist.tracks = tracks;
-      if(artist.topTracks && artist.albums){
-        return ca(artist,i);
-      }
-    });
-    toTracks(a.tophitTracks,function(tracks){
-      artist.topTracks = tracks;
-      if(artist.albums && artist.tracks){
-        return ca(artist,i);
-      }
-    });
-    browseAlbums(a.albums,function(albums){
-      artist.albums = albums;
-      if(artist.topTracks && artist.tracks){
-        return ca(artist,i);
-      }
-    });
+  var artist = artistmap.get(a.link+(browse?"_b":""));
+  if(artist){
+    ca(artist,i);
   }else{
-      return ca(artist,i);
+    artist = {};
+    artist.name = a.name;
+    artist.uri = a.link;
+    if(browse){
+      artist.bio = a.biography;
+      toTracks(a.tracks,function(tracks){
+        artist.tracks = tracks;
+        if(artist.topTracks && artist.albums){
+          artistmap.set(artist.uri+"_b",artist);
+          return ca(artist,i);
+        }
+      });
+      toTracks(a.tophitTracks,function(tracks){
+        artist.topTracks = tracks;
+        if(artist.albums && artist.tracks){
+          artistmap.set(artist.uri+"_b",artist);
+          return ca(artist,i);
+        }
+      });
+      browseAlbums(a.albums,function(albums){
+        artist.albums = albums;
+        if(artist.topTracks && artist.tracks){
+          artistmap.set(artist.uri+"_b",artist);
+          return ca(artist,i);
+        }
+      });
+    }else{
+        artistmap.set(artist.uri,artist);
+        return ca(artist,i);
+    }
   }
 };
 
@@ -257,40 +285,52 @@ var toAlbums = function(a,ca,browse){
   }
 
   a.forEach(function(album,index){
-    toArtist(album,fun,browse,index);
+    toAlbum(album,fun,browse,index);
   });
 };
 
 
 var toAlbum = function(a,ca, browse,i){
   i = typeof i !== 'undefined' ? i : -1;
-  var album = {};
-  album.uri = a.link;
-  album.title = a.name;
-  if(browse){
-    toTracks(a.tracks,function(tracks){
-      album.tracks = tracks;
-      if(album.artists){
-        return ca(album,i);
-      }
-    });
-    if(a.artists){
-      toArtists(a.artists,function(artists){
-          album.artists = artists;
-          if(album.tracks){
-            return ca(album,i);
-          }
-      },false);
-    }else{
-      toArtist(a.artist,function(artist){
-          album.artists = [artist];
-          if(album.tracks){
-            return ca(album,i);
-          }
-      },false);
-    }
+  var album = albummap.get(a.link+(browse ? "_b" : ""));
+  if(album){
+    ca(album,i);
   }else{
-    return ca(album,i);
+    album = {};
+    album.uri = a.link;
+    album.title = a.name;
+    album.cover = a.cover;
+    if(browse){
+      album.type = a.type;
+      album.year = a.year;
+      toTracks(a.tracks,function(tracks){
+        album.tracks = tracks;
+        if(album.artists){
+          albummap.set(album.uri+"_b",album);
+          return ca(album,i);
+        }
+      });
+      if(a.artists){
+        toArtists(a.artists,function(artists){
+            album.artists = artists;
+            if(album.tracks){
+              albummap.set(album.uri+"_b",album);
+              return ca(album,i);
+            }
+        },false);
+      }else{
+        toArtist(a.artist,function(artist){
+            album.artists = [artist];
+            if(album.tracks){
+              albummap.set(album.uri+"_b",album);
+              return ca(album,i);
+            }
+        },false);
+      }
+    }else{
+      albummap.set(album.uri,album);
+      return ca(album,i);
+    }
   }
 }
 

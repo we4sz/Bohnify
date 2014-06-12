@@ -13,6 +13,63 @@ body{
 }
 
 
+/*
+  --------------------------------------------------------------
+  Browse Content
+  --------------------------------------------------------------
+*/
+
+.browsehead{
+  height: 240px;
+  width: 100%;
+  border-bottom: 1px solid #222326;
+}
+
+.browseimage {
+  width: 200px;
+  height: 200px;
+  margin-left: 20px;
+  margin-top: 20px;
+  float:left;
+}
+
+.browsecon{
+  float:left;
+  margin-left: 20px;
+  margin-top: 20px;
+}
+
+.browsetext{
+  color: #84898c;
+  font-size: 12px;
+}
+
+.browsename{
+  margin-top: 10px;
+  color: #dfe0e6;
+  font-size: 40px;
+}
+
+.browseplay{
+  margin-top: 98px;
+  width: 97px;
+  height: 30px;
+  background-color: #618f00;
+  border-radius: 10px;
+  border: none;
+  color : #dfe0e6;
+}
+
+.browsemenu{
+  margin-lefT: 10px;
+  width: 30px;
+  height: 30px;
+  background-color: transparent;
+  border: 1px solid #dfe0e6;
+  border-radius: 15px;
+  background-clip: content-box;
+  color : #dfe0e6;
+}
 
 /*
   --------------------------------------------------------------

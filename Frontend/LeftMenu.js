@@ -12,7 +12,7 @@ var LeftMenu = Backbone.View.extend({
     	var self = this;
     	self.$el.html('');
     	_.each(this.model.toArray(), function(playlist, i) {
-    		self.$el.append((new PlaylistView({model: playlist, resultView : self.options.resultView})).render().$el);
+    		self.$el.append((new PlaylistItem({model: playlist, resultView : self.options.resultView})).render().$el);
     	});
 	    return this;
 	},keyevent : function(ev){

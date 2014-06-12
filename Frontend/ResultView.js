@@ -11,10 +11,7 @@ var ResultView = Backbone.View.extend({
       if(this.options.data){
         if(this.options.data.type == "playlist"){
           var playlist = this.options.data.data;
-          var self = this;
-          _.each(playlist.get("tracks").toArray(), function(track, i) {
-							self.$el.append((new TrackView({model: track, ws : self.options.ws})).render().$el);
-					});
+          this.$el.append((new PlaylistView({model : playlist, ws:this.options.ws})).render().$el);
         }else if(this.options.data.type == "search"){
           var self = this;
           _.each(this.options.data.data.toArray(), function(track, i) {
