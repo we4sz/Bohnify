@@ -18,11 +18,52 @@ wss.on('connection', function(ws) {
   if(cache_playlists){
     ws.send(JSON.stringify({playlists:cache_playlists}));
   }
+  update(ws);
   ws.on('message', function(message) {
     var msg = JSON.parse(message);
 
     if(msg.login){
       login(msg.login.username,msg.login.password,ws);
+    }else if(msg.search){
+      search(msg.search,ws);
+    }else if(msg.play){
+      standardqueue = msg.play.queue;
+      playuri(msg.play.track);
+    }else if(msg.queue){
+
+    }else if(msg.random){
+      status.random = !status.random;
+      update();
+    }else if(msg.repeat){
+      status.repeat = !status.repeat;
+      update();
+    }else if(msg.seek){
+      spotify.player.seek(parseInt(msg.seek));
+      var done = function(){
+        if(spotify.player.currentSecond == parseInt(msg.seek)+1){
+          update();
+        }else{
+          setTimeout(done,100);
+        }
+      }
+      done();
+    }else if(msg.volume){
+      status.volume = msg.volume;
+      update();
+    }else if(msg.search){
+
+    }else if(msg.pause){
+      status.paused = !status.paused;
+      if(status.paused){
+        spotify.player.pause();
+      }else if(status.track){
+        spotify.player.resume();
+      }
+      update();
+    }else if(msg.getqueue){
+
+    }else if(msg.gethistory){
+
     }
   });
 
@@ -69,7 +110,8 @@ var status= {
   repeat : true,
   paused : true,
   position : 0,
-  track : undefined
+  track : undefined,
+  volume : 0
 }
 
 
@@ -314,26 +356,26 @@ var search = function(query,ws){
     if(query.indexOf("spotify:track")==0){
       var track = spotify.createFromLink(query);
       toTrack(track,function(track){
-        ws.send(JSON.stringify(track));
+        ws.send(JSON.stringify({search : {type : "track", data :track}}));
       });
     }else if(query.indexOf("spotify:album")==0){
       var album = spotify.createFromLink(query);
         album.browse(function(err, ba){
           toAlbum(ba,function(ta){
-            ws.send(JSON.stringify(ta));
+            ws.send(JSON.stringify({search : {type : "album", data :ta}}));
           },true);
         });
     }else if(query.indexOf("spotify:artist")==0){
       var artist = spotify.createFromLink(query);
       artist.browse( spotify.constants.ARTISTBROWSE_FULL,function(err, ba){
         toArtist(ba,function(ta){
-          ws.send(JSON.stringify(ta));
+          ws.send(JSON.stringify({search : {type : "artist", data :ta}}));
         },true);
       });
     }else if(query.indexOf(":playlist:")!=-1){
         var playlist = spotify.createFromLink(query);
         toPlaylist(playlist,function(pl){
-          ws.send(JSON.stringify(pl));
+          ws.send(JSON.stringify({search : {type : "playlist", data :pl}}));
         });
     }else if(query.indexOf("spotify:user")==0){
 
@@ -344,7 +386,7 @@ var search = function(query,ws){
       search.playlistLimit = 0;
       search.execute( function(err, searchResult) {
         toTracks(searchResult.tracks,function(tracks){
-          ws.send(JSON.stringify(tracks));
+          ws.send(JSON.stringify({search : {type : "search", data :tracks}}));
         });
       });
     }
@@ -382,11 +424,45 @@ var ready = function(){
   fixPlaylists();
 }
 
+var next = function(){
 
+}
 
-var play = function(uri){
-  spotify.player.play(starredPlaylist.getTrack(0));
+var prev = function(){
+
+}
+
+var endOfTrack = function() {
+    console.log('End of track reachasdasded');
 };
+
+var playuri = function(uri){
+  var track = spotify.createFromLink(uri);
+  play(track);
+}
+
+var play = function(track){
+  spotify.player.play(track);
+  status.track = track;
+  status.paused = false;
+  var done = function(){
+    if(spotify.player.currentSecond == 1){
+      update();
+    }else{
+      setTimeout(done,100);
+    }
+  }
+  done();
+};
+
+var update = function(ws){
+  status.position = spotify.player.currentSecond;
+  if(ws){
+    ws.send(JSON.stringify({status : status}));
+  }else{
+    wss.broadcast(JSON.stringify({status : status}));
+  }
+}
 
 
 spotify.on({

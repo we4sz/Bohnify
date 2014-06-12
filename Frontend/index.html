@@ -30,7 +30,7 @@
           var resultview = new ResultView({el : $("#result"), ws : ws});
           var header = new HeaderView({el : $("#header"), ws : ws});
           var playlists = new PlaylistCollection();
-          var leftmenu = new LeftMenu({model : playlists, el : $("#leftmenu"), ws : ws, resultView : resultview});
+          var leftmenu = new LeftMenu({model : playlists, el : $("#leftmenu"), ws : ws});
           var control = new ControllerView({el : $("#bottom"), ws : ws});
           ws.onmessage = function (msg) {
               var data = JSON.parse(msg.data);
@@ -45,15 +45,29 @@
                   loginview.render();
                 }
               }else if(data.search){
-
+                var todo = {type:data.search.type};
+                if(data.search.type == "search"){
+                    todo.data = toTrackCollection(data.search.data);
+                    $("#result").trigger("update",todo);
+                }else if(data.search.type == "album"){
+                    todo.data = toAlbum(data.search.data,true);
+                    $("#result").trigger("update",todo);
+                }else if(data.search.type == "artist"){
+                    todo.data = toArtist(data.search.data,true);
+                    $("#result").trigger("update",todo);
+                }
               }else if(data.playlists){
                 var list = [];
                 data.playlists.forEach(function(playlist){
                   list.push(toPlaylist(playlist));
                 });
                 playlists.reset(list);
-              }else if(data.update){
-
+              }else if(data.status){
+                if(data.status.track){
+                  data.status.track = toTrack(data.status.track);
+                }
+                $("#bottom").trigger('status',[data.status]);
+                //$("#bottom").trigger('status',[data.status]);
               }
           };
         }
@@ -70,10 +84,14 @@
         return p;
       }
 
-      var toAlbum = function(album){
+      var toAlbum = function(album,browse){
         var a = new Album();
         a.set('title', album.title);
         a.set('uri', album.uri);
+        if(browse){
+          a.set('artists', toArtistCollection(album.artists));
+          a.set('tracks', toTrackCollection(album.tracks));
+        }
         return a;
       }
 
@@ -88,10 +106,16 @@
         return t;
       }
 
-      var toArtist = function(artist){
+      var toArtist = function(artist,browse){
         var a = new Artist();
         a.set('name',artist.name);
         a.set('uri',artist.uri);
+        if(browse){
+          a.set("albums",toAlbumCollection(artist.albums,true));
+          a.set("bio",artist.bio);
+          a.set("toptracks", toTrackCollection(artist.topTracks));
+          a.set("tracks", toTrackCollection(artist.tracks));
+        }
         return a;
       }
 
@@ -99,6 +123,14 @@
         var col = new ArtistCollection();
         artists.forEach(function(artist){
           col.add(toArtist(artist));
+        });
+        return col;
+      }
+
+      var toAlbumCollection = function(albums,browse){
+        var col = new AlbumCollection();
+        albums.forEach(function(album){
+          col.add(toAlbum(album,browse));
         });
         return col;
       }
@@ -122,7 +154,9 @@
 
       var passiveSelectAll = function(select){
         $(".selected").removeClass("selected").addClass("passiveselected");
-        select.addClass("selected");
+        if(select){
+          select.addClass("selected");
+        }
       }
 
       var takeInFocus = function (parent, select){

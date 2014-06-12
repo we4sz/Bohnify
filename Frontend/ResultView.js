@@ -1,6 +1,7 @@
 var ResultView = Backbone.View.extend({
   events : {
-    'keyup' : 'test'
+    'keyup' : 'test',
+    'update' : 'update'
   },initialize : function (options) {
     this.options = options || {};
     $(document).bind("keydown",this.keyevent.bind(this));
@@ -12,17 +13,23 @@ var ResultView = Backbone.View.extend({
           var playlist = this.options.data.data;
           var self = this;
           _.each(playlist.get("tracks").toArray(), function(track, i) {
-							self.$el.append((new TrackView({model: track})).render().$el);
+							self.$el.append((new TrackView({model: track, ws : self.options.ws})).render().$el);
 					});
         }else if(this.options.data.type == "search"){
-
-
+          var self = this;
+          _.each(this.options.data.data.toArray(), function(track, i) {
+              self.$el.append((new TrackView({model: track, ws : self.options.ws})).render().$el);
+          });
         }else if(this.options.data.type == "album"){
-
-
+          var self = this;
+          _.each(this.options.data.data.get("tracks").toArray(), function(track, i) {
+              self.$el.append((new TrackView({model: track, ws : self.options.ws})).render().$el);
+          });
         }else if(this.options.data.type == "artist"){
-
-
+          var self = this;
+          _.each(this.options.data.data.get("tracks").toArray(), function(track, i) {
+              self.$el.append((new TrackView({model: track, ws : self.options.ws})).render().$el);
+          });
         }else if(this.options.data.type == "track"){
 
 
@@ -30,15 +37,15 @@ var ResultView = Backbone.View.extend({
 
 
         }else if(this.options.data.type == "load"){
-
-
+          var html = "<div class='resultloader'></div>";
+          this.$el.html(html);
         }
       }
       return this;
   },keyevent : function(ev){
-    if(ev.keyCode == 40 || ev.keyCode == 38 || ev.keyCode == 39||ev.keyCode == 37){
-      ev.preventDefault()
-      if(this.$el.find(".selected").length > 0){
+    if(this.$el.find(".selected").length > 0){
+      if(ev.keyCode == 40 || ev.keyCode == 38){
+        ev.preventDefault()
         if(ev.keyCode == 40 || ev.keyCode == 38){
           var parent =this.$el.find(".selected").parent();
           var left = parent.nextAll();
@@ -47,24 +54,35 @@ var ResultView = Backbone.View.extend({
             left = parent.prevAll();
           }
           if(left.length > 0){
-            $(".track.selected").removeClass("selected");
             var select = $(left.get(0)).find(".track").trigger("select");
           }
-        }else if(ev.keyCode == 37){
-          this.$el.blur();
+        }
+        return false;
+      }else if(ev.keyCode == 13){
+        $(".track.selected").trigger("play");
+        return false;
+      }else if(ev.keyCode == 9 || ev.keyCode == 37){
+        ev.preventDefault();
+        if((ev.shiftKey && ev.keyCode == 9) || ev.keyCode == 37){
           var playlist = $(".playlist.passiveselected");
           if(playlist.length > 0){
-            playlist.removeClass("passiveselected").trigger("select");
+            playlist.trigger("select");
           }else{
             var playlists = $(".playlist");
             if(playlists.length > 0){
               $(playlists.get(0)).trigger("select");
             }
           }
+        }else{
+          $("#search").focus();
         }
+        return false;
       }
-    }else if(ev.keyCode == 13){
-
+    }
+  },update : function(_,data) {
+    if(this.options.data != data){
+        this.options.data = data;
+        this.render();
     }
   }
 });

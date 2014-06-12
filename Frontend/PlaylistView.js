@@ -13,15 +13,14 @@ var PlaylistView = Backbone.View.extend({
                   + "</div>";
       this.$el.html(html);
       return this;
-  },show : function(){
+  },show : function(_,notChange){
     $(".playlist.selected").removeClass("selected");
     $(".playlist.passiveselected").removeClass("passiveselected");
     passiveSelectAll(this.$el.find(".playlist"));
     takeInFocus(this.$el.parent(),this.$el);
     this.$el.parent().parent().focus();
-    if(this.options.resultView.options.data != this.options.data){
-      this.options.resultView.options.data = this.options.data;
-      this.options.resultView.render();
+    if(!notChange){
+      $("#result").trigger("update",[this.options.data]);
     }
   }
 });

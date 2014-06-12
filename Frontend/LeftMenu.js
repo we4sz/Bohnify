@@ -16,9 +16,9 @@ var LeftMenu = Backbone.View.extend({
     	});
 	    return this;
 	},keyevent : function(ev){
-    if(ev.keyCode == 40 || ev.keyCode == 38 || ev.keyCode == 39||ev.keyCode == 37){
-      ev.preventDefault();
-      if(this.$el.find(".selected").length > 0){
+    if(this.$el.find(".selected").length > 0){
+      if(ev.keyCode == 40 || ev.keyCode == 38){
+        ev.preventDefault();
         if(ev.keyCode == 40 || ev.keyCode == 38){
           var parent =this.$el.find(".selected").parent();
           var left = parent.nextAll();
@@ -30,7 +30,13 @@ var LeftMenu = Backbone.View.extend({
             var select = $(left.get(0)).find(".playlist");
             select.parent().trigger("select");
           }
-        }else if(ev.keyCode == 39){
+        }
+        return false;
+      }else if(ev.keyCode == 9 || ev.keyCode == 39){
+        ev.preventDefault();
+        if(ev.shiftKey && ev.keyCode == 9){
+          $("#search").focus();
+        }else{
           var track = $(".track.passiveselected");
           if(track.length > 0){
             track.trigger("select");
@@ -41,6 +47,7 @@ var LeftMenu = Backbone.View.extend({
             }
           }
         }
+        return false;
       }
     }
   }

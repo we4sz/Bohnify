@@ -44,6 +44,7 @@ var LoginView = Backbone.View.extend({
                   + "</div>";
       }
       this.$el.html(html);
+      this.$el.find("#loginusername").focus();
       return this;
   },login : function(){
     var un = this.$el.find("#loginusername").val();
