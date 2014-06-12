@@ -7,6 +7,7 @@ var HeaderView = Backbone.View.extend({
     'keydown #search' : 'tabb'
   },initialize : function (options) {
     this.options = options || {};
+    $(document).bind("keydown",this.takefocus.bind(this));
   },
   render : function(){
       var html =  " <div id='headback' class='disable head'></div>"
@@ -50,6 +51,12 @@ var HeaderView = Backbone.View.extend({
           }
         }
       }
+      return false;
+    }
+  },takefocus : function(ev){
+    if(ev.keyCode == 76 && ev.ctrlKey){
+      ev.preventDefault();
+      this.$el.find("#search").focus();
       return false;
     }
   }

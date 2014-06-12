@@ -12,6 +12,74 @@ body{
   cursor: default;
 }
 
+/*
+  --------------------------------------------------------------
+  CurrentTrack Content
+  --------------------------------------------------------------
+*/
+
+.currentimage.small{
+  float:left;
+  width: 50px;
+  height: 50px;
+}
+
+
+.currentimage.big{
+  width: 200px;
+  height: 200px;
+}
+
+.currentcon.small{
+  float:left;
+  margin-left: 5px;
+  width: 140px;
+}
+
+.currentcon.big{
+  margin-left: 5px;
+  width: 190px;
+}
+
+.currenttitle{
+  color: #cff2da;
+  width: 100%;
+  margin-top: 7px;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.currentartists{
+  width: 100%;
+  color: #dddddd;
+  margin-top: 5px;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.currentresize.big{
+  position: absolute;
+  background-image: url("/images/minimize.png");
+  width:24px;
+  height:24px;
+  top:5px;
+  left: 171px;
+  visibility: hidden;
+}
+
+.currentresize.small{
+  position: absolute;
+  background-image: url("/images/maximize.png");
+  width:24px;
+  height:24px;
+  top:2px;
+  left: 24px;
+  visibility: hidden;
+}
 
 /*
   --------------------------------------------------------------
@@ -37,6 +105,7 @@ body{
   float:left;
   margin-left: 20px;
   margin-top: 20px;
+  width: calc(100% - 240px);
 }
 
 .browsetext{
@@ -48,6 +117,10 @@ body{
   margin-top: 10px;
   color: #dfe0e6;
   font-size: 40px;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .browseplay{
@@ -92,7 +165,27 @@ body{
   right: 0px;
 }
 
-#leftmenu-small {
+#playtrack.small {
+  position: absolute;
+  bottom: 42px;
+  left: 0px;
+  height: 50px;
+  width: 200px;
+  border-top: 1px solid #393b40;
+  background-color: #222326;
+}
+
+#playtrack.big {
+  position: absolute;
+  bottom: 42px;
+  left: 0px;
+  height: 250px;
+  width: 200px;
+  border-top: 1px solid #393b40;
+  background-color: #222326;
+}
+
+#leftmenu.small {
   position: absolute;
   left: 0px;
   width : 200px;
@@ -103,7 +196,7 @@ body{
   top: 37px;
 }
 
-.leftmenu-large {
+#leftmenu.big {
   position: absolute;
   left: 0px;
   width : 200px;
@@ -132,16 +225,6 @@ body{
   right: 0px;
   background-color: #111213;
   overflow-y: scroll;
-}
-
-#playtrack {
-  position: absolute;
-  bottom: 42px;
-  left: 0px;
-  height: 50px;
-  width: 200px;
-  border-top: 1px solid #393b40;
-  background-color: #222326;
 }
 
 .resultloader {
@@ -231,6 +314,14 @@ body{
   Playlist Content
   --------------------------------------------------------------
 */
+
+.playlistempty{
+  width: 100%;
+  text-align: center;
+  font-size: 40px;
+  margin-top: 50px;
+
+}
 
 .playlist {
   width: 100%;

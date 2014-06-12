@@ -16,6 +16,7 @@ var ControllerView = Backbone.View.extend({
     this.options = options || {};
     this.options.position = true;
     this.options.volume = true;
+    $(document).bind("keydown",this.keyactions.bind(this));
   },
   render : function(){
       var html =  " <div id='controllprev' class='disable controller'></div>"
@@ -68,6 +69,7 @@ var ControllerView = Backbone.View.extend({
       $("#controllduration").text(toMinutesAndSeconds(status.track.get("duration")));
     }
     $("#controllposition").val(status.position);
+    this.position();
     this.options.time = (new Date()).getTime();
     if(this.options.interval){
        clearInterval(this.options.interval);
@@ -84,6 +86,7 @@ var ControllerView = Backbone.View.extend({
     }.bind(this),200);
     if(this.options.volume){
       $("#controllvolume").val(status.volume);
+      this.volume();
     }
     $("#controlltime").text(toMinutesAndSeconds(status.position));
   },disablepos : function(){
@@ -96,5 +99,26 @@ var ControllerView = Backbone.View.extend({
   },activatevol : function(){
     this.options.ws.send(JSON.stringify({volume: $("#controllvolume").val()}));
     this.options.volume = true;
+  },keyactions : function(ev){
+    var searchfocus = $("#search").is(":focus");
+    if(ev.keyCode == 32 && !searchfocus){
+      ev.preventDefault();
+      this.pause();
+      return false;
+    }else if(ev.keyCode == 37 && ev.altKey){
+      ev.preventDefault();
+      return false;
+    }else if(ev.keyCode == 39 && ev.altKey){
+      ev.preventDefault();
+      return false;
+    }else if(ev.keyCode == 37 && ev.ctrlKey){
+      ev.preventDefault();
+      this.prev();
+      return false;
+    }else if(ev.keyCode == 39 && ev.ctrlKey){
+      ev.preventDefault();
+      this.next();
+      return false;
+    }
   }
 });

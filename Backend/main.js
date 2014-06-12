@@ -472,9 +472,6 @@ var prev = function(){
 
 }
 
-var endOfTrack = function() {
-    console.log('End of track reachasdasded');
-};
 
 var playuri = function(uri){
   var track = spotify.createFromLink(uri);
@@ -483,7 +480,6 @@ var playuri = function(uri){
 
 var play = function(track){
   spotify.player.play(track);
-  status.track = track;
   status.paused = false;
   var done = function(){
     if(spotify.player.currentSecond == 1){
@@ -492,7 +488,10 @@ var play = function(track){
       setTimeout(done,100);
     }
   }
-  done();
+  toTrack(track, function(t){
+    status.track = t;
+    done();
+  });
 };
 
 var update = function(ws){
@@ -509,6 +508,8 @@ spotify.on({
     ready: function(){
       loginsocket = undefined;
       setTimeout(ready,2000);
+    },startPlaysback : function() {
+
     },logout :function(){
       if(loginstatus.logingin && loginsocket){
         loginsocket.send(JSON.stringify({loginstatus : {loginerror: "Bad username or password!"}}));
@@ -518,6 +519,12 @@ spotify.on({
       loginstatus.user = undefined;
       wss.broadcast(JSON.stringify({loginstatus : loginstatus}),loginsocket);
       loginsocket = undefined;
+    },endOfTrack : function() {
+        console.log('End of track reachasdasded');
+    },stopPlayback : function() {
+        console.log('Stop playback reachasdasded');
+    },playTokenLost : function() {
+        console.log('Lost biatch reachasdasded');
     }
 });
 

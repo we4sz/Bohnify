@@ -13,6 +13,11 @@
   <script type="text/javascript" src="LeftMenu.js"></script>
   <script type="text/javascript" src="ResultView.js"></script>
   <script type="text/javascript" src="Playlist.js"></script>
+  <script type="text/javascript" src="CurrentTrackView.js"></script>
+  <script type="text/javascript" src="AlbumView.js"></script>
+  <script type="text/javascript" src="ArtistView.js"></script>
+  <script type="text/javascript" src="ArtistAlbumView.js"></script>
+  <script type="text/javascript" src="ArtistTopView.js"></script>
   <script type="text/javascript" src="Track.js"></script>
   <script type="text/javascript" src="Album.js"></script>
   <script type="text/javascript" src="Artist.js"></script>
@@ -31,6 +36,7 @@
           var loginview = new LoginView({el : $("#loginview"), ws : ws});
           var resultview = new ResultView({el : $("#result"), ws : ws});
           var header = new HeaderView({el : $("#header"), ws : ws});
+          var current = new CurrentTrackView({el : $("#playtrack"), ws : ws});
           var playlists = new PlaylistCollection();
           var leftmenu = new LeftMenu({model : playlists, el : $("#leftmenu"), ws : ws});
           var control = new ControllerView({el : $("#bottom"), ws : ws});
@@ -69,7 +75,7 @@
                   data.status.track = toTrack(data.status.track);
                 }
                 $("#bottom").trigger('status',[data.status]);
-                //$("#bottom").trigger('status',[data.status]);
+                $("#playtrack").trigger('status',[data.status]);
               }
           };
         }
@@ -163,15 +169,19 @@
         }
       }
 
-      var takeInFocus = function (parent, select){
-        var h = parent.innerHeight();
-        var s = parent.scrollTop();
-        var oh = select.outerHeight();
-        var o = select.offset().top - parent.offset().top;
-        if(o+oh>h){
-          parent.scrollTop(o+oh-h+s);
-        }else if(o < 0){
-          parent.scrollTop(s+o);
+      var takeInFocus = function (parent, select,totop){
+        if(totop){
+          parent.scrollTop(0);
+        }else{
+          var h = parent.innerHeight();
+          var s = parent.scrollTop();
+          var oh = select.outerHeight();
+          var o = select.offset().top - parent.offset().top;
+          if(o+oh>h){
+            parent.scrollTop(o+oh-h+s);
+          }else if(o < 0){
+            parent.scrollTop(s+o);
+          }
         }
       }
 
@@ -185,8 +195,8 @@
 <body onload="init();">
 <div id="bohnifycontainer">
   <div id="header"></div>
-  <div id="leftmenu" class="leftmenu-large"></div>
-  <div id="playtrack"></div>
+  <div id="leftmenu" class="big"></div>
+  <div id="playtrack" class="small"></div>
   <div id="result"></div>
   <div id="bottom"></div>
   <div id="loginview"></div>

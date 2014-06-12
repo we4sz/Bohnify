@@ -31,7 +31,7 @@ var TrackView = Backbone.View.extend({
     $(".track.selected").removeClass("selected");
     $(".track.passiveselected").removeClass("passiveselected");
     passiveSelectAll(this.$el.find(".track"));
-    takeInFocus(this.$el.parent(),this.$el);
+    takeInFocus(this.$el.parent().parent(),this.$el,this.$el.index()==1);
   },browsealbum : function(){
     $("#result").trigger("update",{type: "load"});
     var ob = JSON.stringify({search : this.model.get("album").get("uri")});

@@ -18,15 +18,9 @@ var ResultView = Backbone.View.extend({
               self.$el.append((new TrackView({model: track, ws : self.options.ws})).render().$el);
           });
         }else if(this.options.data.type == "album"){
-          var self = this;
-          _.each(this.options.data.data.get("tracks").toArray(), function(track, i) {
-              self.$el.append((new TrackView({model: track, ws : self.options.ws})).render().$el);
-          });
+          this.$el.append((new AlbumView({model : this.options.data.data, ws:this.options.ws})).render().$el);
         }else if(this.options.data.type == "artist"){
-          var self = this;
-          _.each(this.options.data.data.get("tracks").toArray(), function(track, i) {
-              self.$el.append((new TrackView({model: track, ws : self.options.ws})).render().$el);
-          });
+          this.$el.append((new ArtistView({model : this.options.data.data, ws:this.options.ws})).render().$el);
         }else if(this.options.data.type == "track"){
 
 

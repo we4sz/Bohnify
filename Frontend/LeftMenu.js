@@ -1,4 +1,8 @@
 var LeftMenu = Backbone.View.extend({
+  events : {
+    'makesmall' : 'makesmall',
+    'makebig' : 'makebig'
+  },
   initialize: function(options) {
 			this.model.on('add', this.render, this);
       this.model.on('remove', this.render, this);
@@ -50,5 +54,9 @@ var LeftMenu = Backbone.View.extend({
         return false;
       }
     }
+  },makebig : function(){
+    this.$el.removeClass("small").addClass("big");
+  },makesmall : function(){
+    this.$el.removeClass("big").addClass("small");
   }
 });
