@@ -15,9 +15,9 @@ var BrowseHeader = Backbone.View.extend({
     }else if(this.model instanceof Artist){
       name = this.model.get("name");
       text = "ARTIST";
-      var tracks = this.model.get("tracks");
-      if(tracks.length>0){
-        var cover = tracks.at(0).get("album").get("cover");
+      var albums = this.model.get("albums");
+      if(albums.length>0){
+        var cover = albums.at(0).get("cover");
         if(cover){
           var uri = cover.substring(14);
           image = "https://d3rt1990lpmkn.cloudfront.net/300/"+uri;
@@ -42,16 +42,13 @@ var BrowseHeader = Backbone.View.extend({
         }
       }
     }
-
-
-    var html =    "<div class='browsehead'>"
-                + "<img class='browseimage' src='"+image+"'/>"
+    this.$el.addClass("browsehead");
+    var html =  "<img class='browseimage' src='"+image+"'/>"
                 + "<div class='browsecon'>"
                 + "<div class='browsetext'>"+text+"</div>"
                 + "<div class='browsename'>"+name+"</div>"
                 + "<button class='browseplay'>Play</button>"
                 + "<button class='browsemenu'>...</button>"
-                + "</div>"
                 + "</div>";
 
     this.$el.append($.parseHTML(html));

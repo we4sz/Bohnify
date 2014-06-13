@@ -1,22 +1,29 @@
 var PlaylistView = Backbone.View.extend({
   events : {
-    'click .playlist' : 'show',
-    'select': 'show'
+    'play' : 'play'
   },initialize : function (options) {
     this.options = options || {};
   },
   render : function(){
+      this.$el.addClass("playlistview");
       this.$el.append((new BrowseHeader({model : this.model, ws:this.options.ws})).render().$el);
       if(this.model.get("tracks").length==0){
         this.$el.append($.parseHTML("<div class='playlistempty'>The playlist is currently empty</div>"));
       }else{
         var self =this;
         _.each(this.model.get("tracks").toArray(), function(track, i) {
-            self.$el.append((new TrackView({model: track, ws : self.options.ws})).render().$el);
+            self.$el.append((new TrackView({model: track, ws : self.options.ws, index:i})).render().$el);
         });
       }
       return this;
-  },show : function(_,notChange){
-
+  },play : function(_,index){
+    var tracks = this.model.get("tracks").toJSON();
+    var track = tracks[index].uri;
+    tracks.splice(index,1);
+    tracks = tracks.map(function(t){
+      return t.uri;
+    });
+    var ob = JSON.stringify({play : {track : track,queue:tracks}});
+    this.options.ws.send(ob);
   }
 });

@@ -32,10 +32,16 @@ wss.on('connection', function(ws) {
     }else if(msg.search){
       search(msg.search,ws);
     }else if(msg.play){
-      standardqueue = msg.play.queue;
       playuri(msg.play.track);
-    }else if(msg.queue){
-
+      setStandardQueue(msg.play.queue,msg.play.track);
+    }else if(msg.manualqueue){
+      addToManualQueue(msg.manualqueue);
+    }else if(msg.removemanualqueue){
+      removeFromToManualQueue(msg.removemanualqueue);
+    }else if(msg.standardqueue){
+      setStandardQueue(msg.standardqueue);
+    }else if(msg.removestandardqueue){
+      removeFromStandardQueue(msg.removestandardqueue);
     }else if(msg.random){
       status.random = !status.random;
       update();
@@ -55,8 +61,6 @@ wss.on('connection', function(ws) {
     }else if(msg.volume){
       status.volume = msg.volume;
       update();
-    }else if(msg.search){
-
     }else if(msg.pause){
       status.paused = !status.paused;
       if(status.paused){
@@ -69,6 +73,10 @@ wss.on('connection', function(ws) {
 
     }else if(msg.gethistory){
 
+    }else if(msg.next){
+      next();
+    }else if(msg.prev){
+      prev();
     }
   });
 
@@ -76,6 +84,49 @@ wss.on('connection', function(ws) {
 
   });
 });
+
+var shuffle = function(o){
+    for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+    return o;
+};
+
+var removeAllWithUriFrom = function(tracks,removes){
+  removes.forEach(function(remove){
+    for(var i = 0;i<tracks.length;i++){
+      if(tracks.uri == remove){
+        tracks.splice(i,1);
+        i--;
+      }
+    }
+  });
+}
+
+var setStandardQueue = function(uris,uri){
+  urisToTracks(uris,function(tracks){
+    orginalqueue = tracks;
+    if(status.random){
+      standardqueue = shuffle(tracks);
+    }else{
+      standardqueue = tracks;
+    }
+  });
+}
+
+var removeFromStandardQueue = function(uris){
+  removeAllWithUriFrom(standardqueue,uris);
+}
+
+var addToManualQueue = function(tracks){
+  urisToTracks(uris,function(tracks){
+    tracks.forEach(function(track){
+      manualqueue.push(track);
+    })
+  });
+}
+
+var removeFromToManualQueue = function(tracks){
+  removeAllWithUriFrom(manualqueue,uris);
+}
 
 wss.broadcast = function(data,miss) {
     for(var i in this.clients){
@@ -117,6 +168,42 @@ var status= {
   position : 0,
   track : undefined,
   volume : 0
+}
+
+var urisToTracks = function(uris,ca){
+  if(uris.length == 0){
+    ca([]);
+  }else{
+    var tracks = [];
+    var fun = function(track, i){
+      tracks.push({track:track,index:i});
+      if(uris.length == tracks.length){
+        tracks.sort(function(a,b){
+          return a.index - b.index;
+        });
+        tracks = tracks.map(function(t){
+          return t.track;
+        });
+        ca(tracks);
+      }
+    }
+    uris.forEach(function(uri,index){
+      uriToTrack(uri,fun,index);
+    });
+  }
+}
+
+var uriToTrack = function(uri,ca,i){
+  i = typeof i !== 'undefined' ? i : -1;
+  var track = trackmap.get(uri);
+  if(track){
+    ca(track,i);
+  }else{
+    toTrack(spotify.createFromLink(uri),function(track){
+      trackmap.set(uri,track);
+      ca(track,i);
+    });
+  }
 }
 
 
@@ -211,23 +298,16 @@ var toArtist = function(a,ca, browse,i){
     artist.uri = a.link;
     if(browse){
       artist.bio = a.biography;
-      toTracks(a.tracks,function(tracks){
-        artist.tracks = tracks;
-        if(artist.topTracks && artist.albums){
-          artistmap.set(artist.uri+"_b",artist);
-          return ca(artist,i);
-        }
-      });
       toTracks(a.tophitTracks,function(tracks){
         artist.topTracks = tracks;
-        if(artist.albums && artist.tracks){
+        if(artist.albums){
           artistmap.set(artist.uri+"_b",artist);
           return ca(artist,i);
         }
       });
       browseAlbums(a.albums,function(albums){
         artist.albums = albums;
-        if(artist.topTracks && artist.tracks){
+        if(artist.topTracks){
           artistmap.set(artist.uri+"_b",artist);
           return ca(artist,i);
         }
@@ -465,20 +545,39 @@ var ready = function(){
 }
 
 var next = function(){
-
+  var track = manualqueue.shift();
+  if(track){
+    playuri(track.uri);
+  }else{
+    track = standardqueue.shift();
+    if(track){
+      playuri(track.uri);
+    }else{
+      status.paused = true;
+      update();
+    }
+  }
 }
 
 var prev = function(){
-
+  if(spotify.player.currentSecond < 3 || !status.track){
+    var track = history.pop();
+    if(track){
+      playuri(track.uri,true);
+    }
+  }else{
+    spotify.player.seek(0);
+    update();
+  }
 }
 
 
-var playuri = function(uri){
+var playuri = function(uri,avoidHistory){
   var track = spotify.createFromLink(uri);
-  play(track);
+  play(track,avoidHistory);
 }
 
-var play = function(track){
+var play = function(track,avoidHistory){
   spotify.player.play(track);
   status.paused = false;
   var done = function(){
@@ -490,6 +589,9 @@ var play = function(track){
   }
   toTrack(track, function(t){
     status.track = t;
+    if(avoidHistory) {
+      history.unshift(track);
+    }
     done();
   });
 };
@@ -520,11 +622,10 @@ spotify.on({
       wss.broadcast(JSON.stringify({loginstatus : loginstatus}),loginsocket);
       loginsocket = undefined;
     },endOfTrack : function() {
-        console.log('End of track reachasdasded');
-    },stopPlayback : function() {
-        console.log('Stop playback reachasdasded');
+      next();
     },playTokenLost : function() {
-        console.log('Lost biatch reachasdasded');
+      status.paused = true;
+      update();
     }
 });
 

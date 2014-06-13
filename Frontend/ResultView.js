@@ -38,19 +38,19 @@ var ResultView = Backbone.View.extend({
       if(ev.keyCode == 40 || ev.keyCode == 38){
         ev.preventDefault()
         if(ev.keyCode == 40 || ev.keyCode == 38){
-          var parent =this.$el.find(".selected").parent();
+          var parent =this.$el.find(".selected");
           var left = parent.nextAll();
           if(ev.keyCode == 38){
-            parent = this.$el.find(".selected").parent();
+            parent = this.$el.find(".selected");
             left = parent.prevAll();
           }
           if(left.length > 0){
-            var select = $(left.get(0)).find(".track").trigger("select");
+            var select = $(left.get(0)).trigger("select");
           }
         }
         return false;
       }else if(ev.keyCode == 13){
-        $(".track.selected").trigger("play");
+        $(".track.selected").trigger("playtrack");
         return false;
       }else if(ev.keyCode == 9 || ev.keyCode == 37){
         ev.preventDefault();

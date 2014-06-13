@@ -144,6 +144,66 @@ body{
   color : #dfe0e6;
 }
 
+
+
+.artistalbumhead{
+  margin-top: 50px;
+  height: 120px;
+  width: 100%;
+  border-bottom: 1px solid #222326;
+}
+
+.artistalbumimage {
+  width: 100px;
+  height: 100px;
+  margin-left: 10px;
+  margin-top: 10px;
+  float:left;
+}
+
+.artistalbumcon{
+  float:left;
+  margin-left: 10px;
+  margin-top: 10px;
+  width: calc(100% - 120px);
+}
+
+.artistalbumtext{
+  color: #84898c;
+  font-size: 12px;
+}
+
+.artistalbumname{
+  margin-top: 10px;
+  color: #dfe0e6;
+  font-size: 30px;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.artistalbumplay{
+  margin-top: 12px;
+  width: 97px;
+  height: 30px;
+  background-color: #618f00;
+  border-radius: 10px;
+  border: none;
+  color : #dfe0e6;
+}
+
+.artistalbummenu{
+  margin-left: 10px;
+  width: 30px;
+  height: 30px;
+  background-color: transparent;
+  border: 1px solid #dfe0e6;
+  border-radius: 15px;
+  background-clip: content-box;
+  color : #dfe0e6;
+}
+
 /*
   --------------------------------------------------------------
   Main Content

@@ -1,9 +1,9 @@
 var TrackView = Backbone.View.extend({
   events : {
-    'dblclick .track' : 'play',
-    'click .track' : 'select',
+    'dblclick' : 'play',
+    'click' : 'select',
     'select' : 'select',
-    'play': 'play',
+    'playtrack': 'play',
     'click .trackalbumtext' : 'browsealbum',
     'click .trackartist' : 'browseartist'
   },initialize : function (options) {
@@ -11,26 +11,24 @@ var TrackView = Backbone.View.extend({
   },
   render : function(){
     var artists = "";
+    this.$el.addClass("track");
     _.each(this.model.get("artists").toArray(), function(artist, i) {
         artists += "<span class='trackartist'>"+artist.get("name")+"</span><span class='trackartistsseparator'>,&nbsp;</span>";
     });
     artists = artists.substring(0,artists.length-50);
 
-    var html =   "<div class='track'>"
-                + "<div class='tracktitle'>"+this.model.get("title")+"</div>"
+    var html =   "<div class='tracktitle'>"+this.model.get("title")+"</div>"
                 + "<div class='trackartists'>"+artists+"</div>"
                 + "<div class='trackduration'>"+toMinutesAndSeconds(this.model.get("duration"))+"</div>"
-                + "<div class='trackalbum'><span class='trackalbumtext'>"+this.model.get("album").get("title")+"</span></div>"
-                + "</div>";
+                + "<div class='trackalbum'><span class='trackalbumtext'>"+this.model.get("album").get("title")+"</span></div>";
     this.$el.html(html);
     return this;
   },play : function(){
-    var ob = JSON.stringify({play : {track : this.model.get("uri"),queue:[]}});
-    this.options.ws.send(ob);
+    this.$el.parent().trigger("play",[this.options.index]);
   },select: function(){
     $(".track.selected").removeClass("selected");
     $(".track.passiveselected").removeClass("passiveselected");
-    passiveSelectAll(this.$el.find(".track"));
+    passiveSelectAll(this.$el);
     takeInFocus(this.$el.parent().parent(),this.$el,this.$el.index()==1);
   },browsealbum : function(){
     $("#result").trigger("update",{type: "load"});
