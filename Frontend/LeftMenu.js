@@ -25,20 +25,25 @@ var LeftMenu = Backbone.View.extend({
         ev.preventDefault();
         if(ev.keyCode == 40 || ev.keyCode == 38){
           var parent =this.$el.find(".selected");
-          var left = parent.nextAll();
-          if(ev.keyCode == 38){
-            parent = this.$el.find(".selected");
-            left = parent.prevAll();
+          var items = $(".playlistitem");
+          var index = items.index(parent);
+          var next;
+          if(ev.keyCode == 38 && index > 0){
+            next = items[index-1];
+          }else if(ev.keyCode == 40 && index < items.length){
+            next = items[index+1];
           }
-          if(left.length > 0){
-            var select = $(left.get(0)).trigger("select");
+          if(next){
+            var select = $(next).trigger("select");
           }
         }
         return false;
-      }else if(ev.keyCode == 9 || ev.keyCode == 39){
+      }else if(ev.keyCode == 9 || (ev.keyCode == 39 && !ev.ctrlKey)){
         ev.preventDefault();
         if(ev.shiftKey && ev.keyCode == 9){
           $("#search").focus();
+        }else if(ev.keyCode == 39 && $(".selected .playlistfolder").length>0){
+          $(".selected .playlistfolder").trigger("expand");
         }else{
           var track = $(".track.passiveselected");
           if(track.length > 0){
@@ -51,6 +56,16 @@ var LeftMenu = Backbone.View.extend({
           }
         }
         return false;
+      }else if(ev.keyCode == 37 && $(".selected .playlistfolder").length>0){
+        ev.preventDefault();
+        $(".selected .playlistfolder").trigger("expand");
+        return false;
+      }else if(ev.keyCode == 37 && $(".playlistitem .playlistitem.selected").length>0){
+        if(!ev.fromResult){
+        ev.preventDefault();
+        $(".playlistitem .playlistitem.selected").trigger("expand");
+        return false;
+        }
       }
     }
   },makebig : function(){

@@ -13,10 +13,7 @@ var ResultView = Backbone.View.extend({
           var playlist = this.options.data.data;
           this.$el.append((new PlaylistView({model : playlist, ws:this.options.ws})).render().$el);
         }else if(this.options.data.type == "search"){
-          var self = this;
-          _.each(this.options.data.data.toArray(), function(track, i) {
-              self.$el.append((new TrackView({model: track, ws : self.options.ws})).render().$el);
-          });
+          this.$el.append((new SearchView({model : this.options.data.data, ws:this.options.ws})).render().$el);
         }else if(this.options.data.type == "album"){
           this.$el.append((new AlbumView({model : this.options.data.data, ws:this.options.ws})).render().$el);
         }else if(this.options.data.type == "artist"){
@@ -39,27 +36,31 @@ var ResultView = Backbone.View.extend({
         ev.preventDefault()
         if(ev.keyCode == 40 || ev.keyCode == 38){
           var parent =this.$el.find(".selected");
-          var left = parent.nextAll();
-          if(ev.keyCode == 38){
-            parent = this.$el.find(".selected");
-            left = parent.prevAll();
+          var tracks = $(".track");
+          var index = tracks.index(parent);
+          var next;
+          if(ev.keyCode == 38 && index > 0){
+            next = tracks[index-1];
+          }else if(ev.keyCode == 40 && index < tracks.length){
+            next = tracks[index+1];
           }
-          if(left.length > 0){
-            var select = $(left.get(0)).trigger("select");
+          if(next){
+            var select = $(next).trigger("select");
           }
         }
         return false;
       }else if(ev.keyCode == 13){
         $(".track.selected").trigger("playtrack");
         return false;
-      }else if(ev.keyCode == 9 || ev.keyCode == 37){
+      }else if(ev.keyCode == 9 || (ev.keyCode == 37 && !ev.ctrlKey)){
         ev.preventDefault();
+        ev.fromResult=true;
         if((ev.shiftKey && ev.keyCode == 9) || ev.keyCode == 37){
-          var playlist = $(".playlist.passiveselected");
+          var playlist = $(".playlistitem.passiveselected");
           if(playlist.length > 0){
             playlist.trigger("select");
           }else{
-            var playlists = $(".playlist");
+            var playlists = $(".playlistitem");
             if(playlists.length > 0){
               $(playlists.get(0)).trigger("select");
             }

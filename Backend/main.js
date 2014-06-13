@@ -296,18 +296,44 @@ var toArtist = function(a,ca, browse,i){
     artist = {};
     artist.name = a.name;
     artist.uri = a.link;
+    if(a.portrait == "undefined"){
+      artist.portrait = undefined;
+    }else{
+      artist.portrait = a.portrait;
+    }
     if(browse){
+      artist.portraits = a.portraits;
       artist.bio = a.biography;
       toTracks(a.tophitTracks,function(tracks){
         artist.topTracks = tracks;
-        if(artist.albums){
+        if(artist.albums && artist.similar){
           artistmap.set(artist.uri+"_b",artist);
           return ca(artist,i);
         }
       });
-      browseAlbums(a.albums,function(albums){
+
+      toArtists(a.similarArtists,function(similar){
+        artist.similar = similar;
+        if(artist.topTracks && artist.albums){
+          artistmap.set(artist.uri+"_b",artist);
+          return ca(artist,i);
+        }
+      });
+
+      var aa = a.albums.slice()
+      for(var j = 0 ;j<aa.length;j++){
+        for(var k = (j+1);k<aa.length;k++){
+          if(aa[k].name==aa[j].name){
+            aa.splice(j,1);
+            j--;
+            break;
+          }
+        }
+      }
+
+      browseAlbums(aa,function(albums){
         artist.albums = albums;
-        if(artist.topTracks){
+        if(artist.topTracks && artist.similar){
           artistmap.set(artist.uri+"_b",artist);
           return ca(artist,i);
         }
@@ -380,6 +406,11 @@ var toAlbum = function(a,ca, browse,i){
     album.uri = a.link;
     album.title = a.name;
     album.cover = a.cover;
+    if(a.cover == "undefined"){
+      album.cover = undefined;
+    }else{
+      album.cover = a.cover;
+    }
     if(browse){
       album.type = a.type;
       album.year = a.year;
@@ -516,17 +547,33 @@ var fixPlaylists = function(){
   var con = spotify.playlistContainer;
   var pls = con.getPlaylists();
   var i = 0;
+  var folders = [];
   pls.forEach(function(pl,index){
     spotify.waitForLoaded([pl],function(){
       for(var j = 0;j<pls.length;j++){
         if(pls[j].type==1||pls[j].type==2){
+          if(pls[j].type==1){
+            folders.push({start: j,name:pls[j].name});
+          }else{
+            folders[folders.length-1].end = j;
+          }
           pls.splice(j,1);
         }
       }
       i++;
       if(i == pls.length){
         toPlaylists(pls, function(tp){
+          for(var k = folders.length-1;k>=0;k--){
+            var start = folders[k].start;
+            var end = folders[k].end;
+            var f = tp.splice(start,end-start);
+            tp.splice(start,0,{name: folders[k].name, playlists : f});
+          }
+          console.log(tp);
+
+
           cache_playlists = tp;
+
           wss.broadcast(JSON.stringify({playlists : tp}));
         });
       }
@@ -566,8 +613,15 @@ var prev = function(){
       playuri(track.uri,true);
     }
   }else{
+    var done = function(){
+      if(spotify.player.currentSecond == 1){
+        update();
+      }else{
+        setTimeout(done,100);
+      }
+    }
     spotify.player.seek(0);
-    update();
+    done();
   }
 }
 

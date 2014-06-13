@@ -26,6 +26,7 @@ var HeaderView = Backbone.View.extend({
 
   },focus : function(){
     passiveSelectAll();
+    this.$el.find("#search").select();
   },tabb : function(ev){
     if(ev.keyCode == 9){
       ev.preventDefault();
@@ -41,7 +42,7 @@ var HeaderView = Backbone.View.extend({
           }
         }
       }else{
-        var playlist = $(".playlist.passiveselected");
+        var playlist = $(".playlistitem.passiveselected");
         if(playlist.length > 0){
           playlist.trigger("select",[true]);
         }else{

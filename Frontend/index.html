@@ -11,10 +11,13 @@
   <script type="text/javascript" src="BrowseHeader.js"></script>
   <script type="text/javascript" src="ArtistAlbumHeader.js"></script>
   <script type="text/javascript" src="PlaylistItem.js"></script>
+  <script type="text/javascript" src="SearchView.js"></script>
   <script type="text/javascript" src="LeftMenu.js"></script>
   <script type="text/javascript" src="ResultView.js"></script>
   <script type="text/javascript" src="Playlist.js"></script>
   <script type="text/javascript" src="CurrentTrackView.js"></script>
+  <script type="text/javascript" src="ArtistSimilarItem.js"></script>
+  <script type="text/javascript" src="ArtistViewSeparator.js"></script>
   <script type="text/javascript" src="AlbumView.js"></script>
   <script type="text/javascript" src="ArtistView.js"></script>
   <script type="text/javascript" src="ArtistAlbumView.js"></script>
@@ -85,11 +88,16 @@
 
       var toPlaylist = function(playlist){
         var p = new Playlist();
+        var isFolder = playlist.playlists;
         p.set("name",playlist.name);
-        p.set("description",playlist.description);
-        p.set("tracks",toTrackCollection(playlist.tracks));
-        p.set("collaborative",playlist.collaborative);
-        p.set("uri",playlist.uri);
+        if(isFolder){
+          p.set("playlists",playlist.playlists.map(toPlaylist));
+        } else{
+          p.set("description",playlist.description);
+          p.set("tracks",toTrackCollection(playlist.tracks));
+          p.set("collaborative",playlist.collaborative);
+          p.set("uri",playlist.uri);
+        }
         return p;
       }
 
@@ -122,7 +130,9 @@
         var a = new Artist();
         a.set('name',artist.name);
         a.set('uri',artist.uri);
+        a.set("portrait", artist.portrait);
         if(browse){
+          a.set("similar", toArtistCollection(artist.similar));
           a.set("albums",toAlbumCollection(artist.albums,true));
           a.set("bio",artist.bio);
           a.set("toptracks", toTrackCollection(artist.topTracks));

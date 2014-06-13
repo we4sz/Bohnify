@@ -145,12 +145,17 @@ body{
 }
 
 
+/*
+  --------------------------------------------------------------
+  Artist Content
+  --------------------------------------------------------------
+*/
+
 
 .artistalbumhead{
-  margin-top: 50px;
+  margin-top: 10px;
   height: 120px;
   width: 100%;
-  border-bottom: 1px solid #222326;
 }
 
 .artistalbumimage {
@@ -202,6 +207,65 @@ body{
   border-radius: 15px;
   background-clip: content-box;
   color : #dfe0e6;
+}
+
+.artistseparator{
+  width: 100%;
+  border-bottom: 1px solid #222326;
+}
+
+.artistseparatortext{
+    margin-left: 10px;
+    margin-top: 40px;
+    color: #84898c;
+    font-size: 13px;
+}
+.artisttop{
+  width: 100%;
+  clear:both;
+  overflow:auto;
+}
+
+.artisttoptracks{
+  width: 70%;
+  float:left;
+}
+
+.artistsimilar{
+  margin-left:20px;
+  width:calc(30% - 40px);
+  float:left;
+}
+
+.artistsimilaritem{
+    height: 50px;
+    margin-top:5px;
+    width:100%;
+    background-color: #1c1c1f;
+}
+.artistsimilarimage{
+  float:left;
+  margin-left: 20px;
+  margin-top: 14px;
+  width: 22px;
+  height: 22px;
+}
+
+.artistsimilarname{
+  color:c6d9e6;
+  float:left;
+  margin-top: 18px;
+  font-size: 14px;
+  margin-left: 20px;
+  width-max: calc(100% - 62px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.artistsimilaritem:hover{
+  background-color: #1e1f22;
+  cursor: pointer;
 }
 
 /*
@@ -383,21 +447,61 @@ body{
 
 }
 
-.playlist {
-  width: 100%;
-  height: 30px;
+.playlist{
+width: 100%;
+min-height: 30px;
 }
 
-.playlist:hover {
+.playlistitem{
+  width: 100%;
+  min-height: 30px;
+  background-color: #222326;
+}
+
+.playlistitem.playlistitem{
+  width: calc(100% - 10px);
+  border-left:10px solid #222326;
+  min-height: 30px;
+  background-color: #222326;
+}
+
+.playlistfolder {
+  width: 100%;
+  min-height: 30px;
+}
+
+
+.folderminimize {
+  margin-left: 20px;
+  background-image: url("/images/folderminimize.png");
+  background-repeat:no-repeat;
+  width: 13px;
+  height: 8px;
+  margin-top: 11px;
+  float: left;
+}
+
+.foldermaximize{
+  margin-left: 20px;
+  background-image: url("/images/foldermaximize.png");
+  background-repeat:no-repeat;
+  width: 13px;
+  height: 7px;
+  margin-top: 11px;
+  float: left;
+}
+
+.playlistitem:hover {
   background-color: #323336;
 }
-.playlist.selected {
+.playlistitem.selected {
   background-color: #536535;
 }
 
-.playlist.passiveselected {
+.playlistitem.passiveselected {
   background-color: #454545;
 }
+
 
 .playlistnote {
   margin-left: 20px;

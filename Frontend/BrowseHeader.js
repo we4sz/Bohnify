@@ -15,12 +15,18 @@ var BrowseHeader = Backbone.View.extend({
     }else if(this.model instanceof Artist){
       name = this.model.get("name");
       text = "ARTIST";
-      var albums = this.model.get("albums");
-      if(albums.length>0){
-        var cover = albums.at(0).get("cover");
-        if(cover){
-          var uri = cover.substring(14);
-          image = "https://d3rt1990lpmkn.cloudfront.net/300/"+uri;
+      var cover = this.model.get("portrait");
+      if(cover){
+        var uri = cover.substring(14);
+        image = "https://d3rt1990lpmkn.cloudfront.net/300/"+uri;
+      }else{
+        var albums = this.model.get("albums");
+        if(albums.length>0){
+          var cover = albums.at(0).get("cover");
+          if(cover){
+            var uri = cover.substring(14);
+            image = "https://d3rt1990lpmkn.cloudfront.net/300/"+uri;
+          }
         }
       }
     }else if(this.model instanceof Album){

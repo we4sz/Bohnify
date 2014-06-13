@@ -6,7 +6,11 @@ var ArtistView = Backbone.View.extend({
     this.options = options || {};
   },
   render : function(){
+    this.$el.addClass("artistview");
       this.$el.append((new BrowseHeader({model : this.model, ws:this.options.ws})).render().$el);
+
+      this.$el.append((new ArtistTopView({model : this.model, ws:this.options.ws})).render().$el);
+
       var singles = [];
       var albums = [];
       var appears = [];
@@ -24,25 +28,49 @@ var ArtistView = Backbone.View.extend({
       });
 
       albums.sort(function(a,b){
-        return a.get("year")-b.get("year");
+        return b.get("year")-a.get("year");
       })
 
       singles.sort(function(a,b){
-        return a.get("year")-b.get("year");
+        return b.get("year")-a.get("year");
       })
 
       compilations.sort(function(a,b){
-        return a.get("year")-b.get("year");
+        return b.get("year")-a.get("year");
       })
 
       appears.sort(function(a,b){
-        return a.get("year")-b.get("year");
+        return b.get("year")-a.get("year");
       })
       console.log(albums.length);
       var self =this;
-      _.each(albums, function(album, i) {
-          self.$el.append((new ArtistAlbumView({model: album, ws : self.options.ws})).render().$el);
-      });
+      if(albums.length>0){
+        this.$el.append((new ArtistViewSeparator({model : "ALBUMS"})).render().$el);
+        _.each(albums, function(album, i) {
+            self.$el.append((new ArtistAlbumView({model: album, ws : self.options.ws})).render().$el);
+        });
+      }
+      if(singles.length>0){
+        this.$el.append((new ArtistViewSeparator({model : "SINGLES"})).render().$el);
+        _.each(singles, function(album, i) {
+            self.$el.append((new ArtistAlbumView({model: album, ws : self.options.ws})).render().$el);
+        });
+      }
+
+      if(compilations.length>0){
+        this.$el.append((new ArtistViewSeparator({model : "COMPILATIONS"})).render().$el);
+        _.each(compilations, function(album, i) {
+            self.$el.append((new ArtistAlbumView({model: album, ws : self.options.ws})).render().$el);
+        });
+      }
+
+      if(appears.length>0){
+        this.$el.append((new ArtistViewSeparator({model : "APPEARS ON"})).render().$el);
+        _.each(appears, function(album, i) {
+            self.$el.append((new ArtistAlbumView({model: album, ws : self.options.ws})).render().$el);
+        });
+      }
+
       return this;
   },show : function(_,notChange){
 
