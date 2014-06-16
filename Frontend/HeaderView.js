@@ -16,10 +16,12 @@ var HeaderView = Backbone.View.extend({
       this.$el.html(html);
       return this;
   },
-  search : function(){
-    $("#result").trigger("update",{type: "load"});
+  search : function(ev){
     var val = this.$el.find("#search").val();
-    this.options.ws.send(JSON.stringify({search : val}));
+    if(val){
+      $("#result").trigger("update",{type: "load"});
+      this.options.ws.send(JSON.stringify({search : val}));
+    }
   },back : function(){
 
   },foward : function(){

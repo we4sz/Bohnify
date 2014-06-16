@@ -3,7 +3,8 @@ var PlaylistItem = Backbone.View.extend({
     'click .playlistfolder' : 'expand',
     'click .playlist' : 'show',
     'select': 'show',
-    'expand' : 'expand'
+    'expand' : 'expand',
+    'play' : 'play'
   },initialize : function (options) {
     this.options = options || {};
     this.options.data = {type: "playlist", data:this.model};
@@ -18,10 +19,9 @@ var PlaylistItem = Backbone.View.extend({
           + "<div class='playlistname'>"+this.model.get("name")+"</div></div>");
         this.$el.html(html);
     if(this.options.isbig){
-      var self =this;
       _.each(this.model.get("playlists"), function(playlist, i) {
-          self.$el.append((new PlaylistItem({model: playlist, ws : self.options.ws, index:i})).render().$el);
-      });
+          this.$el.append((new PlaylistItem({model: playlist, ws : this.options.ws, index:i})).render().$el);
+      }.bind(this));
     }
     return this;
   },show : function(_,notChange){
@@ -43,5 +43,18 @@ var PlaylistItem = Backbone.View.extend({
     $(".playlistitem.passiveselected").removeClass("passiveselected");
     passiveSelectAll(this.$el);
     takeInFocus($("#leftmenu"),this.$el);
+  },play : function(ev){
+    if(this.$el.find(".playlistfolder").length > 0){
+      this.expand();
+    }else{
+      var tracks = this.model.get("tracks").toJSON();
+      tracks = tracks.map(function(t){
+        return t.uri;
+      });
+      console.log(tracks);
+      var ob = JSON.stringify({startqueue : tracks});
+      this.options.ws.send(ob);
+      return false;
+    }
   }
 });

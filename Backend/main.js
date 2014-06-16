@@ -40,6 +40,14 @@ wss.on('connection', function(ws) {
       removeFromToManualQueue(msg.removemanualqueue);
     }else if(msg.standardqueue){
       setStandardQueue(msg.standardqueue);
+    }else if(msg.startqueue){
+      var split = 0;
+      if(status.random){
+        split =  Math.floor(Math.random() * msg.startqueue.length);
+      }
+      var a = msg.startqueue.splice(split,1)[0];
+      playuri(a);
+      setStandardQueue(msg.startqueue);
     }else if(msg.removestandardqueue){
       removeFromStandardQueue(msg.removestandardqueue);
     }else if(msg.random){
@@ -632,22 +640,27 @@ var playuri = function(uri,avoidHistory){
 }
 
 var play = function(track,avoidHistory){
-  spotify.player.play(track);
-  status.paused = false;
-  var done = function(){
-    if(spotify.player.currentSecond == 1){
-      update();
-    }else{
-      setTimeout(done,100);
+  try{
+    spotify.player.play(track);
+    status.paused = false;
+    var done = function(){
+      if(spotify.player.currentSecond == 1){
+        update();
+      }else{
+        setTimeout(done,100);
+      }
     }
+    toTrack(track, function(t){
+      status.track = t;
+      if(avoidHistory) {
+        history.unshift(track);
+      }
+      done();
+    });
+  }catch(e){
+    wss.broadcast(JSON.stringify({statusfail : "Not availiable in your country!"}));
+    next();
   }
-  toTrack(track, function(t){
-    status.track = t;
-    if(avoidHistory) {
-      history.unshift(track);
-    }
-    done();
-  });
 };
 
 var update = function(ws){
@@ -678,6 +691,7 @@ spotify.on({
     },endOfTrack : function() {
       next();
     },playTokenLost : function() {
+      wss.broadcast(JSON.stringify({statusfail : "Spotify is playing somewhere else!"}));
       status.paused = true;
       update();
     }

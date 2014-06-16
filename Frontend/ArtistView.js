@@ -42,33 +42,31 @@ var ArtistView = Backbone.View.extend({
       appears.sort(function(a,b){
         return b.get("year")-a.get("year");
       })
-      console.log(albums.length);
-      var self =this;
       if(albums.length>0){
         this.$el.append((new ArtistViewSeparator({model : "ALBUMS"})).render().$el);
         _.each(albums, function(album, i) {
-            self.$el.append((new ArtistAlbumView({model: album, ws : self.options.ws})).render().$el);
-        });
+            this.$el.append((new ArtistAlbumView({model: album, ws : this.options.ws})).render().$el);
+        }.bind(this));
       }
       if(singles.length>0){
         this.$el.append((new ArtistViewSeparator({model : "SINGLES"})).render().$el);
         _.each(singles, function(album, i) {
-            self.$el.append((new ArtistAlbumView({model: album, ws : self.options.ws})).render().$el);
-        });
+            this.$el.append((new ArtistAlbumView({model: album, ws : this.options.ws})).render().$el);
+        }.bind(this));
       }
 
       if(compilations.length>0){
         this.$el.append((new ArtistViewSeparator({model : "COMPILATIONS"})).render().$el);
-        _.each(compilations, function(album, i) {
-            self.$el.append((new ArtistAlbumView({model: album, ws : self.options.ws})).render().$el);
-        });
+        _.each(compilations,function(album, i) {
+            this.$el.append((new ArtistAlbumView({model: album, ws : this.options.ws})).render().$el);
+        }.bind(this));
       }
 
       if(appears.length>0){
         this.$el.append((new ArtistViewSeparator({model : "APPEARS ON"})).render().$el);
-        _.each(appears, function(album, i) {
-            self.$el.append((new ArtistAlbumView({model: album, ws : self.options.ws})).render().$el);
-        });
+        _.each(appears,function(album, i) {
+            this.$el.append((new ArtistAlbumView({model: album, ws : this.options.ws})).render().$el);
+        }.bind(this));
       }
 
       return this;

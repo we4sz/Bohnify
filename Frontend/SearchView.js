@@ -6,10 +6,9 @@ var SearchView = Backbone.View.extend({
   },
   render : function(){
       this.$el.addClass("searchview");
-      var self =this;
       _.each(this.model.toArray(), function(track, i) {
-          self.$el.append((new TrackView({model: track, ws : self.options.ws, index:i})).render().$el);
-      });
+          this.$el.append((new TrackView({model: track, ws : this.options.ws, index:i})).render().$el);
+      }.bind(this));
       return this;
   },play : function(_,index){
     var tracks = this.model.toJSON();

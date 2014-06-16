@@ -13,11 +13,10 @@ var LeftMenu = Backbone.View.extend({
       $(document).bind("keydown",this.keyevent.bind(this));
 	},
   render: function() {
-    	var self = this;
-    	self.$el.html('');
+    	this.$el.html('');
     	_.each(this.model.toArray(), function(playlist, i) {
-    		self.$el.append((new PlaylistItem({model: playlist, resultView : self.options.resultView})).render().$el);
-    	});
+    		this.$el.append((new PlaylistItem({model: playlist, ws: this.options.ws,resultView : this.options.resultView})).render().$el);
+    	}.bind(this));
 	    return this;
 	},keyevent : function(ev){
     if(this.$el.find(".selected").length > 0){
@@ -66,6 +65,10 @@ var LeftMenu = Backbone.View.extend({
         $(".playlistitem .playlistitem.selected").trigger("expand");
         return false;
         }
+      }else if(ev.keyCode == 13){
+        ev.preventDefault();
+        $(".selected").trigger("play");
+        return false;
       }
     }
   },makebig : function(){

@@ -41,6 +41,10 @@ var BrowseHeader = Backbone.View.extend({
       text = "PLAYLIST";
       var tracks = this.model.get("tracks");
       if(tracks.length>0){
+        var covers = [];
+        _.each(tracks.toArray(),function(){
+
+        });
         var cover = tracks.at(0).get("album").get("cover");
         if(cover){
           var uri = cover.substring(14);
