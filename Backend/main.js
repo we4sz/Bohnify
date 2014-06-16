@@ -577,9 +577,6 @@ var fixPlaylists = function(){
             var f = tp.splice(start,end-start);
             tp.splice(start,0,{name: folders[k].name, playlists : f});
           }
-          console.log(tp);
-
-
           cache_playlists = tp;
 
           wss.broadcast(JSON.stringify({playlists : tp}));

@@ -51,7 +51,6 @@ var PlaylistItem = Backbone.View.extend({
       tracks = tracks.map(function(t){
         return t.uri;
       });
-      console.log(tracks);
       var ob = JSON.stringify({startqueue : tracks});
       this.options.ws.send(ob);
       return false;
