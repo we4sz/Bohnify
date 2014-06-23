@@ -32,26 +32,47 @@ wss.on('connection', function(ws) {
     }else if(msg.search){
       search(msg.search,ws);
     }else if(msg.play){
-      playuri(msg.play.track);
+      if(status.party){
+        voteUp([msg.play.track]);
+      }else{
+        playuri(msg.play.track);
+      }
       setStandardQueue(msg.play.queue,msg.play.track);
     }else if(msg.manualqueue){
-      addToManualQueue(msg.manualqueue);
+      if(status.party){
+        voteUp(msg.manualqueue);
+      }else{
+        addToManualQueue(msg.manualqueue);
+      }
     }else if(msg.removemanualqueue){
-      removeFromToManualQueue(msg.removemanualqueue);
+      if(status.party){
+        voteDown(msg.removemanualqueue);
+      }else{
+        removeFromToManualQueue(msg.removemanualqueue);
+      }
     }else if(msg.standardqueue){
       setStandardQueue(msg.standardqueue);
     }else if(msg.startqueue){
-      var split = 0;
-      if(status.random){
-        split =  Math.floor(Math.random() * msg.startqueue.length);
+      if(status.party){
+        voteUp(msg.startqueue);
+      }else{
+        var split = 0;
+        if(status.random){
+          split =  Math.floor(Math.random() * msg.startqueue.length);
+        }
+        var a = msg.startqueue.splice(split,1)[0];
+        playuri(a);
+        setStandardQueue(msg.startqueue);
       }
-      var a = msg.startqueue.splice(split,1)[0];
-      playuri(a);
-      setStandardQueue(msg.startqueue);
     }else if(msg.removestandardqueue){
       removeFromStandardQueue(msg.removestandardqueue);
     }else if(msg.random){
       status.random = !status.random;
+      if(status.random){
+        standardqueue = shuffle(orginalqueue.slice());
+      }else{
+        standardqueue = orginalqueue.slice();
+      }
       update();
     }else if(msg.repeat){
       status.repeat = !status.repeat;
@@ -78,13 +99,25 @@ wss.on('connection', function(ws) {
       }
       update();
     }else if(msg.getqueue){
-
+      if(status.party){
+        ws.send(JSON.stringify({queues: [{type: "vote" , queue : votequeue}]}));
+      }else{
+        ws.send(JSON.stringify({queues :{[{type:manualqueue,queue:manualqueue},{type:"standard",queue:standardqueue}]}}));
+      }
     }else if(msg.gethistory){
-
+      ws.send(JSON.stringify({history:history}))
     }else if(msg.next){
-      next();
+      if(!status.party){
+        next();
+      }
     }else if(msg.prev){
-      prev();
+      if(!status.party){
+        prev();
+      }
+    }else if(msg.party){
+      status.party = !status.party;
+      update();
+      updateQueue();
     }
   });
 
@@ -109,15 +142,63 @@ var removeAllWithUriFrom = function(tracks,removes){
   });
 }
 
+
+var voteUp = function(uris){
+  if(uris){
+    uris.forEach(function(uri){
+      var found = false;
+      for(var i = 0;i<votequeue.length;i++){
+        if(votequeue.uri == uri){
+          votequeue[i].rank = votequeue[i].rank+1;
+          found = true;
+          break;
+        }
+      }
+      if(!found){
+        var track = trackmap.get(uri);
+        if(track){
+          track.rank = 1;
+          votequeue.push(track);
+        }
+      }
+    });
+    updateQueue();
+  }
+}
+
+var voteDown = function(uris){
+  if(uris){
+    uris.forEach(function(uri){
+      for(var i = 0;i<votequeue.length;i++){
+        if(votequeue.uri == uri){
+          votequeue[i].rank = votequeue[i].rank-1;
+          break;
+        }
+      }
+    });
+    updateQueue();
+  }
+}
+
+var updateQueue = function(){
+
+
+}
+
 var setStandardQueue = function(uris,uri){
-  urisToTracks(uris,function(tracks){
-    orginalqueue = tracks;
-    if(status.random){
-      standardqueue = shuffle(tracks);
-    }else{
-      standardqueue = tracks;
-    }
-  });
+  if(uris){
+    urisToTracks(uris,function(tracks){
+      orginalqueue = tracks;
+      if(status.random){
+        standardqueue = shuffle(tracks);
+      }else{
+        standardqueue = tracks;
+      }
+    });
+  }else{
+    orginalqueue = [];
+    standardqueue = [];
+  }
 }
 
 var removeFromStandardQueue = function(uris){
@@ -164,6 +245,7 @@ var spotify = require('../Spotify/spotify')(options);
 
 var standardqueue = [];
 var manualqueue = [];
+var votequeue = [];
 var orginalqueue = [];
 var history = [];
 var cache_playlists = undefined;
@@ -175,7 +257,8 @@ var status= {
   paused : true,
   position : 0,
   track : undefined,
-  volume : 0
+  volume : 0,
+  party: false
 }
 
 var urisToTracks = function(uris,ca){
@@ -207,10 +290,7 @@ var uriToTrack = function(uri,ca,i){
   if(track){
     ca(track,i);
   }else{
-    toTrack(spotify.createFromLink(uri),function(track){
-      trackmap.set(uri,track);
-      ca(track,i);
-    });
+    toTrack(spotify.createFromLink(uri),ca);
   }
 }
 

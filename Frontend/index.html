@@ -123,6 +123,7 @@
         t.set('album',toAlbum(track.album));
         t.set('popularity',track.popularity);
         t.set('duration',track.duration);
+        t.set('rate',track.rate ? track.rate : 0);
         return t;
       }
 
