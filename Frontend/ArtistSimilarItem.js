@@ -10,8 +10,7 @@ var ArtistSimilarItem = Backbone.View.extend({
     var image = "/images/similarimage.png";
     var cover = this.model.get("portrait");
     if(cover){
-      var uri = cover.substring(14);
-      image = "https://d3rt1990lpmkn.cloudfront.net/300/"+uri;
+      image = imageUrl(cover);
     }
     var html =  "<img class='artistsimilarimage' src='"+image+"'/>"
                 + "<div class='artistsimilarname'>"+this.model.get("name")+"</div>";

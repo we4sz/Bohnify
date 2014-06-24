@@ -15,8 +15,7 @@ var CurrentTrackView = Backbone.View.extend({
         var image = "/images/playlistdefault.png";
         var cover = this.options.track.get("album").get("cover");
         if(cover){
-          var uri = cover.substring(14);
-          image = "https://d3rt1990lpmkn.cloudfront.net/300/"+uri;
+          image = imageUrl(cover);
         }
         var title = this.options.track.get("title");
         var artists = "";

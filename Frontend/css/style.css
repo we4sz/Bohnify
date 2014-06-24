@@ -349,6 +349,7 @@ body{
   right: 0px;
   background-color: #111213;
   overflow-y: scroll;
+  min-width: 400px;
 }
 
 .resultloader {
@@ -366,11 +367,38 @@ body{
   --------------------------------------------------------------
 */
 
+
+.track td div{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #dbdce1;
+  font-size: 14px;
+}
+
+
+.trackindex{
+  text-align: center;
+}
+.trackduration{
+  text-align: center;
+}
+
+.trackpopularity{
+  text-align: center;
+}
+
 .track {
+  color: #dbdce1;
   width: 100%;
   height: 40px;
-  border-bottom: 1px solid #222326;
 }
+
+.track td{
+  border-bottom: 1px solid #222326;
+  padding: 0px;
+}
+
 
 
 .track:hover{
@@ -378,47 +406,42 @@ body{
 }
 
 .track.selected {
-    background-color: #456434;
+  background-color: #456434;
 }
 
 .track.passiveselected {
-    background-color: #454545;
+  background-color: #454545;
 }
 
-.tracktitle,
-.trackartists,
-.trackalbum,
-.trackduration{
-  margin-top: 14px;
-  float:left;
-  color: #dbdce1;
-  font-size: 14px;
+.trackpart{
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.tracktitle{
-  margin-left: 10px;
-  width: calc(35% - 10px);
+.trackimage img{
+  height: 37px;
+  width: auto;
 }
 
-.trackartists{
-  margin-left: 10px;
-  width: calc(35% - 10px);
+th:last-child{
+  border-right:none;
 }
 
-.trackduration{
-  margin-left: 10px;
-  color: #cbcfe0;
-  width: calc(5% - 10px);
+
+table{
+  border-spacing: 0px;
 }
 
-.trackalbum{
-  margin-left: 10px;
-  width: calc(25% - 10px);
-}
+th{
+  padding-top: 3px;
+  padding-bottom: 3px;
+  color: #dbdce1;
+  text-align:left;
+  border: none;
+  border-bottom: 1px solid #222326;
 
+}
 
 
 .trackalbumtext:hover{

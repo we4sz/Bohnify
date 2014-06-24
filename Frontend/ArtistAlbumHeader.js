@@ -10,8 +10,7 @@ var ArtistAlbumHeader = Backbone.View.extend({
     var name = this.model.get("title");
     var text = this.model.get("year");
     if(this.model.get("cover")){
-      var uri = this.model.get("cover").substring(14);
-      image = "https://d3rt1990lpmkn.cloudfront.net/300/"+uri;
+      image = imageUrl(this.model.get("cover"));
     }
     this.$el.addClass("artistalbumhead");
     var html =  "<img class='artistalbumimage' src='"+image+"'/>"

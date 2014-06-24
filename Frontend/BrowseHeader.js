@@ -17,15 +17,13 @@ var BrowseHeader = Backbone.View.extend({
       text = "ARTIST";
       var cover = this.model.get("portrait");
       if(cover){
-        var uri = cover.substring(14);
-        image = "https://d3rt1990lpmkn.cloudfront.net/300/"+uri;
+        image = imageUrl(cover);
       }else{
         var albums = this.model.get("albums");
         if(albums.length>0){
           var cover = albums.at(0).get("cover");
           if(cover){
-            var uri = cover.substring(14);
-            image = "https://d3rt1990lpmkn.cloudfront.net/300/"+uri;
+            image = imageUrl(cover);
           }
         }
       }
@@ -33,8 +31,7 @@ var BrowseHeader = Backbone.View.extend({
       name = this.model.get("title");
       text = "ALBUM";
       if(this.model.get("cover")){
-        var uri = this.model.get("cover").substring(14);
-        image = "https://d3rt1990lpmkn.cloudfront.net/300/"+uri;
+        image = imageUrl(this.model.get("cover"));
       }
     }else if(this.model instanceof Playlist){
       name = this.model.get("name");
@@ -47,8 +44,7 @@ var BrowseHeader = Backbone.View.extend({
         });
         var cover = tracks.at(0).get("album").get("cover");
         if(cover){
-          var uri = cover.substring(14);
-          image = "https://d3rt1990lpmkn.cloudfront.net/300/"+uri;
+          image = imageUrl(cover);
         }
       }
     }

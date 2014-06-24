@@ -2,7 +2,6 @@
 
 <head>
   <script type="text/javascript" src="jquery.js"></script>
-    <script type="text/javascript" src="jquery-migrate.js"></script>
   <script type="text/javascript" src="underscore.js"></script>
   <script type="text/javascript" src="backbone.js"></script>
   <script type="text/javascript" src="HeaderView.js"></script>
@@ -31,15 +30,24 @@
   <script type="text/javascript" src="AlbumCollection.js"></script>
   <script type="text/javascript" src="ArtistCollection.js"></script>
   <script type="text/javascript" src="TrackView.js"></script>
-  <script type="text/javascript" src="jquery-ui-1.10.4.custom.min.js"></script>
   <script type="text/javascript" src="TracksView.js"></script>
   <script type="text/javascript" src="jquery.dataTables.min.js"></script>
-  <script type="text/javascript" src="yes.js"></script>
   <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
   <link rel="stylesheet" type="text/css" href="css/style.css">
-  <link rel="stylesheet" type="text/css" href="css/jquery-ui-1.10.4.custom.css">
-
    <script>
+
+      $.fn.textWidth = function(){
+          var self = $(this),
+              children = self.children(),
+              calculator = $('<span style="display: inline-block;" />'),
+              width;
+
+          children.wrap(calculator);
+          width = children.parent().width(); // parent = the calculator wrapper
+          children.unwrap();
+          return width;
+      };
+
       var init = function(){
         var host = window.document.location.host.replace(/:.*/, '');
         var ws = new WebSocket('ws://' + host + ':1650');
