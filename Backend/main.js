@@ -716,13 +716,28 @@ var playuri = function(uri,avoidHistory){
   play(track,avoidHistory);
 }
 
+var endOfTimeChecker;
+
+var checkTimeout = function(){
+  if(spotify.player.currentSecond >= status.track.duration){
+    console.log("endOfTrack")
+    clearInterval(endOfTimeChecker);
+    next();
+  }
+}
+
 var play = function(track,avoidHistory){
+  if(endOfTimeChecker){
+    clearInterval(endOfTimeChecker);
+  }
+
   try{
     spotify.player.play(track);
     status.paused = false;
     var done = function(){
       if(spotify.player.currentSecond == 1){
         update();
+        endOfTimeChecker = setInterval(checkTimeout,100);
       }else{
         setTimeout(done,100);
       }
@@ -765,8 +780,6 @@ spotify.on({
       loginstatus.user = undefined;
       wss.broadcast(JSON.stringify({loginstatus : loginstatus}),loginsocket);
       loginsocket = undefined;
-    },endOfTrack : function() {
-      next();
     },playTokenLost : function() {
       wss.broadcast(JSON.stringify({statusfail : "Spotify is playing somewhere else!"}));
       status.paused = true;
