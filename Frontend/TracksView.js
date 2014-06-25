@@ -129,8 +129,8 @@ var TracksView = Backbone.View.extend({
           }
       }.bind(this))
       console.log( $("th"+this.options.nextclass).html())
-      this.options.nextwidth = $("th"+this.options.nextclass).textWidth() + 20;
-      this.options.currwidth = $("th"+this.options.class).textWidth() + 20;
+      this.options.nextwidth = $("th"+this.options.nextclass).textWidth() + 30;
+      this.options.currwidth = $("th"+this.options.class).textWidth() + 30;
     }else{
       this.options.resize = false;
     }
