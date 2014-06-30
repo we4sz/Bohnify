@@ -1,7 +1,13 @@
 var LeftMenu = Backbone.View.extend({
   events : {
     'makesmall' : 'makesmall',
-    'makebig' : 'makebig'
+    'makebig' : 'makebig',
+    'click #queue' :  'getqueue',
+    'select #queue' :  'getqueue',
+    'click #history' :  'gethistory',
+    'select #history' :  'gethistory',
+    'click #toplist' :  'gettoplist',
+    'select #toplist' :  'gettoplist'
   },
   initialize: function(options) {
 			this.model.on('add', this.render, this);
@@ -13,7 +19,12 @@ var LeftMenu = Backbone.View.extend({
       $(document).bind("keydown",this.keyevent.bind(this));
 	},
   render: function() {
-    	this.$el.html('');
+      this.$el.append((new ArtistViewSeparator({model : "MENU"})).render().$el);
+      var html =  //"<div class='playlistitem menuitem' id='toplist'><div class='playlistname'>Toplist</div></div>" +
+                  "<div class='playlistitem menuitem' id='queue'><div class='playlistname'>Queue</div></div>" +
+                  "<div class='playlistitem menuitem' id='history'><div class='playlistname'>History</div></div>";
+      this.$el.append($.parseHTML(html));
+      this.$el.append((new ArtistViewSeparator({model : "PLAYLISTS"})).render().$el);
     	_.each(this.model.toArray(), function(playlist, i) {
     		this.$el.append((new PlaylistItem({model: playlist, ws: this.options.ws,resultView : this.options.resultView})).render().$el);
     	}.bind(this));
@@ -61,9 +72,9 @@ var LeftMenu = Backbone.View.extend({
         return false;
       }else if(ev.keyCode == 37 && $(".playlistitem .playlistitem.selected").length>0){
         if(!ev.fromResult){
-        ev.preventDefault();
-        $(".playlistitem .playlistitem.selected").trigger("expand");
-        return false;
+          ev.preventDefault();
+          $(".playlistitem .playlistitem.selected").trigger("expand");
+          return false;
         }
       }else if(ev.keyCode == 13){
         ev.preventDefault();
@@ -75,5 +86,23 @@ var LeftMenu = Backbone.View.extend({
     this.$el.removeClass("small").addClass("big");
   },makesmall : function(){
     this.$el.removeClass("big").addClass("small");
+  },getqueue : function(){
+    $("#result").trigger("update",{type: "load"});
+    this.select("#queue",true);
+    this.options.ws.send(JSON.stringify({getqueue : true}));
+  },gethistory : function(){
+    $("#result").trigger("update",{type: "load"});
+    this.select("#history");
+    this.options.ws.send(JSON.stringify({gethistory : true}));
+  },gettoplist : function(){
+    $("#result").trigger("update",{type: "load"});
+    this.select("#toplist",true);
+    this.options.ws.send(JSON.stringify({gettoplist : true}));
+  }, select : function(target,first){
+    $(".playlistitem.selected").removeClass("selected");
+    $(".playlistitem.passiveselected").removeClass("passiveselected");
+    passiveSelectAll($(target));
+    takeInFocus($("#leftmenu"),$(target),first);
+    $(target).addClass("selected");
   }
 });

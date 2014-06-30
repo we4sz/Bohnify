@@ -11,9 +11,11 @@ var TracksView = Backbone.View.extend({
   initialize : function (options) {
     $(window).on("resize", this.setresize.bind(this));
     this.options = options || {};
+
     this.options.title = typeof options.title !== 'undefined' ? options.title : true;
     this.options.artist = typeof options.artist !== 'undefined' ? options.artist : true;
     this.options.album= typeof options.album !== 'undefined' ? options.album : true;
+    this.options.extraclass = typeof options.extraclass !== 'undefined' ? options.extraclass : "";
     this.options.duration = typeof options.duration !== 'undefined' ? options.duration : true;
     this.options.image = typeof options.image !== 'undefined' ? options.image : false;
     this.options.popularity = typeof options.popularity !== 'undefined' ? options.popularity : true;
@@ -64,16 +66,19 @@ var TracksView = Backbone.View.extend({
               title:this.options.title,
               duration:this.options.duration,
               image:this.options.image,
+              extraclass:this.options.extraclass,
               popularity:this.options.popularity})).render().$el);
           }
       }.bind(this));
       this.$el.append($.parseHTML("</tbody></table>"));
-      this.$el.dataTable( {
-        dom : 't',
-        paging : false,
-        autoWidth : false,
-        sScrollXInner : false
-      });
+      if(this.options.header){
+        this.$el.dataTable( {
+          dom : 't',
+          paging : false,
+          autoWidth : false,
+          sScrollXInner : false
+        });
+      }
 
       this.$el.bind("DOMNodeInsertedIntoDocument",this.setsize.bind(this));
 
@@ -128,7 +133,6 @@ var TracksView = Backbone.View.extend({
             this.options.nextclass = "."+cl;
           }
       }.bind(this))
-      console.log( $("th"+this.options.nextclass).html())
       this.options.nextwidth = $("th"+this.options.nextclass).textWidth() + 30;
       this.options.currwidth = $("th"+this.options.class).textWidth() + 30;
     }else{

@@ -1,7 +1,8 @@
 var ResultView = Backbone.View.extend({
   events : {
     'keyup' : 'test',
-    'update' : 'update'
+    'update' : 'update',
+    'status' : 'newstatus'
   },initialize : function (options) {
     this.options = options || {};
     $(document).bind("keydown",this.keyevent.bind(this));
@@ -24,10 +25,19 @@ var ResultView = Backbone.View.extend({
         }else if(this.options.data.type == "user"){
 
 
+        }else if(this.options.data.type == "queue"){
+          this.$el.append((new QueueView({model : this.options.data.data, ws:this.options.ws})).render().$el);
+        }else if(this.options.data.type == "toplist"){
+          this.$el.append((new ToplistView({model : this.options.data.data, ws:this.options.ws})).render().$el);
+        }else if(this.options.data.type == "history"){
+          this.$el.append((new HistoryView({model : this.options.data.data, ws:this.options.ws})).render().$el);
         }else if(this.options.data.type == "load"){
           var html = "<div class='resultloader'></div>";
           this.$el.html(html);
         }
+      }
+      if(this.options.status){
+        this.$el.find(".track").trigger('markcurrent',[this.options.status]);
       }
       return this;
   },keyevent : function(ev){
@@ -75,6 +85,11 @@ var ResultView = Backbone.View.extend({
     if(this.options.data != data){
         this.options.data = data;
         this.render();
+    }
+  }, newstatus : function(_,status){
+    this.options.status = status;
+    if(this.options.status){
+      this.$el.find(".track").trigger('markcurrent',[this.options.status]);
     }
   }
 });

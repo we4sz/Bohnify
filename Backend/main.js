@@ -102,7 +102,7 @@ wss.on('connection', function(ws) {
       if(status.party){
         ws.send(JSON.stringify({queues: [{type: "vote" , queue : votequeue}]}));
       }else{
-        ws.send(JSON.stringify({queues : [{type:manualqueue,queue:manualqueue},{type:"standard",queue:standardqueue}]}));
+        ws.send(JSON.stringify({queues : [{type:'manual',queue:manualqueue},{type:"standard",queue:standardqueue}]}));
       }
     }else if(msg.gethistory){
       ws.send(JSON.stringify({history:history}))
@@ -744,8 +744,8 @@ var play = function(track,avoidHistory){
     }
     toTrack(track, function(t){
       status.track = t;
-      if(avoidHistory) {
-        history.unshift(track);
+      if(!avoidHistory) {
+        history.unshift(t);
       }
       done();
     });

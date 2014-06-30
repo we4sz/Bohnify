@@ -5,6 +5,7 @@ var TrackView = Backbone.View.extend({
     'select' : 'select',
     'playtrack': 'play',
     'click .trackalbumtext' : 'browsealbum',
+    'markcurrent' : 'currenttrack',
     'click .trackartist' : 'browseartist'
   },initialize : function (options) {
     this.options = options || {};
@@ -12,12 +13,14 @@ var TrackView = Backbone.View.extend({
     this.options.artist =  options.artist;
     this.options.album=  options.album;
     this.options.duration =  options.duration;
+    this.options.extraclass =  options.extraclass;
     this.options.image =  options.image;
     this.options.popularity =  options.popularity;
   },tagName: "tr",
   render : function(){
     var artists = "";
     this.$el.addClass("track");
+    this.$el.addClass(this.options.extraclass);
     _.each(this.model.get("artists").toArray(), function(artist, i) {
         artists += "<span class='trackartist'>"+artist.get("name")+"</span><span class='trackartistsseparator'>,&nbsp;</span>";
     });
@@ -62,5 +65,13 @@ var TrackView = Backbone.View.extend({
     var uri = this.model.get("artists").at(index).get("uri");
     var ob = JSON.stringify({search : uri});
     this.options.ws.send(ob);
+  }, currenttrack : function(_,status){
+    if(status.track){
+      if(status.track.get("uri") == this.model.get("uri")){
+        this.$el.addClass("current");
+      }else{
+        this.$el.removeClass("current");
+      }
+    }
   }
 });

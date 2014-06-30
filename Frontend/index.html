@@ -31,6 +31,9 @@
   <script type="text/javascript" src="ArtistCollection.js"></script>
   <script type="text/javascript" src="TrackView.js"></script>
   <script type="text/javascript" src="TracksView.js"></script>
+  <script type="text/javascript" src="QueueView.js"></script>
+  <script type="text/javascript" src="ToplistView.js"></script>
+  <script type="text/javascript" src="HistoryView.js"></script>
   <script type="text/javascript" src="jquery.dataTables.min.js"></script>
   <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
   <link rel="stylesheet" type="text/css" href="css/style.css">
@@ -49,6 +52,7 @@
       };
 
       var init = function(){
+        var lateststatus;
         var host = window.document.location.host.replace(/:.*/, '');
         var ws = new WebSocket('ws://' + host + ':1650');
         ws.onopen = function(){
@@ -89,12 +93,21 @@
                   list.push(toPlaylist(playlist));
                 });
                 playlists.reset(list);
+              }else if(data.queues){
+                data.queues.forEach(function(queue){
+                  queue.queue = toTrackCollection(queue.queue);
+                });
+                $("#result").trigger("update",{type:"queue",data:data.queues});
+              }else if(data.history){
+                $("#result").trigger("update",{type:"history",data:toTrackCollection(data.history)});
               }else if(data.status){
                 if(data.status.track){
                   data.status.track = toTrack(data.status.track);
                 }
+                lateststatus = data.status;
                 $("#bottom").trigger('status',[data.status]);
                 $("#playtrack").trigger('status',[data.status]);
+                $("#result").trigger('status',[data.status]);
               }
           };
         }
@@ -217,67 +230,14 @@
         }
       }
 
-      var resetTableSizes = function(table, change, columnIndex)
-    	{
-    		//calculate new width;
-    		var tableId = table.attr('id');
-    		var myWidth = $('#'+tableId+' TR TH').get(columnIndex).offsetWidth;
-    		var newWidth = (myWidth+change)+'px';
-
-    		$('#'+tableId+' TR').each(function()
-    		{
-    			$(this).find('TD').eq(columnIndex).css('width',newWidth);
-    			$(this).find('TH').eq(columnIndex).css('width',newWidth);
-    		});
-    		resetSliderPositions(table);
-    	};
-
-    	var resetSliderPositions = function(table)
-    	{
-    		var tableId = table.attr('id');
-    		//put all sliders on the correct position
-    		table.find(' TR:first TH').each(function(index)
-    		{
-    			var td = $(this);
-    			var newSliderPosition = td.offset().left+td.outerWidth() ;
-    			$("#"+tableId+"_id"+(index+1)).css({  left:   newSliderPosition , height: table.height() + 'px'}  );
-    		});
-    	}
-
-    	var makeResizable = function(table)
-    	{
-    		var numberOfColumns = table.find('TR:first TH').size();
-
-    		//id is needed to create id's for the draghandles
-    		var tableId = table.attr('id');
-
-    		for (var i=0; i<=numberOfColumns; i++)
-    		{
-    			//enjoy this nice chain :)
-    			$('<div class="draghandle" id="'+tableId+'_id'+i+'"></div>').insertBefore(table).data('tableid', tableId).data('myindex',i).draggable(
-    			{ axis: "x",
-    			  start: function ()
-    			  {
-    				var tableId = ($(this).data('tableid'));
-    				$(this).toggleClass( "dragged" );
-    				//set the height of the draghandle to the current height of the table, to get the vertical ruler
-    				$(this).css({ height: $('#'+tableId).height() + 'px'} );
-    			  },
-    			  stop: function (event, ui)
-    			  {
-    				var tableId = ($(this).data('tableid'));
-    				$( this ).toggleClass( "dragged" );
-    				var oldPos  = ($( this ).data("draggable").originalPosition.left);
-    				var newPos = ui.position.left;
-    				var index =  $(this).data("myindex");
-    				resetTableSizes($('#'+tableId), newPos-oldPos, index-1);
-    			  }
-    			}
-    			);;
-    		};
-    		resetSliderPositions(table);
-
-    	}
+      var findWithAttr = function(array, attr, value) {
+        for(var i = 0; i < array.length; i += 1) {
+            if(array[i][attr] === value) {
+                return i;
+            }
+        }
+        return -1;
+      }
 
 
     </script>

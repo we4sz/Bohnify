@@ -211,12 +211,33 @@ body{
 
 .artistseparator{
   width: 100%;
+  margin-top: 40px;
   border-bottom: 1px solid #222326;
+}
+
+#leftmenu .artistseparator{
+  margin-top: 10px;
+}
+
+.queueview .artistseparator:first-child{
+  margin-top: 0px;
+}
+
+.queueview .artistseparator{
+  margin-top: 10px;
+}
+
+.historyview .artistseparator{
+  margin-top: 0px;
+}
+
+.toplistview .artistseparator{
+  margin-top: 0px;
 }
 
 .artistseparatortext{
     margin-left: 10px;
-    margin-top: 40px;
+    !margin-top: 40px;
     color: #84898c;
     font-size: 13px;
 }
@@ -376,6 +397,9 @@ body{
   font-size: 14px;
 }
 
+.track.current td div{
+    color: #ab11a9;
+}
 
 .trackindex{
   text-align: center;
@@ -475,11 +499,14 @@ width: 100%;
 min-height: 30px;
 }
 
+
+
 .playlistitem{
   width: 100%;
   min-height: 30px;
   background-color: #222326;
 }
+
 
 .playlistitem.playlistitem{
   width: calc(100% - 10px);
