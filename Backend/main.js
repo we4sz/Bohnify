@@ -205,7 +205,7 @@ var removeFromStandardQueue = function(uris){
   removeAllWithUriFrom(standardqueue,uris);
 }
 
-var addToManualQueue = function(tracks){
+var addToManualQueue = function(uris){
   urisToTracks(uris,function(tracks){
     tracks.forEach(function(track){
       manualqueue.push(track);
@@ -213,7 +213,7 @@ var addToManualQueue = function(tracks){
   });
 }
 
-var removeFromToManualQueue = function(tracks){
+var removeFromToManualQueue = function(uris){
   removeAllWithUriFrom(manualqueue,uris);
 }
 

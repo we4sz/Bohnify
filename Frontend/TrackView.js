@@ -6,7 +6,8 @@ var TrackView = Backbone.View.extend({
     'playtrack': 'play',
     'click .trackalbumtext' : 'browsealbum',
     'markcurrent' : 'currenttrack',
-    'click .trackartist' : 'browseartist'
+    'click .trackartist' : 'browseartist',
+    'contextmenu' : 'opencontext'
   },initialize : function (options) {
     this.options = options || {};
     this.options.title =  options.title;
@@ -73,5 +74,41 @@ var TrackView = Backbone.View.extend({
         this.$el.removeClass("current");
       }
     }
+  }, opencontext : function(ev){
+    $("#contextmenu").remove();
+    var x = ev.clientX;
+    var y = ev.clientY;
+    var html =  "<div id='contextmenu'>" +
+                "<div id='contextqueue' class='contextitem'>Queue track</div>" +
+                "<div id='contexttrackuri' class='contextitem'>"+this.model.get("uri")+"</div>" +
+                "<div id='contextartisturi' class='contextitem'>"+this.model.get("artists").at(0).get("uri")+"</div>" +
+                "<div id='contextalbumuri' class='contextitem'>"+this.model.get("album").get("uri")+"</div>" +
+                "</div>";
+    var el = $($.parseHTML(html));
+
+    el.find("#contextqueue").click(function(ev){
+      this.options.ws.send(JSON.stringify({manualqueue: [this.model.get("uri")]}));
+      el.remove();
+    }.bind(this));
+
+    $(document.body).append(el);
+
+    var h = el[0].clientHeight;
+    var w = el[0].clientWidth;
+    var mw = $(window).innerWidth();
+    var mh = $(window).innerHeight();
+
+    if(y + h > mh){
+      el.css('top',(y-h)+"px");
+    }else{
+      el.css('top',y+"px");
+    }
+
+    if(x+w>mw){
+      el.css('left',(x-w)+"px");
+    }else{
+      el.css('left',x+"px");
+    }
+    return false;
   }
 });

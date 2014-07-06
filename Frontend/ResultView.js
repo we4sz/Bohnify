@@ -43,7 +43,7 @@ var ResultView = Backbone.View.extend({
   },keyevent : function(ev){
     if(this.$el.find(".selected").length > 0){
       if(ev.keyCode == 40 || ev.keyCode == 38){
-        ev.preventDefault()
+        ev.preventDefault();
         if(ev.keyCode == 40 || ev.keyCode == 38){
           var parent =this.$el.find(".selected");
           var tracks = $(".track");

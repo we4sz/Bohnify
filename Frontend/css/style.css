@@ -278,7 +278,7 @@ body{
   margin-top: 18px;
   font-size: 14px;
   margin-left: 20px;
-  width-max: calc(100% - 62px);
+  width: calc(100% - 62px);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -882,6 +882,38 @@ input[type="range"]::-webkit-slider-thumb:active{
 input[type="range"]:focus {
   outline: none;
 }
+
+/*
+  --------------------------------------------------------------
+  Contextmenu
+  --------------------------------------------------------------
+*/
+
+
+
+#contextmenu{
+  position: absolute;
+  background-color: #ffffff;
+
+
+}
+
+.contextitem{
+  !height: 32px;
+  padding: 7px;
+  border-bottom: 1px solid #ebebeb;
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+.contextitem:hover{
+  background-color: #4a90d9;
+}
+
+
 
 /*
   --------------------------------------------------------------

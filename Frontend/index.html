@@ -52,6 +52,16 @@
       };
 
       var init = function(){
+        $(document).on("contextmenu",function(ev){
+          $("#contextmenu").remove();
+          return false;
+        });
+
+        document.body.onclick= function(ev){
+          if(ev.target.id != "contextmenu" && !ev.target.classList.contains("contextitem")){
+            $("#contextmenu").remove();
+          }
+        }
         var lateststatus;
         var host = window.document.location.host.replace(/:.*/, '');
         var ws = new WebSocket('ws://' + host + ':1650');

@@ -19,12 +19,12 @@ var LeftMenu = Backbone.View.extend({
       $(document).bind("keydown",this.keyevent.bind(this));
 	},
   render: function() {
-      this.$el.append((new ArtistViewSeparator({model : "MENU"})).render().$el);
+      this.$el.append((new ArtistViewSeparator({model : "MAIN"})).render().$el);
       var html =  //"<div class='playlistitem menuitem' id='toplist'><div class='playlistname'>Toplist</div></div>" +
                   "<div class='playlistitem menuitem' id='queue'><div class='playlistname'>Queue</div></div>" +
                   "<div class='playlistitem menuitem' id='history'><div class='playlistname'>History</div></div>";
       this.$el.append($.parseHTML(html));
-      this.$el.append((new ArtistViewSeparator({model : "PLAYLISTS"})).render().$el);
+      this.$el.append((new ArtistViewSeparator({model : "YOUR MUSIC"})).render().$el);
     	_.each(this.model.toArray(), function(playlist, i) {
     		this.$el.append((new PlaylistItem({model: playlist, ws: this.options.ws,resultView : this.options.resultView})).render().$el);
     	}.bind(this));

@@ -4,7 +4,9 @@ var PlaylistItem = Backbone.View.extend({
     'click .playlist' : 'show',
     'select': 'show',
     'expand' : 'expand',
-    'play' : 'play'
+    'play' : 'play',
+    'dblclick .playlist' : 'play',
+    'contextmenu .playlist' : 'opencontext'
   },initialize : function (options) {
     this.options = options || {};
     this.options.data = {type: "playlist", data:this.model};
@@ -32,7 +34,6 @@ var PlaylistItem = Backbone.View.extend({
     if(!notChange && this.$el.find(".playlistfolder").length == 0){
       $("#result").trigger("update",[this.options.data]);
     }
-    return false;
   },click : function(){
     this.options.isbig = !this.options.isbig;
     this.render();
@@ -55,5 +56,50 @@ var PlaylistItem = Backbone.View.extend({
       this.options.ws.send(ob);
       return false;
     }
+  }, opencontext : function(ev){
+    $("#contextmenu").remove();
+    var x = ev.clientX;
+    var y = ev.clientY;
+    var html =  "<div id='contextmenu'>" +
+                "<div id='contextplay' class='contextitem'>Play</div>" +
+                "<div id='contextqueue' class='contextitem'>Choose as Current Playlist</div>" +
+                "<div id='contexturi' class='contextitem'>"+this.model.get("uri")+"</div>" +
+                "</div>";
+    var el = $($.parseHTML(html));
+
+    el.find("#contextqueue").click(function(ev){
+      var tracks = this.model.get("tracks").toJSON();
+      tracks = tracks.map(function(t){
+        return t.uri;
+      });
+      this.options.ws.send(JSON.stringify({standardqueue: tracks}));
+      el.remove();
+    }.bind(this));
+
+    el.find("#contextplay").click(function(ev){
+      this.play();
+      $("#contextmenu").remove();
+    }.bind(this));
+
+
+    $(document.body).append(el);
+
+    var h = el[0].clientHeight;
+    var w = el[0].clientWidth;
+    var mw = $(window).innerWidth();
+    var mh = $(window).innerHeight();
+
+    if(y + h > mh){
+      el.css('top',(y-h)+"px");
+    }else{
+      el.css('top',y+"px");
+    }
+
+    if(x+w>mw){
+      el.css('left',(x-w)+"px");
+    }else{
+      el.css('left',x+"px");
+    }
+    return false;
   }
 });
