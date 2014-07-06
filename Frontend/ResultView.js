@@ -8,28 +8,35 @@ var ResultView = Backbone.View.extend({
     $(document).bind("keydown",this.keyevent.bind(this));
   },
   render : function(){
-      this.$el.html("");
       if(this.options.data){
         if(this.options.data.type == "playlist"){
           var playlist = this.options.data.data;
-          this.$el.append((new PlaylistView({model : playlist, ws:this.options.ws})).render().$el);
+          this.$el.html((new PlaylistView({model : playlist, ws:this.options.ws})).render().$el);
         }else if(this.options.data.type == "search"){
-          this.$el.append((new SearchView({model : this.options.data.data, ws:this.options.ws})).render().$el);
+          this.$el.html((new SearchView({model : this.options.data.data, ws:this.options.ws})).render().$el);
         }else if(this.options.data.type == "album"){
-          this.$el.append((new AlbumView({model : this.options.data.data, ws:this.options.ws})).render().$el);
+          this.$el.html((new AlbumView({model : this.options.data.data, ws:this.options.ws})).render().$el);
         }else if(this.options.data.type == "artist"){
-          this.$el.append((new ArtistView({model : this.options.data.data, ws:this.options.ws})).render().$el);
+          this.$el.html((new ArtistView({model : this.options.data.data, ws:this.options.ws})).render().$el);
         }else if(this.options.data.type == "track"){
-          this.$el.append((new AlbumView({model : this.options.data.data, ws:this.options.ws})).render().$el);
+          this.$el.html((new AlbumView({model : this.options.data.data, ws:this.options.ws})).render().$el);
           $(".track").trigger("selecturi",this.options.data.search)
         }else if(this.options.data.type == "user"){
 
         }else if(this.options.data.type == "queue"){
-          this.$el.append((new QueueView({model : this.options.data.data, ws:this.options.ws})).render().$el);
+          if($(".queueview").length == 0){
+            this.$el.html((new QueueView({model : this.options.data.data, ws:this.options.ws})).render().$el);
+          }else{
+            $(".queueview").trigger("newqueue",[this.options.data.data]);
+          }
         }else if(this.options.data.type == "toplist"){
-          this.$el.append((new ToplistView({model : this.options.data.data, ws:this.options.ws})).render().$el);
+          this.$el.html((new ToplistView({model : this.options.data.data, ws:this.options.ws})).render().$el);
         }else if(this.options.data.type == "history"){
-          this.$el.append((new HistoryView({model : this.options.data.data, ws:this.options.ws})).render().$el);
+          if($(".historyview").length == 0){
+            this.$el.html((new HistoryView({model : this.options.data.data, ws:this.options.ws})).render().$el);
+          }else{
+            $(".historyview").trigger("newhistory",this.options.data.data);
+          }
         }else if(this.options.data.type == "load"){
           var html = "<div class='resultloader'></div>";
           this.$el.html(html);

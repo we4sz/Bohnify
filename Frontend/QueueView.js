@@ -1,33 +1,53 @@
 var QueueView = Backbone.View.extend({
   events :{
-    'update' : 'update'
+    'update' : 'update',
+    'newqueue' : 'newqueue'
   },
   initialize : function (options) {
     this.options = options || {};
   },
   render : function(){
     this.$el.addClass("queueview");
-    var standard = findWithAttr(this.model, "type", "standard");
-    var manual = findWithAttr(this.model, "type", "manual");
-    var vote = findWithAttr(this.model, "type", "vote");
+    this.$el.html("");
+    this.options.standard = findWithAttr(this.model, "type", "standard");
+    this.options.manual = findWithAttr(this.model, "type", "manual");
+    this.options.vote = findWithAttr(this.model, "type", "vote");
 
-    if(vote >= 0 && this.model[vote].queue.length > 0){
+    if(this.options.vote >= 0 && this.model[this.options.vote].queue.length > 0){
       this.$el.append((new ArtistViewSeparator({model : "VOTE QUEUE"})).render().$el);
-      this.$el.append((new TracksView({model: this.model[vote].queue, ws : this.options.ws,  extraclass: "votetrack"})).render().$el);
+      this.$el.append((new TracksView({model: this.model[this.options.vote].queue, ws : this.options.ws,  extraclass: "votetrack"})).render().$el);
     }
 
-    if(manual >= 0 && this.model[manual].queue.length > 0){
+    if(this.options.manual >= 0 && this.model[this.options.manual].queue.length > 0){
       this.$el.append((new ArtistViewSeparator({model : "MANUAL QUEUE"})).render().$el);
-      this.$el.append((new TracksView({model: this.model[manual].queue, ws : this.options.ws, extraclass: "manualtrack"})).render().$el);
+      this.$el.append((new TracksView({model: this.model[this.options.manual].queue, ws : this.options.ws, extraclass: "manualtrack"})).render().$el);
     }
 
-    if(standard >= 0 && this.model[standard].queue.length > 0){
+    if(this.options.standard >= 0 && this.model[this.options.standard].queue.length > 0){
       this.$el.append((new ArtistViewSeparator({model : "STANDARD QUEUE"})).render().$el);
-      this.$el.append((new TracksView({model: this.model[standard].queue, ws : this.options.ws, extraclass: "standardtrack"})).render().$el);
+      this.$el.append((new TracksView({model: this.model[this.options.standard].queue, ws : this.options.ws, extraclass: "standardtrack"})).render().$el);
     }
     return this;
   }, update : function(){
-    $("#result").trigger("update",{type: "load"});
+    var selectedTrack = $(".track.selected");
+    if(selectedTrack){
+        if(selectedTrack.hasClass("manualtrack")){
+          this.options.selected = {hasclass : "manualtrack", track : this.model[this.options.manual].queue.at(selectedTrack.index())};
+        }else if(selectedTrack.hasClass("standardtrack")){
+          this.options.selected = {hasclass : "standardtrack", track : this.model[this.options.standard].queue.at(selectedTrack.index())};
+        }else if(selectedTrack.hasClass("votetrack")){
+          this.options.selected = {hasclass : "votetrack", track : this.model[this.options.vote].queue.at(selectedTrack.index())};
+        }
+    }
     this.options.ws.send(JSON.stringify({getqueue : true}));
+  }, newqueue : function (_,queue){
+    this.model = queue;
+    this.render();
+    if(this.options.selected.track){
+      $(".track."+this.options.selected.hasclass).trigger("selecturi",this.options.selected.track.get("uri"));
+      if($(".track.selected").length == 0){
+        $("#queue").trigger("select");
+      }
+    }
   }
 });
