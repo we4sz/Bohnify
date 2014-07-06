@@ -720,8 +720,8 @@ var endOfTimeChecker;
 
 var checkTimeout = function(){
   if(spotify.player.currentSecond >= status.track.duration){
-    console.log("endOfTrack")
     clearInterval(endOfTimeChecker);
+    console.log("endOfTrack")
     next();
   }
 }

@@ -1,0 +1,32 @@
+{
+  "name": "Bohnify",
+  "version": "0.1.0",
+  "description": "Remote spotify server",
+  "main": "index.js",
+  "dependencies": {
+    "express": "~4.4.2",
+    "fs-extra": "~0.9.1",
+    "hashmap": "~1.0.1",
+    "request": "~2.36.0",
+    "segfault-handler": "~0.2.1",
+    "ws": "~0.4.31"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/we4sz/Bohnify.git"
+  },
+  "keywords": [
+    "spotify",
+    "music",
+    "remote"
+  ],
+  "author": "John Johansson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/we4sz/Bohnify/issues"
+  }
+}
