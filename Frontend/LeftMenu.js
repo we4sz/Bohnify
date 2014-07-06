@@ -87,17 +87,23 @@ var LeftMenu = Backbone.View.extend({
   },makesmall : function(){
     this.$el.removeClass("big").addClass("small");
   },getqueue : function(){
-    $("#result").trigger("update",{type: "load"});
     this.select("#queue",true);
-    this.options.ws.send(JSON.stringify({getqueue : true}));
+    if($(".queueview").length == 0 ){
+      $("#result").trigger("update",{type: "load"});
+      this.options.ws.send(JSON.stringify({getqueue : true}));
+    }
   },gethistory : function(){
-    $("#result").trigger("update",{type: "load"});
     this.select("#history");
-    this.options.ws.send(JSON.stringify({gethistory : true}));
+    if($(".historyview").length == 0){
+      $("#result").trigger("update",{type: "load"});
+      this.options.ws.send(JSON.stringify({gethistory : true}));
+    }
   },gettoplist : function(){
-    $("#result").trigger("update",{type: "load"});
     this.select("#toplist",true);
-    this.options.ws.send(JSON.stringify({gettoplist : true}));
+    if($(".toplistview").length == 0){
+      $("#result").trigger("update",{type: "load"});
+      this.options.ws.send(JSON.stringify({gettoplist : true}));
+    }
   }, select : function(target,first){
     $(".playlistitem.selected").removeClass("selected");
     $(".playlistitem.passiveselected").removeClass("passiveselected");
