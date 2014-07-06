@@ -27,6 +27,7 @@ var PlaylistItem = Backbone.View.extend({
     }
     return this;
   },show : function(_,notChange){
+    $("#contextmenu").remove();
     $(".playlistitem.selected").removeClass("selected");
     $(".playlistitem.passiveselected").removeClass("passiveselected");
     passiveSelectAll(this.$el);
@@ -34,6 +35,7 @@ var PlaylistItem = Backbone.View.extend({
     if(!notChange && this.$el.find(".playlistfolder").length == 0){
       $("#result").trigger("update",[this.options.data]);
     }
+    return false;
   },click : function(){
     this.options.isbig = !this.options.isbig;
     this.render();

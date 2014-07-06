@@ -34,6 +34,8 @@
   <script type="text/javascript" src="QueueView.js"></script>
   <script type="text/javascript" src="ToplistView.js"></script>
   <script type="text/javascript" src="HistoryView.js"></script>
+  <script type="text/javascript" src="CreatedHead.js"></script>
+  <script type="text/javascript" src="User.js"></script>
   <script type="text/javascript" src="jquery.dataTables.min.js"></script>
   <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
   <link rel="stylesheet" type="text/css" href="css/style.css">
@@ -132,11 +134,20 @@
           p.set("playlists",playlist.playlists.map(toPlaylist));
         } else{
           p.set("description",playlist.description);
+          p.set("author",toAuthor(playlist.author));
           p.set("tracks",toTrackCollection(playlist.tracks));
           p.set("collaborative",playlist.collaborative);
           p.set("uri",playlist.uri);
         }
         return p;
+      }
+
+      var toAuthor = function(author){
+        var a = new User();
+        a.set("nick",author.nick);
+        a.set("name",author.name);
+        a.set("uri",author.uri);
+        return a;
       }
 
       var toAlbum = function(album,browse){
@@ -210,6 +221,21 @@
         var seconds = time%60;
         seconds = seconds < 10 ? "0" + seconds : seconds;
         return minutes+":"+seconds;
+      }
+
+      var getDurationOfTracks = function(tracks){
+        var seconds = 0;
+        _.each(tracks.toArray(), function(track){
+          seconds += track.get("duration");
+        });
+        var text = "";
+        var min  = parseInt(seconds / 60) % 60;
+        var h = parseInt(seconds / 60 / 60);
+        if(h> 0 ){
+          text = h+" hr ";
+        }
+        text += min + " min";
+        return text;
       }
 
       var passiveSelectAll = function(select){

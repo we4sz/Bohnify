@@ -12,6 +12,42 @@ body{
   cursor: default;
 }
 
+*{
+ outline: none;
+}
+
+
+/*
+  --------------------------------------------------------------
+  CreatedHead
+  --------------------------------------------------------------
+*/
+
+
+.createdhead{
+  !height: 36px;
+  width: calc(100% - 20px);
+  !margin-left: 20px;
+  padding-top: 9px;
+  padding-left: 20px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid #222326;
+}
+
+.createdheadtext{
+  color: #7c8979;
+}
+
+.createdheadtext span{
+  color: #dfe0df;
+}
+
+.createdheadtext span:hover{
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+
 /*
   --------------------------------------------------------------
   CurrentTrack Content
@@ -88,6 +124,10 @@ body{
 */
 
 .browsehead{
+  width: 100%;
+}
+
+.browseheadtop{
   height: 240px;
   width: 100%;
   border-bottom: 1px solid #222326;
@@ -186,6 +226,11 @@ body{
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.artistalbumname:hover{
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .artistalbumplay{
@@ -899,7 +944,6 @@ input[type="range"]:focus {
 }
 
 .contextitem{
-  !height: 32px;
   padding: 7px;
   border-bottom: 1px solid #ebebeb;
   -webkit-user-select: text;

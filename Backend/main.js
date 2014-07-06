@@ -571,6 +571,7 @@ var toPlaylist = function(pl,ca,i){
   var playlist = {};
   playlist.name = pl.name;
   playlist.uri = pl.link;
+  playlist.author = toAuthor(pl.owner);
   playlist.collaborative = pl.collaborative;
   playlist.description = pl.description;
   var tracks = pl.getTracks();
@@ -589,6 +590,11 @@ var toPlaylist = function(pl,ca,i){
     playlist.tracks = [];
     ca(playlist,i);
   }
+}
+
+
+var toAuthor = function(owner){
+  return {nick : owner.displayName, name : owner.canonicalName, uri : owner.link};
 }
 
 var search = function(query,ws){
