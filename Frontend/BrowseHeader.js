@@ -51,10 +51,10 @@ var BrowseHeader = Backbone.View.extend({
         });
 
         if(covers.length >= 4){
-          image = imageUrl(covers[0])+"'/>" +
-                  "<img class='browseimage' src='"+imageUrl(covers[1])+"'/>" +
-                  "<img class='browseimage' src='"+imageUrl(covers[2])+"'/>" +
-                  "<img class='browseimage' src='"+imageUrl(covers[3]);
+          image = imageUrl(covers[0],true)+"'/>" +
+                  "<img class='browseimage' src='"+imageUrl(covers[1],true)+"'/>" +
+                  "<img class='browseimage' src='"+imageUrl(covers[2],true)+"'/>" +
+                  "<img class='browseimage' src='"+imageUrl(covers[3],true);
         }else{
           if(covers[0]){
             image = imageUrl(covers[0]);

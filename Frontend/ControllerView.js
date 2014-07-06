@@ -65,6 +65,7 @@ var ControllerView = Backbone.View.extend({
     $("#controllrepeat").removeClass("active disable").addClass(status.repeat ? "active" : "disable");
     $("#controllshuffle").removeClass("active disable").addClass(status.random ? "active" : "disable");
     if(status.track){
+      document.title = "Bohnify - "+status.track.get("title");
       $("#controllposition").attr("max",status.track.get("duration"));
       $("#controllduration").text(toMinutesAndSeconds(status.track.get("duration")));
     }

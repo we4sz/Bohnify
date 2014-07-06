@@ -253,9 +253,13 @@
         }
       }
 
-      var imageUrl = function(cover){
+      var imageUrl = function(cover, small){
+        var size = 300;
+        if(small){
+          size = 120;
+        }
         var uri = cover.substring(14);
-        return "https://d3rt1990lpmkn.cloudfront.net/300/"+uri;
+        return "https://d3rt1990lpmkn.cloudfront.net/"+size+"/"+uri;
       }
 
       var takeInFocus = function (parent, select,totop){
