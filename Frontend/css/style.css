@@ -143,12 +143,25 @@ body{
   border-bottom: 1px solid #222326;
 }
 
-.browseimage {
+.browseimagecon{
+  float:left;
   width: 200px;
   height: 200px;
   margin-left: 20px;
   margin-top: 20px;
-  float:left;
+}
+
+.browseimage:only-child {
+  width: 200px;
+  height: 200px;
+}
+
+.browseimage:nth-child(1):nth-last-child(4),
+.browseimage:nth-child(2):nth-last-child(3),
+.browseimage:nth-child(3):nth-last-child(2),
+.browseimage:nth-child(4):nth-last-child(1) {
+    width: 100px;
+    height: 100px;
 }
 
 .browsecon{

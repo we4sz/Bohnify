@@ -42,12 +42,23 @@ var BrowseHeader = Backbone.View.extend({
       var tracks = this.model.get("tracks");
       if(tracks.length>0){
         var covers = [];
-        _.each(tracks.toArray(),function(){
-
+        _.each(tracks.toArray(),function(track){
+          if(track.get("album").get("cover") &&
+          track.get("album").get("cover") != "" &&
+          covers.indexOf(track.get("album").get("cover")) < 0){
+            covers.push(track.get("album").get("cover"));
+          }
         });
-        var cover = tracks.at(0).get("album").get("cover");
-        if(cover){
-          image = imageUrl(cover);
+
+        if(covers.length >= 4){
+          image = imageUrl(covers[0])+"'/>" +
+                  "<img class='browseimage' src='"+imageUrl(covers[1])+"'/>" +
+                  "<img class='browseimage' src='"+imageUrl(covers[2])+"'/>" +
+                  "<img class='browseimage' src='"+imageUrl(covers[3]);
+        }else{
+          if(covers[0]){
+            image = imageUrl(covers[0]);
+          }
         }
       }
     }else if(this.model instanceof User){
@@ -55,7 +66,9 @@ var BrowseHeader = Backbone.View.extend({
     }
     this.$el.addClass("browsehead");
     var html =  "<div class='browseheadtop'>"
+                + "<div class='browseimagecon'>"
                 + "<img class='browseimage' src='"+image+"'/>"
+                + "</div>"
                 + "<div class='browsecon'>"
                 + "<div class='browsetext'>"+text+"</div>"
                 + "<div class='browsename'>"+name+"</div>"
