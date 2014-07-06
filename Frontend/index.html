@@ -89,6 +89,7 @@
                 }
               }else if(data.search){
                 var todo = {type:data.search.type};
+                todo.search = data.search.search;
                 if(data.search.type == "search"){
                     todo.data = toTrackCollection(data.search.data);
                     $("#result").trigger("update",todo);
@@ -97,6 +98,9 @@
                     $("#result").trigger("update",todo);
                 }else if(data.search.type == "artist"){
                     todo.data = toArtist(data.search.data,true);
+                    $("#result").trigger("update",todo);
+                }else if(data.search.type == "track"){
+                    todo.data = toAlbum(data.search.data,true);
                     $("#result").trigger("update",todo);
                 }
               }else if(data.playlists){
@@ -120,6 +124,10 @@
                 $("#bottom").trigger('status',[data.status]);
                 $("#playtrack").trigger('status',[data.status]);
                 $("#result").trigger('status',[data.status]);
+              }else if(data.queueupdated){
+                $(".queueview").trigger("update");
+              }else if(data.historyupdated){
+                $(".historyview").trigger("update");
               }
           };
         }

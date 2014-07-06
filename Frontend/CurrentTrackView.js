@@ -4,7 +4,9 @@ var CurrentTrackView = Backbone.View.extend({
     'mouseover' : 'mouseover',
     'mouseout' : 'mouseout',
     'click .currentresize.small' : 'makebig',
-    'click .currentresize.big' : 'makesmall'
+    'click .currentresize.big' : 'makesmall',
+    'click .currentartist' : 'browseartist',
+    'click .currenttitle' : 'browsetrack'
 
   },initialize : function (options) {
     this.options = options || {};
@@ -52,5 +54,14 @@ var CurrentTrackView = Backbone.View.extend({
     this.$el.removeClass("small").addClass("big");
     $("#leftmenu").trigger("makesmall");
     this.render();
+  }, browseartist : function(e){
+    $("#result").trigger("update",{type: "load"});
+    var index = parseInt($(e.target).index()/2);
+    var uri = this.options.track.get("artists").at(index).get("uri");
+    this.options.ws.send(JSON.stringify({search : uri}));
+  }, browsetrack : function(){
+    $("#result").trigger("update",{type: "load"});
+    var uri = this.options.track.get("uri");
+    this.options.ws.send(JSON.stringify({search : uri}));
   }
 });

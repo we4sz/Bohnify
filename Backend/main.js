@@ -181,9 +181,13 @@ var voteDown = function(uris){
 }
 
 var updateQueue = function(){
-
-
+  wss.broadcast(JSON.stringify({queueupdated : true}));
 }
+
+var updateHistory = function(){
+  wss.broadcast(JSON.stringify({historyupdated : true}));
+}
+
 
 var setStandardQueue = function(uris,uri){
   if(uris){
@@ -199,10 +203,12 @@ var setStandardQueue = function(uris,uri){
     orginalqueue = [];
     standardqueue = [];
   }
+  updateQueue();
 }
 
 var removeFromStandardQueue = function(uris){
   removeAllWithUriFrom(standardqueue,uris);
+  updateQueue();
 }
 
 var addToManualQueue = function(uris){
@@ -211,10 +217,12 @@ var addToManualQueue = function(uris){
       manualqueue.push(track);
     })
   });
+  updateQueue();
 }
 
 var removeFromToManualQueue = function(uris){
   removeAllWithUriFrom(manualqueue,uris);
+  updateQueue();
 }
 
 wss.broadcast = function(data,miss) {
@@ -601,26 +609,31 @@ var search = function(query,ws){
     if(query.indexOf("spotify:track")==0){
       var track = spotify.createFromLink(query);
       toTrack(track,function(track){
-        ws.send(JSON.stringify({search : {type : "track", data :track}}));
+        var album = spotify.createFromLink(track.album.uri);
+          album.browse(function(err, ba){
+            toAlbum(ba,function(ta){
+              ws.send(JSON.stringify({search : {type : "track", data :ta, search:query}}));
+            },true);
+          });
       });
     }else if(query.indexOf("spotify:album")==0){
       var album = spotify.createFromLink(query);
         album.browse(function(err, ba){
           toAlbum(ba,function(ta){
-            ws.send(JSON.stringify({search : {type : "album", data :ta}}));
+            ws.send(JSON.stringify({search : {type : "album", data :ta, search:query}}));
           },true);
         });
     }else if(query.indexOf("spotify:artist")==0){
       var artist = spotify.createFromLink(query);
       artist.browse( spotify.constants.ARTISTBROWSE_FULL,function(err, ba){
         toArtist(ba,function(ta){
-          ws.send(JSON.stringify({search : {type : "artist", data :ta}}));
+          ws.send(JSON.stringify({search : {type : "artist", data :ta, search:query}}));
         },true);
       });
     }else if(query.indexOf(":playlist:")!=-1){
         var playlist = spotify.createFromLink(query);
         toPlaylist(playlist,function(pl){
-          ws.send(JSON.stringify({search : {type : "playlist", data :pl}}));
+          ws.send(JSON.stringify({search : {type : "playlist", data :pl, search:query}}));
         });
     }else if(query.indexOf("spotify:user")==0){
 
@@ -631,7 +644,7 @@ var search = function(query,ws){
       search.playlistLimit = 0;
       search.execute( function(err, searchResult) {
         toTracks(searchResult.tracks,function(tracks){
-          ws.send(JSON.stringify({search : {type : "search", data :tracks}}));
+          ws.send(JSON.stringify({search : {type : "search", data :tracks, search:query}}));
         });
       });
     }
@@ -685,10 +698,12 @@ var ready = function(){
 var next = function(){
   var track = manualqueue.shift();
   if(track){
+    updateQueue();
     playuri(track.uri);
   }else{
     track = standardqueue.shift();
     if(track){
+      updateQueue();
       playuri(track.uri);
     }else{
       status.paused = true;
@@ -701,6 +716,7 @@ var prev = function(){
   if(spotify.player.currentSecond < 3 || !status.track){
     var track = history.pop();
     if(track){
+      updateHistory();
       playuri(track.uri,true);
     }
   }else{
@@ -752,6 +768,7 @@ var play = function(track,avoidHistory){
       status.track = t;
       if(!avoidHistory) {
         history.unshift(t);
+        updateHistory();
       }
       done();
     });

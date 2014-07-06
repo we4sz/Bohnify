@@ -20,10 +20,9 @@ var ResultView = Backbone.View.extend({
         }else if(this.options.data.type == "artist"){
           this.$el.append((new ArtistView({model : this.options.data.data, ws:this.options.ws})).render().$el);
         }else if(this.options.data.type == "track"){
-
-
+          this.$el.append((new AlbumView({model : this.options.data.data, ws:this.options.ws})).render().$el);
+          $(".track").trigger("selecturi",this.options.data.search)
         }else if(this.options.data.type == "user"){
-
 
         }else if(this.options.data.type == "queue"){
           this.$el.append((new QueueView({model : this.options.data.data, ws:this.options.ws})).render().$el);

@@ -87,6 +87,11 @@ body{
   text-overflow: ellipsis;
 }
 
+.currenttitle:hover{
+  cursor: pointer;
+  text-decoration: underline;
+}
+
 .currentartists{
   width: 100%;
   color: #dddddd;
@@ -95,6 +100,11 @@ body{
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.currentartist:hover{
+  cursor: pointer;
+  text-decoration: underline;
 }
 
 .currentresize.big{

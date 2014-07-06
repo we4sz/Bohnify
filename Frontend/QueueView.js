@@ -1,4 +1,7 @@
 var QueueView = Backbone.View.extend({
+  events :{
+    'update' : 'update'
+  },
   initialize : function (options) {
     this.options = options || {};
   },
@@ -23,5 +26,8 @@ var QueueView = Backbone.View.extend({
       this.$el.append((new TracksView({model: this.model[standard].queue, ws : this.options.ws, extraclass: "standardtrack"})).render().$el);
     }
     return this;
+  }, update : function(){
+    $("#result").trigger("update",{type: "load"});
+    this.options.ws.send(JSON.stringify({getqueue : true}));
   }
 });

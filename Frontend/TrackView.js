@@ -7,7 +7,8 @@ var TrackView = Backbone.View.extend({
     'click .trackalbumtext' : 'browsealbum',
     'markcurrent' : 'currenttrack',
     'click .trackartist' : 'browseartist',
-    'contextmenu' : 'opencontext'
+    'contextmenu' : 'opencontext',
+    'selecturi' : 'selecturi'
   },initialize : function (options) {
     this.options = options || {};
     this.options.title =  options.title;
@@ -62,7 +63,7 @@ var TrackView = Backbone.View.extend({
     this.options.ws.send(ob);
   },browseartist : function(e){
     $("#result").trigger("update",{type: "load"});
-    var index = $(e.target).index()/2;
+    var index = parseInt($(e.target).index()/2);
     var uri = this.model.get("artists").at(index).get("uri");
     var ob = JSON.stringify({search : uri});
     this.options.ws.send(ob);
@@ -110,5 +111,9 @@ var TrackView = Backbone.View.extend({
       el.css('left',x+"px");
     }
     return false;
+  }, selecturi : function(_,uri){
+    if(this.model.get("uri") == uri) {
+      this.select();
+    }
   }
 });
