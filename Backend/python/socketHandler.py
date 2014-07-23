@@ -3,17 +3,26 @@ from ws4py.websocket import WebSocket
 from ws4py.messaging import TextMessage
 from bohnify import Bohnify
 import json
+import time
+from threading import Timer
 
 class SocketHandler(WebSocket):
 
     def opened(self):
-        self.send("gxgx")
-        self.send("gxgx")
-        print("gfgj")
+        Timer(0.2, self.sendWelcome, ()).start()
+
+    def sendWelcome(self):
+        self.send(json.dumps({"loginstatus" : Bohnify.Instance().loginstatus}))
 
 
     def received_message(self, m):
-        print("ye")
+        cmd = json.loads(m.data)
+        print(cmd)
+        if "login" in cmd:
+          Bohnify.Instance().login(cmd.get("login").get("username"),cmd.get("login").get("password"))
+        else:
+          print("noo")
+
         #cherrypy.engine.publish('websocket-broadcast', m)
 
     def closed(self, code, reason="A client left the room without a proper explanation."):
