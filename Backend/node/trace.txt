@@ -1,0 +1,7 @@
+libspotify trace from 12.1.51.g86c92b43 Release Linux-x86_64 
+
+< sp_session_create() = 0
+> sp_session_process_events(0x23fbbb0 0x7fff99cadecc) on 0x7f213d2b8780
+< sp_session_process_events() = 300915
+> sp_session_process_events(0x23fbbb0 0x7fff99cadecc) on 0x7f213d2b8780
+< sp_session_process_events() = 300895

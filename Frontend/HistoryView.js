@@ -20,7 +20,7 @@ var HistoryView = Backbone.View.extend({
     this.model = history;
     this.render();
     if(this.options.selected){
-      for(var i = this.options.selected.index-2 ; i <= this.options.selected.index +2 && i < $(".track").length;i++){
+      for(var i = this.options.selected.index-2 ; i <=  this.options.selected.index +2 && i < $(".track").length;i++){
         $($(".track").get(i)).trigger("selecturi",this.options.selected.track.get("uri"));
       }
       if($(".track.selected").length == 0){

@@ -12,7 +12,7 @@ var WebSocketServer = require('ws').Server
   , express = require('express')
   , app = express();
 
-app.use(express.static(__dirname +"/../Frontend"));
+app.use(express.static(__dirname +"/../../Frontend"));
 
 var server = http.createServer(app);
 server.listen(1650);
@@ -249,7 +249,7 @@ var options = {
     appkeyFile: 'spotify_appkey.key' //required
 }
 
-var spotify = require('../Spotify/spotify')(options);
+var spotify = require('../../Spotify/spotify')(options);
 
 var standardqueue = [];
 var manualqueue = [];

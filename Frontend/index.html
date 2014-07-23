@@ -66,7 +66,7 @@
         }
         var lateststatus;
         var host = window.document.location.host.replace(/:.*/, '');
-        var ws = new WebSocket('ws://' + host + ':1650');
+        var ws = new WebSocket('ws://' + host + ':1650/ws');
         ws.onopen = function(){
           var loginview = new LoginView({el : $("#loginview"), ws : ws});
           var resultview = new ResultView({el : $("#result"), ws : ws});
@@ -76,6 +76,7 @@
           var leftmenu = new LeftMenu({model : playlists, el : $("#leftmenu"), ws : ws});
           var control = new ControllerView({el : $("#bottom"), ws : ws});
           ws.onmessage = function (msg) {
+              console.log(msg);
               var data = JSON.parse(msg.data);
               console.log(data);
               if(data.loginstatus){

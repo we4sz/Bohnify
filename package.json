@@ -14,7 +14,7 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start" : "cd Backend && xdg-open http://localhost:1650 && node main.js"
+    "start" : "cd Backend && cd node && xdg-open http://localhost:1650 && node main.js"
   },
   "repository": {
     "type": "git",
