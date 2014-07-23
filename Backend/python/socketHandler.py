@@ -13,6 +13,8 @@ class SocketHandler(WebSocket):
 
     def sendWelcome(self):
         self.send(json.dumps({"loginstatus" : Bohnify.Instance().loginstatus}))
+        if Bohnify.Instance().loginstatus["login"]:
+          self.send(json.dumps({"status" : Bohnify.Instance().status}))
 
 
     def received_message(self, m):
@@ -20,8 +22,10 @@ class SocketHandler(WebSocket):
         print(cmd)
         if "login" in cmd:
           Bohnify.Instance().login(cmd.get("login").get("username"),cmd.get("login").get("password"))
+        elif "search" in cmd:
+          print("search")
         else:
-          print("noo")
+          print("else")
 
         #cherrypy.engine.publish('websocket-broadcast', m)
 
