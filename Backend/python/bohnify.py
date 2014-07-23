@@ -88,3 +88,21 @@ class Bohnify(object):
       container.load()
       self.cache_playlists = Transformer().playlistContainer(container)
     cherrypy.engine.publish('websocket-broadcast', json.dumps({"playlists" : self.cache_playlists}))
+
+  def browseTrack(self, uri,  ws):
+    print("bt")
+
+  def browseAlbum(self, uri,  ws):
+    print("balbum")
+
+  def browseArtist(self, uri,  ws):
+    print("bartist")
+
+  def browsePlaylist(self, uri,  ws):
+    print("bp")
+
+  def browseUser(self, uri,  ws):
+    print("bu")
+
+  def search(self, query,  ws):
+    print("s")

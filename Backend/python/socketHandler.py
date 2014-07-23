@@ -21,9 +21,20 @@ class SocketHandler(WebSocket):
         cmd = json.loads(m.data)
         print(cmd)
         if "login" in cmd:
-          Bohnify.Instance().login(cmd.get("login").get("username"),cmd.get("login").get("password"))
+          Bohnify.Instance().login(cmd["login"]["username"],cmd["login"]["password"])
         elif "search" in cmd:
-          print("search")
+          if cmd["search"].find("spotify:track:") == 0:
+            Bohnify.Instance().browseTrack(cmd["search"],self)
+          elif cmd["search"].find("spotify:artist:") == 0:
+            Bohnify.Instance().browseArtist(cmd["search"],self)
+          elif cmd["search"].find("spotify:album:") == 0:
+            Bohnify.Instance().browseAlbum(cmd["search"],self)
+          elif cmd["search"].find(":playlist:") != -1:
+            Bohnify.Instance().browsePlaylist(cmd["search"],self)
+          elif cmd["search"].find("spotify:user:") == 0:
+            Bohnify.Instance().browseUser(cmd["search"],self)
+          else:
+            Bohnify.Instance().search(cmd["search"],self)
         else:
           print("else")
 
