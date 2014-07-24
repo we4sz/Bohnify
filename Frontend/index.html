@@ -240,6 +240,7 @@
         _.each(tracks.toArray(), function(track){
           seconds += track.get("duration");
         });
+        seconds = seconds / 1000;
         var text = "";
         var min  = parseInt(seconds / 60) % 60;
         var h = parseInt(seconds / 60 / 60);
