@@ -26,7 +26,7 @@ var ControllerView = Backbone.View.extend({
                   + "<div id='controllspeaker' class='controller'></div>"
                   + "<div id='controlltime' class='controller'>00:00</div>"
                   + "<input id='controllposition' min='0' max='100' value='0' type='range' class='controller'/>"
-                  + "<div id='controllduration' class='controller'>01:00</div>"
+                  + "<div id='controllduration' class='controller'>00:00</div>"
                   + "<div id='controllshuffle' class='disable controller'></div>"
                   + "<div id='controllrepeat' class='disable controller'></div>";
       this.$el.html(html);
@@ -67,7 +67,7 @@ var ControllerView = Backbone.View.extend({
     if(status.track){
       document.title = "Bohnify - "+status.track.get("title");
       $("#controllposition").attr("max",status.track.get("duration"));
-      $("#controllduration").text(toMinutesAndSeconds(status.track.get("duration")));
+      $("#controllduration").text(toMinutesAndSeconds(status.track.get("duration")/1000));
     }
     $("#controllposition").val(status.position);
     this.position();
@@ -78,10 +78,10 @@ var ControllerView = Backbone.View.extend({
     this.options.interval = setInterval(function(){
       if(!status.paused && this.options.position){
         var t = (new Date()).getTime() - this.options.time;
-        var t = t/1000;
+        var t = t;
         var np = status.position+t;
         $("#controllposition").val(np);
-        $("#controlltime").text(toMinutesAndSeconds(np));
+        $("#controlltime").text(toMinutesAndSeconds(np/1000));
         this.position();
       }
     }.bind(this),200);
@@ -89,7 +89,7 @@ var ControllerView = Backbone.View.extend({
       $("#controllvolume").val(status.volume);
       this.volume();
     }
-    $("#controlltime").text(toMinutesAndSeconds(status.position));
+    $("#controlltime").text(toMinutesAndSeconds(status.position/1000));
   },disablepos : function(){
     this.options.position = false;
   },activatepos : function(){

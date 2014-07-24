@@ -58,19 +58,72 @@ class Transformer(object):
 
   def album(self,album):
     album.load()
+    cover = None
+    try:
+      cover = album.cover_link().uri
+    except:
+      pass
     return {
       "uri" : album.link.uri,
       "title" : album.name,
-      "cover" : ""#album.cover_link().uri
+      "cover" : cover
+    }
+
+  def albums_b(self,albums):
+    arr = []
+    for album in albums:
+      arr.append(self.album_b(album))
+    return arr
+
+  def album_b(self,album):
+    album = album.browse().load()
+    cover = None
+    try:
+      cover = album.album.cover_link().uri
+    except:
+      pass
+    return {
+      "uri" : album.album.link.uri,
+      "title" : album.album.name,
+      "cover" : cover,
+      "type" : album.album.type,
+      "tracks" : self.tracks(album.tracks),
+      "artists" : [self.artist(album.artist)],
+      "year" : album.album.year
     }
 
   def artists(self,artists):
     a = []
     for artist in artists:
-      artist.load()
-      a.append({
-        "name" : artist.name,
-        "uri" : artist.link.uri,
-        "portrait" : ""#artist.portrait_link().uri
-      })
+      a.append(self.artist(artist))
     return a
+
+  def artist(self, artist):
+    artist.load()
+    por = None
+    try:
+      por = artist.portrait_link().uri
+    except:
+      pass
+    return {
+      "name" : artist.name,
+      "uri" : artist.link.uri,
+      "portrait" : por
+    }
+
+  def artist_b(self, artist):
+    artist = artist.browse(spotify.ArtistBrowserType.NO_TRACKS).load()
+    por = None
+    try:
+      por = artist.artist.portrait_link().uri
+    except:
+      pass
+    return {
+      "name" : artist.artist.name,
+      "uri" : artist.artist.link.uri,
+      "portrait" : por,
+      "bio" : artist.biography,
+      "topTracks" : self.tracks(artist.tophit_tracks),
+      "similar" : self.artists(artist.similar_artists),
+      "albums" : self.albums_b(artist.albums)
+    }

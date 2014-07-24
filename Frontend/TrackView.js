@@ -39,7 +39,7 @@ var TrackView = Backbone.View.extend({
       html += "<td><div class='resize trackartists'>"+artists+"</div></td>";
     }
     if(this.options.duration){
-      html += "<td><div class='trackduration'>"+toMinutesAndSeconds(this.model.get("duration"))+"</div></td>";
+      html += "<td><div class='trackduration'>"+toMinutesAndSeconds(this.model.get("duration")/1000)+"</div></td>";
     }
     if(this.options.album){
       html += "<td><div class='resize trackalbum'><span class='trackalbumtext'>"+this.model.get("album").get("title")+"</span></div></td>";

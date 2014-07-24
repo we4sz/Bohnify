@@ -68,6 +68,7 @@
         var host = window.document.location.host.replace(/:.*/, '');
         var ws = new WebSocket('ws://' + host + ':1650/ws');
         ws.onopen = function(){
+          console.log("open")
           var loginview = new LoginView({el : $("#loginview"), ws : ws});
           var resultview = new ResultView({el : $("#result"), ws : ws});
           var header = new HeaderView({el : $("#header"), ws : ws});
@@ -117,6 +118,8 @@
                 $("#result").trigger("update",{type:"queue",data:data.queues});
               }else if(data.history){
                 $("#result").trigger("update",{type:"history",data:toTrackCollection(data.history)});
+              }else if(data.toplist){
+                $("#result").trigger("update",{type:"toplist",data:toTrackCollection(data.toplist)});
               }else if(data.status){
                 if(data.status.track){
                   data.status.track = toTrack(data.status.track);
