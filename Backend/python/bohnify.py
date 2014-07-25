@@ -204,6 +204,10 @@ class Bohnify(object):
     tracks = Transformer().tracks(toplist.tracks)
     ws.send(json.dumps({"toplist" : tracks }))
 
+  def starred(self,ws):
+    pl = Transformer().playlist(self.session.get_starred())
+    ws.send(json.dumps({"starred" : pl }))
+
   def addToManual(self, tracks):
     for track in tracks:
       if self.status["party"]:

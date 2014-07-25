@@ -34,6 +34,7 @@
   <script type="text/javascript" src="QueueView.js"></script>
   <script type="text/javascript" src="ToplistView.js"></script>
   <script type="text/javascript" src="HistoryView.js"></script>
+  <script type="text/javascript" src="StarredView.js"></script>
   <script type="text/javascript" src="CreatedHead.js"></script>
   <script type="text/javascript" src="User.js"></script>
   <script type="text/javascript" src="jquery.dataTables.min.js"></script>
@@ -104,6 +105,9 @@
                 }else if(data.search.type == "track"){
                     todo.data = toAlbum(data.search.data,true);
                     $("#result").trigger("update",todo);
+                }else if(data.search.type == "playlist"){
+                    todo.data = toPlaylist(data.search.data,true);
+                    $("#result").trigger("update",todo);
                 }
               }else if(data.playlists){
                 var list = [];
@@ -120,6 +124,8 @@
                 $("#result").trigger("update",{type:"history",data:toTrackCollection(data.history)});
               }else if(data.toplist){
                 $("#result").trigger("update",{type:"toplist",data:toTrackCollection(data.toplist)});
+              }else if(data.starred){
+                $("#result").trigger("update",{type:"starred",data:toPlaylist(data.starred)});
               }else if(data.status){
                 if(data.status.track){
                   data.status.track = toTrack(data.status.track);

@@ -7,7 +7,9 @@ var LeftMenu = Backbone.View.extend({
     'click #history' :  'gethistory',
     'select #history' :  'gethistory',
     'click #toplist' :  'gettoplist',
-    'select #toplist' :  'gettoplist'
+    'select #toplist' :  'gettoplist',
+    'click #starred' :  'getstarred',
+    'select #starred' :  'getstarred'
   },
   initialize: function(options) {
 			this.model.on('add', this.render, this);
@@ -22,7 +24,8 @@ var LeftMenu = Backbone.View.extend({
       this.$el.append((new ArtistViewSeparator({model : "MAIN"})).render().$el);
       var html =  "<div class='playlistitem menuitem' id='toplist'><div class='playlistname'>Toplist</div></div>" +
                   "<div class='playlistitem menuitem' id='queue'><div class='playlistname'>Queue</div></div>" +
-                  "<div class='playlistitem menuitem' id='history'><div class='playlistname'>History</div></div>";
+                  "<div class='playlistitem menuitem' id='history'><div class='playlistname'>History</div></div>" +
+                  "<div class='playlistitem menuitem' id='starred'><div class='playlistname'>Starred</div></div>";
       this.$el.append($.parseHTML(html));
       this.$el.append((new ArtistViewSeparator({model : "YOUR MUSIC"})).render().$el);
     	_.each(this.model.toArray(), function(playlist, i) {
@@ -103,6 +106,12 @@ var LeftMenu = Backbone.View.extend({
     if($(".toplistview").length == 0){
       $("#result").trigger("update",{type: "load"});
       this.options.ws.send(JSON.stringify({gettoplist : true}));
+    }
+  },getstarred : function(){
+    this.select("#toplist",true);
+    if($(".starredview").length == 0){
+      $("#result").trigger("update",{type: "load"});
+      this.options.ws.send(JSON.stringify({getstarred : true}));
     }
   }, select : function(target,first){
     $(".playlistitem.selected").removeClass("selected");

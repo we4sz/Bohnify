@@ -8,7 +8,7 @@ var PlaylistView = Backbone.View.extend({
       if(this.model.get("tracks").length==0){
         this.$el.append($.parseHTML("<div class='playlistempty'>The playlist is currently empty</div>"));
       }else{
-        this.$el.append((new TracksView({model: this.model.get("tracks"), ws : this.options.ws})).render().$el);
+        this.$el.append((new TracksView({model: this.model.get("tracks"), ws : this.options.ws,  extraclass: "playlisttrack"})).render().$el);
       }
       return this;
   }
