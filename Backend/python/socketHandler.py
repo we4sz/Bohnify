@@ -46,7 +46,10 @@ class SocketHandler(WebSocket):
           Bohnify.Instance().starred(self)
         elif "getqueue" in cmd:
           if Bohnify.Instance().status["party"]:
-            self.send(json.dumps({"queues" : [{"type" : "vote", "queue" : Bohnify.Instance().votequeue}]}))
+            self.send(json.dumps({"queues" : [
+              {"type" : "vote", "queue" : Bohnify.Instance().votequeue},
+              {"type" : "standard", "queue" : Bohnify.Instance().standardqueue}
+            ]}))
           else:
             self.send(json.dumps({"queues" : [
               {"type" : "manual", "queue" : Bohnify.Instance().manualqueue},
@@ -55,11 +58,16 @@ class SocketHandler(WebSocket):
         elif "gethistory" in cmd:
           self.send(json.dumps({"history":Bohnify.Instance().history}))
         elif "prev" in cmd:
-          Bohnify.Instance().prev()
+          if not Bohnify.Instance().status["party"]:
+            Bohnify.Instance().prev()
         elif "next" in cmd:
-          Bohnify.Instance().next()
+          if not Bohnify.Instance().status["party"]:
+            Bohnify.Instance().next()
         elif "play" in cmd:
-          Bohnify.Instance().playFromUri(cmd["play"]["track"],cmd["play"]["queue"])
+          if Bohnify.Instance().status["party"]:
+            Bohnify.Instance().voteUp(cmd["play"]["track"])
+          else:
+            Bohnify.Instance().playFromUri(cmd["play"]["track"],cmd["play"]["queue"])
         elif "party" in cmd:
           Bohnify.Instance().toggleParty()
         elif "random" in cmd:

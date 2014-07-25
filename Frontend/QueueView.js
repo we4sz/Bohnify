@@ -43,7 +43,7 @@ var QueueView = Backbone.View.extend({
   }, newqueue : function (_,queue){
     this.model = queue;
     this.render();
-    if(this.options.selected.track){
+    if(this.options.selected && this.options.selected.track){
       $(".track."+this.options.selected.hasclass).trigger("selecturi",this.options.selected.track.get("uri"));
       if($(".track.selected").length == 0){
         $("#queue").trigger("select");

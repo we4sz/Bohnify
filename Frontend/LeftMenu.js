@@ -108,7 +108,7 @@ var LeftMenu = Backbone.View.extend({
       this.options.ws.send(JSON.stringify({gettoplist : true}));
     }
   },getstarred : function(){
-    this.select("#toplist",true);
+    this.select("#starred",true);
     if($(".starredview").length == 0){
       $("#result").trigger("update",{type: "load"});
       this.options.ws.send(JSON.stringify({getstarred : true}));

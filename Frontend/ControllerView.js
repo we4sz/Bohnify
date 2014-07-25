@@ -28,7 +28,8 @@ var ControllerView = Backbone.View.extend({
                   + "<input id='controllposition' min='0' max='100' value='0' type='range' class='controller'/>"
                   + "<div id='controllduration' class='controller'>00:00</div>"
                   + "<div id='controllshuffle' class='disable controller'></div>"
-                  + "<div id='controllrepeat' class='disable controller'></div>";
+                  + "<div id='controllrepeat' class='disable controller'></div>"
+                  + "<div id='controllparty' class='disable controller'></div>";
       this.$el.html(html);
       return this;
   },volume : function(){
@@ -64,6 +65,7 @@ var ControllerView = Backbone.View.extend({
     $("#controllpause").removeClass("active disable").addClass(status.paused ? "disable" : "active");
     $("#controllrepeat").removeClass("active disable").addClass(status.repeat ? "active" : "disable");
     $("#controllshuffle").removeClass("active disable").addClass(status.random ? "active" : "disable");
+    $("#controllparty").removeClass("active disable").addClass(status.party ? "active" : "disable");
     if(status.track){
       document.title = "Bohnify - "+status.track.get("title");
       $("#controllposition").attr("max",status.track.get("duration"));

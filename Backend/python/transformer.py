@@ -3,6 +3,7 @@ import spotify
 class Transformer(object):
 
   def playlistContainer(self,con, index=0):
+    con.load()
     arr = []
     i = index
     while i < len(con):
@@ -20,11 +21,23 @@ class Transformer(object):
     return arr
 
   def author(self,user):
-    user.load();
+    user.load()
     return {
       "nick" : user.display_name,
       "name" :user.canonical_name,
       "uri" : user.link.uri
+    }
+
+  def user(self, user):
+    user.load()
+    starred = self.playlist(user.starred)
+    starred["name"] =  "Starred"
+    playlists = self.playlistContainer(user.published_playlists)
+    return {
+      "nick" : user.display_name,
+      "name" :user.canonical_name,
+      "uri" : user.link.uri,
+      "playlists" : playlists
     }
 
   def playlist(self,pl):

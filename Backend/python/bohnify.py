@@ -25,11 +25,10 @@ class Bohnify(object):
 
   standardqueue = [];
   manualqueue = [];
-  orginalqueue = [];
   votequeue = [];
   history = [];
   cache_playlists = None;
-
+  lastprev = False
 
   status = {
     "random" : True,
@@ -98,7 +97,9 @@ class Bohnify(object):
 
   def toggleRandom(self):
     self.status["random"] = not self.status["random"]
+    self.sortStandardQueue()
     self.updateStatus()
+    self.updatequeue()
 
   def toggleRepeat(self):
     self.status["repeat"] = not self.status["repeat"]
@@ -110,40 +111,117 @@ class Bohnify(object):
 
   def next(self):
     track = None
+    add = False
     if self.status["party"] and len(self.votequeue) > 0:
       track = self.votequeue.pop(0)
     elif len(self.manualqueue) > 0:
       track = self.manualqueue.pop(0)
     if track == None and len(self.standardqueue) > 0:
-      track = self.standardqueue.pop(0)
+      i = 0
+      while i < len(self.standardqueue):
+        self.giveTrackHighestSort(self.standardqueue[i])
+        if self.standardqueue[i]["uri"] != self.status["track"]["uri"]:
+          track = self.standardqueue.pop(i)
+          break
+        i = i + 1
+      add = True
     if track != None:
-      self.play(track)
-      self.updatequeue()
+      self.play(track, add)
+      if not add:
+        self.updatequeue()
 
   def prev(self):
-    track = None
-    if len(self.history) > 0:
-      track = self.history.pop(0)
-    if track != None:
-      self.play(track)
-      self.updatehistory()
+    if self.session.player.get_position() > 3000:
+      self.seek(0)
+    else:
+      track = None
+      i = len(self.standardqueue) - 1
+      while i >= 0:
+        self.giveTrackLowestSort(self.standardqueue[i])
+        if self.standardqueue[i]["uri"] != self.status["track"]["uri"]:
+          track = self.standardqueue[i]
+          break
+        i = i - 1
+
+      self.sortStandardQueue()
+      if track != None:
+        self.updatequeue()
+        self.play(track, False)
+
+  def giveTrackLowestSort(self,track):
+    minr = min(self.standardqueue, key=lambda track: (track["shuffleround"]*100000+track["shuffle"]))
+    minv = min(self.standardqueue, key=lambda track: track["orig"])
+    track["orig"] = minv["orig"] - 1
+    track["shuffle"] = (minr["shuffle"] - 1) if minr["shuffle"] > 0 else (len(self.standardqueue) - 1)
+    track["shuffleround"] = minr["shuffleround"] if minr["shuffle"] > 0 else (minr["shuffleround"] - 1)
+
+  def giveTrackHighestSort(self, track):
+    minv = max(self.standardqueue, key=lambda track:track["orig"])
+    minr = max(self.standardqueue, key=lambda track: (track["shuffleround"]*100000+track["shuffle"]))
+    track["orig"] = minv["orig"] + 1
+    shuffleround = minr["shuffleround"]
+    shuffle = minr["shuffle"] + 1
+    def filtertFunc(t):
+      return t["shuffleround"] == shuffleround
+
+    filterShuffle = filter(filtertFunc,self.standardqueue)
+    if len(filterShuffle) == len(self.standardqueue):
+      shuffleround = shuffleround + 1
+      shuffle = 0
+
+    track["shuffle"] = shuffle
+    track["shuffleround"] = shuffleround
+
+
+  def giveNewQueueSpot(self, track):
+    self.giveTrackHighestSort(track)
+    shuffleround = max(self.standardqueue, key=lambda track:track["shuffleround"])["shuffleround"]
+    def filtertFunc(t):
+      return t["shuffleround"] == shuffleround
+
+    filterShuffle = filter(filtertFunc,self.standardqueue)
+    if len(filterShuffle) == len(self.standardqueue):
+      shuffleround = shuffleround + 1
+
+    free = self.getFreeIndicesInRound(shuffleround)
+    track["shuffle"] = free[randint(0,len(free)-1)]
+    track["shuffleround"] = shuffleround
+
+
+  def getFreeIndicesInRound(self, round):
+    indices = range(len(self.standardqueue))
+    for track in self.standardqueue:
+      if track["shuffleround"] == round:
+        indices.remove(track["shuffle"])
+    return indices
 
   def playFromUri(self, track, queue=None):
     if queue != None:
       self.setStandard(queue)
     self.play({"uri" : track})
 
-  def play(self, track):
-    if self.status["track"] != None:
-      self.history.append(self.status["track"])
-      self.updatehistory()
+  def play(self, track, add=True):
     t = self.session.get_link(track["uri"]).as_track()
-    self.status["track"] = Transformer().track(t)
+    if self.session.player.get_position() < 3000 and len(self.history) > 0:
+      self.history.pop(0)
     self.session.player.unload()
     self.session.player.load(t)
     self.session.player.play()
+    self.status["track"] = Transformer().track(t)
+    if self.status["repeat"] and add:
+      self.addTrackRepeat(self.status["track"])
     self.status["paused"] = False
     self.updateStatus()
+    self.history.insert(0, self.status["track"])
+    self.updatehistory()
+
+
+  def addTrackRepeat(self,track):
+    t = self.status["track"]
+    self.giveNewQueueSpot(t)
+    self.standardqueue.append(t)
+    self.sortStandardQueue()
+    self.updatequeue()
 
   def seek(self,pos):
     self.session.player.seek(int(pos))
@@ -190,7 +268,8 @@ class Bohnify(object):
     ws.send(json.dumps({"search" : {"type" : "playlist", "data" :playlist, "search":link.uri}}))
 
   def browseUser(self, link,  ws):
-    print("bu")
+    user = Transformer().user(link.as_user())
+    ws.send(json.dumps({"search" : {"type" : "user", "data" :user, "search":link.uri}}))
 
   def search(self, query,  ws):
     result = self.session.search(query, track_count = 100,album_count=0,artist_count=0,playlist_count=0)
@@ -206,6 +285,7 @@ class Bohnify(object):
 
   def starred(self,ws):
     pl = Transformer().playlist(self.session.get_starred())
+    pl["name"] = "Starred"
     ws.send(json.dumps({"starred" : pl }))
 
   def addToManual(self, tracks):
@@ -258,15 +338,27 @@ class Bohnify(object):
 
   def setStandard(self, tracks):
     self.standardqueue = []
-    self.orginalqueue = []
-    for track in tracks:
+    for index, track in enumerate(tracks):
       t = Transformer().track(self.session.get_link(track).as_track())
+      t["orig"] = index
+      t["shuffle"] = index
+      t["shuffleround"] = 0
       self.standardqueue.append(t)
-      self.orginalqueue.append(t)
     if self.status["random"]:
-      shuffle(self.standardqueue)
+      self.shuffleStandardQueue()
     self.updatequeue()
 
+  def shuffleStandardQueue(self):
+    shuffle(self.standardqueue)
+    for index, track in enumerate(self.standardqueue):
+      track["shuffle"] = index
+      track["shuffleround"] = 0
+
+  def sortStandardQueue(self):
+    if self.status["random"]:
+      list.sort(self.standardqueue, key=lambda track: (track["shuffleround"]*100000+track["shuffle"]))
+    else:
+      list.sort(self.standardqueue, key=lambda track:track["orig"])
 
   def removeFromStandard(self, tracks):
     for track in tracks:
