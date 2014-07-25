@@ -120,7 +120,7 @@ class Bohnify(object):
       i = 0
       while i < len(self.standardqueue):
         self.giveTrackHighestSort(self.standardqueue[i])
-        if self.standardqueue[i]["uri"] != self.status["track"]["uri"]:
+        if self.status["track"] == None or self.standardqueue[i]["uri"] != self.status["track"]["uri"]:
           track = self.standardqueue.pop(i)
           break
         i = i + 1
@@ -138,7 +138,7 @@ class Bohnify(object):
       i = len(self.standardqueue) - 1
       while i >= 0:
         self.giveTrackLowestSort(self.standardqueue[i])
-        if self.standardqueue[i]["uri"] != self.status["track"]["uri"]:
+        if self.status["track"] == None or self.standardqueue[i]["uri"] != self.status["track"]["uri"]:
           track = self.standardqueue[i]
           break
         i = i - 1
@@ -205,15 +205,18 @@ class Bohnify(object):
     if self.session.player.get_position() < 3000 and len(self.history) > 0:
       self.history.pop(0)
     self.session.player.unload()
-    self.session.player.load(t)
-    self.session.player.play()
-    self.status["track"] = Transformer().track(t)
-    if self.status["repeat"] and add:
-      self.addTrackRepeat(self.status["track"])
-    self.status["paused"] = False
-    self.updateStatus()
-    self.history.insert(0, self.status["track"])
-    self.updatehistory()
+    try:
+      self.session.player.load(t)
+      self.session.player.play()
+      self.status["track"] = Transformer().track(t)
+      if self.status["repeat"] and add:
+        self.addTrackRepeat(self.status["track"])
+      self.status["paused"] = False
+      self.updateStatus()
+      self.history.insert(0, self.status["track"])
+      self.updatehistory()
+    except:
+      self.next()
 
 
   def addTrackRepeat(self,track):
