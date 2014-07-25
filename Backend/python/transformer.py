@@ -2,7 +2,6 @@ import spotify
 
 class Transformer(object):
 
-
   def playlistContainer(self,con, index=0):
     arr = []
     i = index
@@ -69,28 +68,33 @@ class Transformer(object):
       "cover" : cover
     }
 
-  def albums_b(self,albums):
+  def albums_b(self,albums, callback):
     arr = []
+    def albumLoaded(album):
+      arr.append(album)
+      if(len(arr) == len(albums)):
+        callback(arr)
     for album in albums:
-      arr.append(self.album_b(album))
-    return arr
+      self.album_b(album,albumLoaded)
 
-  def album_b(self,album):
-    album = album.browse().load()
-    cover = None
-    try:
-      cover = album.album.cover_link().uri
-    except:
-      pass
-    return {
-      "uri" : album.album.link.uri,
-      "title" : album.album.name,
-      "cover" : cover,
-      "type" : album.album.type,
-      "tracks" : self.tracks(album.tracks),
-      "artists" : [self.artist(album.artist)],
-      "year" : album.album.year
-    }
+
+  def album_b(self,album, callback):
+    def albumBrowsed(album):
+      cover = None
+      try:
+        cover = album.album.cover_link().uri
+      except:
+        pass
+      callback( {
+        "uri" : album.album.link.uri,
+        "title" : album.album.name,
+        "cover" : cover,
+        "type" : album.album.type,
+        "tracks" : self.tracks(album.tracks),
+        "artists" : [self.artist(album.artist)],
+        "year" : album.album.year
+      })
+    album = album.browse(albumBrowsed)
 
   def artists(self,artists):
     a = []
@@ -111,19 +115,23 @@ class Transformer(object):
       "portrait" : por
     }
 
-  def artist_b(self, artist):
-    artist = artist.browse(spotify.ArtistBrowserType.NO_TRACKS).load()
-    por = None
-    try:
-      por = artist.artist.portrait_link().uri
-    except:
-      pass
-    return {
-      "name" : artist.artist.name,
-      "uri" : artist.artist.link.uri,
-      "portrait" : por,
-      "bio" : artist.biography,
-      "topTracks" : self.tracks(artist.tophit_tracks),
-      "similar" : self.artists(artist.similar_artists),
-      "albums" : self.albums_b(artist.albums)
-    }
+  def artist_b(self, artist, callback):
+    def artistBrowsed(artist):
+      por = None
+      try:
+        por = artist.artist.portrait_link().uri
+      except:
+        pass
+      a = {
+        "name" : artist.artist.name,
+        "uri" : artist.artist.link.uri,
+        "portrait" : por,
+        "bio" : artist.biography,
+        "topTracks" : self.tracks(artist.tophit_tracks),
+        "similar" : self.artists(artist.similar_artists)
+      }
+      def albumsBrowsed(albums):
+        a["albums"] = albums
+        callback(a)
+      self.albums_b(artist.albums,albumsBrowsed)
+    artist = artist.browse(spotify.ArtistBrowserType.NO_TRACKS,artistBrowsed)

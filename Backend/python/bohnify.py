@@ -169,18 +169,21 @@ class Bohnify(object):
     cherrypy.engine.publish('websocket-broadcast', json.dumps({"playlists" : self.cache_playlists}))
 
   def browseTrack(self, link,  ws):
+    def trackBrowsed(album):
+      ws.send(json.dumps({"search" : {"type" : "track", "data" :album, "search":link.uri}}))
     track = Transformer().track(link.as_track())
-    album = Transformer().album_b(self.session.get_link(track["album"]["uri"]).as_album())
-    ws.send(json.dumps({"search" : {"type" : "track", "data" :album, "search":link.uri}}))
-
+    Transformer().album_b(self.session.get_link(track["album"]["uri"]).as_album(),trackBrowsed)
 
   def browseAlbum(self, link,  ws):
-    album = Transformer().album_b(link.as_album())
-    ws.send(json.dumps({"search" : {"type" : "album", "data" :album, "search":link.uri}}))
+    def albumBrowsed(album):
+      ws.send(json.dumps({"search" : {"type" : "album", "data" :album, "search":link.uri}}))
+    Transformer().album_b(link.as_album(),albumBrowsed)
+
 
   def browseArtist(self, link,  ws):
-    artist = Transformer().artist_b(link.as_artist())
-    ws.send(json.dumps({"search" : {"type" : "artist", "data" :artist, "search":link.uri}}))
+    def artistBrowsed(artist):
+      ws.send(json.dumps({"search" : {"type" : "artist", "data" :artist, "search":link.uri}}))
+    Transformer().artist_b(link.as_artist(),artistBrowsed)
 
   def browsePlaylist(self, link,  ws):
     playlist = Transformer().playlist(link.as_playlist())

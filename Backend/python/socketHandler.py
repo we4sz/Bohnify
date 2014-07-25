@@ -16,6 +16,8 @@ class SocketHandler(WebSocket):
         self.send(json.dumps({"loginstatus" : Bohnify.Instance().loginstatus}))
         if Bohnify.Instance().loginstatus["login"]:
           self.send(json.dumps({"status" : Bohnify.Instance().status}))
+          if Bohnify.Instance().cache_playlists != None:
+            self.send(json.dumps({"playlists" : Bohnify.Instance().cache_playlists}))
 
 
     def received_message(self, m):
