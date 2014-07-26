@@ -62,3 +62,26 @@ class Cache(object):
         for track in album["tracks"]:
           BohnifyQueue.Instance().setVoteToTrack(track)
     return artist
+
+  def removeTrack(self,uri):
+    if uri in self.tracks :
+      del self.tracks[uri]
+
+  def removePlaylist(self,uri):
+    if uri in self.playlists:
+      del self.playlists[uri]
+
+  def removeUser(self,uri, browse = False):
+    uri = uri+"_b" if browse else uri
+    if uri in self.users:
+      del self.users[uri]
+
+  def removeAlbum(self, uri, browse = False):
+    uri = uri+"_b" if browse else uri
+    if uri in self.albums:
+      del self.albums[uri]
+
+  def removeArtist(self, uri, browse = False):
+    uri = uri+"_b" if browse else uri
+    if uri in self.artists:
+      del self.artists[uri]

@@ -89,21 +89,29 @@
               lastcommand = sendingobject;
               if(!preventHistory){
                 $("#header").trigger("addbrowse",sendingobject)
+              }else{
+                $("#leftmenu").trigger("forceselect", $("#history"));
               }
             }else if(sendingobject.getqueue){
               lastcommand = sendingobject;
               if(!preventHistory){
                 $("#header").trigger("addbrowse",sendingobject)
+              }else{
+                $("#leftmenu").trigger("forceselect", $("#queue"));
               }
             }else if(sendingobject.getstarred){
               lastcommand = sendingobject;
               if(!preventHistory){
                 $("#header").trigger("addbrowse",sendingobject)
+              }else{
+                $("#leftmenu").trigger("forceselect", $("#starred"));
               }
             }else if(sendingobject.gettoplist){
               lastcommand = sendingobject;
               if(!preventHistory){
                 $("#header").trigger("addbrowse",sendingobject)
+              }else{
+                $("#leftmenu").trigger("forceselect", $("#toplist"));
               }
             }
             ws.origSend(JSON.stringify(sendingobject));
@@ -138,9 +146,13 @@
                       todo.data = toAlbum(data.search.data,true);
                       $("#result").trigger("update",todo);
                   }else if(data.search.type == "playlist"){
+                    if($(".playlistview").length == 1){
+                      $(".playlistview").trigger("newplaylist", toPlaylist(data.search.data,true))
+                    }else{
                       todo.data = toPlaylist(data.search.data,true);
                       $("#result").trigger("update",todo);
                       $(".playlistitem").trigger("selectplaylist", data.search.search);
+                    }
                   }
                 }
               }else if(data.playlists){
@@ -155,22 +167,18 @@
                     queue.queue = toTrackCollection(queue.queue);
                   });
                   $("#result").trigger("update",{type:"queue",data:data.queues});
-                  $("#leftmenu").trigger("forceselect", $("#queue"));
                 }
               }else if(data.history){
                 if(lastcommand.gethistory){
                   $("#result").trigger("update",{type:"history",data:toTrackCollection(data.history)});
-                  $("#leftmenu").trigger("forceselect", $("#history"));
                 }
               }else if(data.toplist){
                 if(lastcommand.gettoplist){
                   $("#result").trigger("update",{type:"toplist",data:toTrackCollection(data.toplist)});
-                  $("#leftmenu").trigger("forceselect", $("#toplist"));
                 }
               }else if(data.starred){
                 if(lastcommand.getstarred){
                   $("#result").trigger("update",{type:"starred",data:toPlaylist(data.starred)});
-                  $("#leftmenu").trigger("forceselect", $("#starred"));
                 }
               }else if(data.status){
                 if(data.status.track){
@@ -191,6 +199,8 @@
                 $(".historyview").trigger("update");
               }else if(data.votechange){
                 $(".track").trigger('votechange',data.votechange);
+              }else if(data.playlistchanged){
+                $(".playlistview").trigger('update',data.playlistchanged);
               }
           };
         }
@@ -206,7 +216,9 @@
         } else{
           p.set("description",playlist.description);
           p.set("author",toAuthor(playlist.author));
-          p.set("tracks",toTrackCollection(playlist.tracks));
+          if(playlist.tracks){
+            p.set("tracks",toTrackCollection(playlist.tracks));
+          }
           p.set("collaborative",playlist.collaborative);
           p.set("uri",playlist.uri);
         }

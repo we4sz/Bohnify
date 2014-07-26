@@ -6,7 +6,8 @@ var TracksView = Backbone.View.extend({
     'mousemove' : 'fixresize',
     'mouseup' : 'stopresize',
     'resize' : 'setresize',
-    "repainttracks" : "repaint"
+    "repainttracks" : "repaint",
+    "passiveselectfirst" : "passiveselectfirst"
   },
   tagName: 'div',
   initialize : function (options) {
@@ -102,7 +103,7 @@ var TracksView = Backbone.View.extend({
     });
     var ob = {play : {track : track,queue:tracks}};
     this.options.ws.send(ob);
-  }, fixresize:function(ev){
+  },fixresize:function(ev){
     if(this.options.resize){
       var next = $(this.options.nextclass);
       var curr = $(this.options.class);
@@ -195,5 +196,7 @@ var TracksView = Backbone.View.extend({
       $(this.$el.find(".track").get(selectIndex)).trigger("select");
 //      console.log(this.model.at(selectIndex).get("uri"))
     }
+  }, passiveselectfirst: function(){
+    $(this.$el.find(".track").get(0)).addClass("passiveselected");
   }
 });

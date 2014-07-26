@@ -9,7 +9,8 @@ var TrackView = Backbone.View.extend({
     'click .trackartist' : 'browseartist',
     'contextmenu' : 'opencontext',
     'selecturi' : 'selecturi',
-    'votechange' : 'votechange'
+    'votechange' : 'votechange',
+    "passiveselect" : "passiveselect"
   },initialize : function (options) {
     this.options = options || {};
     this.options.title =  options.title;
@@ -62,6 +63,10 @@ var TrackView = Backbone.View.extend({
     passiveSelectAll(this.$el);
     var first = $(".track")[0] == this.$el[0];
     takeInFocus($("#result"),this.$el,first);
+  },passiveselect : function() {
+    $(".track.selected").removeClass("selected");
+    $(".track.passiveselected").removeClass("passiveselected");
+    this.$el.addClass("passiveselected");
   },browsealbum : function(){
     $("#result").trigger("update",{type: "load"});
     var ob = {search : this.model.get("album").get("uri")};

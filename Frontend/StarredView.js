@@ -10,6 +10,7 @@ var StarredView = Backbone.View.extend({
       }else{
         this.$el.append((new TracksView({model: this.model.get("tracks"), ws : this.options.ws,  extraclass: "starredtrack"})).render().$el);
       }
+      this.$el.find(".tracksview").trigger("passiveselectfirst");
       return this;
   }
 });

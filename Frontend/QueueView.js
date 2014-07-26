@@ -1,7 +1,8 @@
 var QueueView = Backbone.View.extend({
   events :{
     'update' : 'update',
-    'newqueue' : 'newqueue'
+    'newqueue' : 'newqueue',
+    "delete" : "delete"
   },
   initialize : function (options) {
     this.options = options || {};
@@ -27,6 +28,7 @@ var QueueView = Backbone.View.extend({
       this.$el.append((new ArtistViewSeparator({model : "STANDARD QUEUE"})).render().$el);
       this.$el.append((new TracksView({model: this.model[this.options.standard].queue, ws : this.options.ws, extraclass: "standardtrack"})).render().$el);
     }
+    $(this.$el.find(".tracksview").get(0)).trigger("passiveselectfirst");
     return this;
   }, update : function(){
     var selectedTrack = $(".track.selected");
@@ -48,6 +50,20 @@ var QueueView = Backbone.View.extend({
       if($(".track.selected").length == 0){
         $("#queue").trigger("select");
       }
+    }
+  }, delete : function(){
+    var selectedTrack = $(".track.selected");
+    if(selectedTrack){
+        if(selectedTrack.hasClass("manualtrack")){
+          track = this.model[this.options.manual].queue.at(selectedTrack.index());
+          this.options.ws.send({removemanualqueue : [track.get("uri")]});
+        }else if(selectedTrack.hasClass("standardtrack")){
+          track = this.model[this.options.standard].queue.at(selectedTrack.index());
+          this.options.ws.send({removestandardqueue : [track.get("uri")]});
+        }else if(selectedTrack.hasClass("votetrack")){
+          track = this.model[this.options.vote].queue.at(selectedTrack.index());
+          this.options.ws.send({removemanualqueue : [track.get("uri")]});
+        }
     }
   }
 });

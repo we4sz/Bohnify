@@ -472,6 +472,11 @@ body{
 .trackindex{
   text-align: center;
 }
+
+.trackvote{
+  text-align: center;
+}
+
 .trackduration{
   text-align: center;
 }

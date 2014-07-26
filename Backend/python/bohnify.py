@@ -12,6 +12,7 @@ from random import shuffle
 from random import randint
 from volume import Volume
 from bohnifyqueue import BohnifyQueue
+from cache import Cache
 
 @Singleton
 class Bohnify(object):
@@ -75,6 +76,10 @@ class Bohnify(object):
     self.status["track"] = None
     self.updateStatus()
     self.next()
+
+  def playlistChanged(self, pl, *args):
+    Cache.Instance().removePlaylist(pl.link.uri)
+    cherrypy.engine.publish('websocket-broadcast', json.dumps({"playlistchanged" : pl.link.uri}))
 
   def increaseVolume(self):
     v = (self.volumeController.getVolume() + 10)
@@ -309,11 +314,7 @@ class Bohnify(object):
 
   def getPlaylists(self):
     container = self.session.playlist_container
-    if container.is_loaded:
-      self.cache_playlists = Transformer().playlistContainer(container)
-    else:
-      container.load()
-      self.cache_playlists = Transformer().playlistContainer(container)
+    self.cache_playlists = Transformer().playlistContainer(container,0, self.playlistChanged)
     cherrypy.engine.publish('websocket-broadcast', json.dumps({"playlists" : self.cache_playlists}))
 
   def browseTrack(self, link,  ws):
@@ -370,7 +371,7 @@ class Bohnify(object):
   def removeFromManual(self,tracks):
     for track in tracks:
       if self.status["party"]:
-        voteDown(track)
+        self.voteDown(track)
       else:
         t = self.getUriFromList(BohnifyQueue.Instance().manualqueue, track)
         if t != None:

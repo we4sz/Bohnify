@@ -87,6 +87,8 @@ var ResultView = Backbone.View.extend({
           $("#search").focus();
         }
         return false;
+      }else if(ev.keyCode == 46){
+        $(".queueview").trigger("delete");
       }
     }
   },update : function(_,data) {
