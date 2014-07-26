@@ -144,16 +144,7 @@ class Bohnify(object):
       track["playing"] = False
     map(clear, self.standardqueue)
 
-  def indexOfPlaying(self):
-    print("--------------------")
-    print("len: "+str(len(self.standardqueue)))
-    for i,t in enumerate(self.standardqueue):
-      if t["playing"]:
-        print(i)
-    print("-----------------------")
-
   def next(self):
-    print("next")
     track = None
     add = False
     if self.status["party"] and len(self.votequeue) > 0:
@@ -161,7 +152,6 @@ class Bohnify(object):
     elif len(self.manualqueue) > 0:
       track = self.manualqueue.pop(0)
     if track == None and len(self.standardqueue) > self.getMinimumStandard():
-      self.indexOfPlaying()
       if self.standardqueue[0]["playing"]:
         self.giveTrackHighestSort(self.standardqueue[0])
         track = self.standardqueue.pop(1)
