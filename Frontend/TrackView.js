@@ -76,6 +76,7 @@ var TrackView = Backbone.View.extend({
     if(status.track){
       if(status.track.get("uri") == this.model.get("uri")){
         this.$el.addClass("current");
+        this.$el.find(".trackvote").html(status.track.get("vote"));
       }else{
         this.$el.removeClass("current");
       }

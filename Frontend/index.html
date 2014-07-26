@@ -190,7 +190,7 @@
               }else if(data.historyupdated){
                 $(".historyview").trigger("update");
               }else if(data.votechange){
-                $(".track").trigger('votechange',[data.votechange]);
+                $(".track").trigger('votechange',data.votechange);
               }
           };
         }
