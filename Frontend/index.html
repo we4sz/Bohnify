@@ -176,7 +176,12 @@
                 if(data.status.track){
                   data.status.track = toTrack(data.status.track);
                 }
+                if(window.lateststatus && window.lateststatus.party != data.status.party){
+                  window.lateststatus = data.status;
+                  $(".tracksview").trigger("repainttracks");
+                }
                 window.lateststatus = data.status;
+
                 $("#bottom").trigger('status',[data.status]);
                 $("#playtrack").trigger('status',[data.status]);
                 $("#result").trigger('status',[data.status]);

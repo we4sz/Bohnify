@@ -5,9 +5,10 @@ var TracksView = Backbone.View.extend({
     'mousemove th' : 'fixcursor',
     'mousemove' : 'fixresize',
     'mouseup' : 'stopresize',
-    'resize' : 'setresize'
+    'resize' : 'setresize',
+    "repainttracks" : "repaint"
   },
-  tagName: 'table',
+  tagName: 'div',
   initialize : function (options) {
     $(window).on("resize", this.setresize.bind(this));
     this.options = options || {};
@@ -26,6 +27,8 @@ var TracksView = Backbone.View.extend({
   render : function(){
       this.$el.addClass("tracksview");
       this.options.sizes = [];
+      var child =$(document.createElement("table"));
+
       if(this.options.header){
 
         var html ="<thead><tr><th class='trackindex'><span>#</span></th>";
@@ -59,12 +62,12 @@ var TracksView = Backbone.View.extend({
           this.options.sizes.push({classname : "trackpopularity", size : "60px"});
         }
         html+="</tr></thead>";
-        this.$el.html(html);
+        child.html(html);
       }
-      this.$el.append($.parseHTML("<tbody>"));
+      child.append($.parseHTML("<tbody>"));
       _.each(this.model.toArray(), function(track, i) {
         if(i<this.options.max){
-          this.$el.append((
+          child.append((
             new TrackView({model: track,
               ws : this.options.ws,
               index:i,album : this.options.album,
@@ -77,9 +80,9 @@ var TracksView = Backbone.View.extend({
               vote:this.options.vote})).render().$el);
           }
       }.bind(this));
-      this.$el.append($.parseHTML("</tbody></table>"));
+      child.append($.parseHTML("</tbody></table>"));
       if(this.options.header){
-        this.$el.dataTable( {
+        this.options.dt = child.dataTable( {
           dom : 't',
           paging : false,
           autoWidth : false,
@@ -87,8 +90,8 @@ var TracksView = Backbone.View.extend({
         });
       }
 
-      this.$el.bind("DOMNodeInsertedIntoDocument",this.setsize.bind(this));
-
+      child.bind("DOMNodeInsertedIntoDocument",this.setsize.bind(this));
+      this.$el.append(child);
       return this;
   },play : function(_,index){
     var tracks = this.model.toJSON();
@@ -183,5 +186,14 @@ var TracksView = Backbone.View.extend({
       }.bind(this));
     }
     this.setsize();
+  }, repaint : function(){
+    var selectIndex = $(".track.selected").index();
+    this.options.vote = window.lateststatus && window.lateststatus.party;
+    this.$el.find("table").DataTable().destroy(false);
+    this.render();
+    if(selectIndex >= 0){
+      $(this.$el.find(".track").get(selectIndex)).trigger("select");
+//      console.log(this.model.at(selectIndex).get("uri"))
+    }
   }
 });
