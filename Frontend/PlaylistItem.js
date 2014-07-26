@@ -6,7 +6,8 @@ var PlaylistItem = Backbone.View.extend({
     'expand' : 'expand',
     'play' : 'play',
     'dblclick .playlist' : 'play',
-    'contextmenu .playlist' : 'opencontext'
+    'contextmenu .playlist' : 'opencontext',
+    "selectplaylist" : "forceselect"
   },initialize : function (options) {
     this.options = options || {};
     this.options.data = {type: "playlist", data:this.model};
@@ -33,7 +34,9 @@ var PlaylistItem = Backbone.View.extend({
     passiveSelectAll(this.$el);
     takeInFocus($("#leftmenu"),this.$el);
     if(!notChange && this.$el.find(".playlistfolder").length == 0){
-      $("#result").trigger("update",[this.options.data]);
+      $("#result").trigger("update",{type: "load"});
+      this.options.ws.send({search : this.model.get("uri")});
+      //$("#result").trigger("update",[this.options.data]);
     }
     return false;
   },click : function(){
@@ -54,7 +57,7 @@ var PlaylistItem = Backbone.View.extend({
       tracks = tracks.map(function(t){
         return t.uri;
       });
-      var ob = JSON.stringify({startqueue : tracks});
+      var ob = {startqueue : tracks};
       this.options.ws.send(ob);
       return false;
     }
@@ -74,7 +77,7 @@ var PlaylistItem = Backbone.View.extend({
       tracks = tracks.map(function(t){
         return t.uri;
       });
-      this.options.ws.send(JSON.stringify({standardqueue: tracks}));
+      this.options.ws.send({standardqueue: tracks});
       el.remove();
     }.bind(this));
 
@@ -101,6 +104,14 @@ var PlaylistItem = Backbone.View.extend({
       el.css('left',(x-w)+"px");
     }else{
       el.css('left',x+"px");
+    }
+    return false;
+  }, forceselect : function(_, uri){
+    if(uri == this.model.get("uri")){
+      $(".playlistitem.selected").removeClass("selected");
+      $(".playlistitem.passiveselected").removeClass("passiveselected");
+      passiveSelectAll(this.$el);
+      takeInFocus($("#leftmenu"),this.$el);
     }
     return false;
   }

@@ -11,6 +11,7 @@ from threading import Timer
 from random import shuffle
 from random import randint
 from volume import Volume
+from bohnifyqueue import BohnifyQueue
 
 @Singleton
 class Bohnify(object):
@@ -23,12 +24,7 @@ class Bohnify(object):
     "user" : None
   };
 
-  standardqueue = [];
-  manualqueue = [];
-  votequeue = [];
-  history = [];
   cache_playlists = None;
-  lastprev = False
 
   status = {
     "random" : True,
@@ -119,12 +115,12 @@ class Bohnify(object):
         t = self.status["track"]
         t["addedbyrepeat"] = True
         self.giveNewQueueSpot(t)
-        self.standardqueue.append(t)
+        BohnifyQueue.Instance().standardqueue.append(t)
     else:
       i = 0
-      while i < len(self.standardqueue):
-        if self.standardqueue[i]["addedbyrepeat"]:
-          self.standardqueue.pop(i)
+      while i < len(BohnifyQueue.Instance().standardqueue):
+        if BohnifyQueue.Instance().standardqueue[i]["addedbyrepeat"]:
+          BohnifyQueue.Instance().standardqueue.pop(i)
         else:
           i = i + 1
 
@@ -142,21 +138,24 @@ class Bohnify(object):
   def clearPlaying(self):
     def clear(track):
       track["playing"] = False
-    map(clear, self.standardqueue)
+    map(clear, BohnifyQueue.Instance().standardqueue)
 
   def next(self):
     track = None
     add = False
-    if self.status["party"] and len(self.votequeue) > 0:
-      track = self.votequeue.pop(0)
-    elif len(self.manualqueue) > 0:
-      track = self.manualqueue.pop(0)
-    if track == None and len(self.standardqueue) > self.getMinimumStandard():
-      if self.standardqueue[0]["playing"]:
-        self.giveTrackHighestSort(self.standardqueue[0])
-        track = self.standardqueue.pop(1)
+    if self.status["party"] and len(BohnifyQueue.Instance().votequeue) > 0:
+      track = BohnifyQueue.Instance().votequeue.pop(0)
+      if track != None:
+        track["vote"] = 0
+        self.voteChange(track["uri"],track["vote"])
+    elif len(BohnifyQueue.Instance().manualqueue) > 0:
+      track = BohnifyQueue.Instance().manualqueue.pop(0)
+    elif len(BohnifyQueue.Instance().standardqueue) > self.getMinimumStandard():
+      if BohnifyQueue.Instance().standardqueue[0]["playing"]:
+        self.giveTrackHighestSort(BohnifyQueue.Instance().standardqueue[0])
+        track = BohnifyQueue.Instance().standardqueue.pop(1)
       else:
-        track = self.standardqueue.pop(0)
+        track = BohnifyQueue.Instance().standardqueue.pop(0)
       add = True
     if track != None:
       self.play(track, add)
@@ -168,13 +167,13 @@ class Bohnify(object):
       self.seek(0)
     else:
       track = None
-      if len(self.standardqueue) > self.getMinimumStandard():
-        self.giveTrackLowestSort(self.standardqueue[len(self.standardqueue)-1])
-        if self.standardqueue[len(self.standardqueue)-1]["playing"]:
-          track = self.standardqueue[len(self.standardqueue)-2]
-          self.giveTrackLowestSort(self.standardqueue[len(self.standardqueue)-2])
+      if len(BohnifyQueue.Instance().standardqueue) > self.getMinimumStandard():
+        self.giveTrackLowestSort(BohnifyQueue.Instance().standardqueue[len(BohnifyQueue.Instance().standardqueue)-1])
+        if BohnifyQueue.Instance().standardqueue[len(BohnifyQueue.Instance().standardqueue)-1]["playing"]:
+          track = BohnifyQueue.Instance().standardqueue[len(BohnifyQueue.Instance().standardqueue)-2]
+          self.giveTrackLowestSort(BohnifyQueue.Instance().standardqueue[len(BohnifyQueue.Instance().standardqueue)-2])
         else:
-          track = self.standardqueue[len(self.standardqueue)-1]
+          track = BohnifyQueue.Instance().standardqueue[len(BohnifyQueue.Instance().standardqueue)-1]
       self.sortStandardQueue()
       if track != None:
         self.clearPlaying()
@@ -186,21 +185,21 @@ class Bohnify(object):
     minr = {"orig" : 0, "shuffle" : 0, "shuffleround" : 0}
     minv = {"orig" : 0, "shuffle" : 0, "shuffleround" : 0}
     try:
-      minr = min(self.standardqueue, key=lambda track: (track["shuffleround"]*100000+track["shuffle"]))
-      minv = min(self.standardqueue, key=lambda track: track["orig"])
+      minr = min(BohnifyQueue.Instance().standardqueue, key=lambda track: (track["shuffleround"]*100000+track["shuffle"]))
+      minv = min(BohnifyQueue.Instance().standardqueue, key=lambda track: track["orig"])
     except:
       pass
     finally:
       track["orig"] = minv["orig"] - 1
-      track["shuffle"] = (minr["shuffle"] - 1) if minr["shuffle"] > 0 else (len(self.standardqueue) - 1)
+      track["shuffle"] = (minr["shuffle"] - 1) if minr["shuffle"] > 0 else (len(BohnifyQueue.Instance().standardqueue) - 1)
       track["shuffleround"] = minr["shuffleround"] if minr["shuffle"] > 0 else (minr["shuffleround"] - 1)
 
   def giveTrackHighestSort(self, track):
     minr = {"orig" : 0, "shuffle" : 0, "shuffleround" : 0}
     minv = {"orig" : 0, "shuffle" : 0, "shuffleround" : 0}
     try:
-      minv = max(self.standardqueue, key=lambda track:track["orig"])
-      minr = max(self.standardqueue, key=lambda track: (track["shuffleround"]*100000+track["shuffle"]))
+      minv = max(BohnifyQueue.Instance().standardqueue, key=lambda track:track["orig"])
+      minr = max(BohnifyQueue.Instance().standardqueue, key=lambda track: (track["shuffleround"]*100000+track["shuffle"]))
     except:
       pass
     finally:
@@ -210,8 +209,8 @@ class Bohnify(object):
       def filtertFunc(t):
         return t["shuffleround"] == shuffleround
 
-      filterShuffle = filter(filtertFunc,self.standardqueue)
-      if len(filterShuffle) == len(self.standardqueue):
+      filterShuffle = filter(filtertFunc,BohnifyQueue.Instance().standardqueue)
+      if len(filterShuffle) == len(BohnifyQueue.Instance().standardqueue):
         shuffleround = shuffleround + 1
         shuffle = 0
 
@@ -223,15 +222,15 @@ class Bohnify(object):
     self.giveTrackHighestSort(track)
     shuffleround = 0
     try:
-      shuffleround = max(self.standardqueue, key=lambda track:track["shuffleround"])["shuffleround"]
+      shuffleround = max(BohnifyQueue.Instance().standardqueue, key=lambda track:track["shuffleround"])["shuffleround"]
     except:
       pass
     finally:
       def filtertFunc(t):
         return t["shuffleround"] == shuffleround
 
-      filterShuffle = filter(filtertFunc,self.standardqueue)
-      if len(filterShuffle) == len(self.standardqueue):
+      filterShuffle = filter(filtertFunc,BohnifyQueue.Instance().standardqueue)
+      if len(filterShuffle) == len(BohnifyQueue.Instance().standardqueue):
         shuffleround = shuffleround + 1
 
       free = self.getFreeIndicesInRound(shuffleround)
@@ -240,8 +239,8 @@ class Bohnify(object):
 
 
   def getFreeIndicesInRound(self, round):
-    indices = range(len(self.standardqueue))
-    for track in self.standardqueue:
+    indices = range(len(BohnifyQueue.Instance().standardqueue))
+    for track in BohnifyQueue.Instance().standardqueue:
       if track["shuffleround"] == round:
         indices.remove(track["shuffle"])
     return indices
@@ -256,8 +255,8 @@ class Bohnify(object):
 
   def play(self, track, add=True):
     def startTrack(t):
-      if self.session.player.get_position() < 3000 and len(self.history) > 0:
-        self.history.pop(0)
+      if self.session.player.get_position() < 3000 and len(BohnifyQueue.Instance().history) > 0:
+        BohnifyQueue.Instance().history.pop(0)
       self.session.player.unload()
       try:
         self.session.player.load(t)
@@ -269,7 +268,7 @@ class Bohnify(object):
           self.clearPlaying()
         self.status["paused"] = False
         self.updateStatus()
-        self.history.insert(0, self.status["track"])
+        BohnifyQueue.Instance().history.insert(0, self.status["track"])
         self.updatehistory()
       except:
         print(t)
@@ -290,7 +289,7 @@ class Bohnify(object):
     self.clearPlaying()
     t["playing"] = True
     self.giveNewQueueSpot(t)
-    self.standardqueue.append(t)
+    BohnifyQueue.Instance().standardqueue.append(t)
     self.sortStandardQueue()
     self.updatequeue()
 
@@ -364,8 +363,8 @@ class Bohnify(object):
       if self.status["party"]:
         voteUp(track)
       else:
-        self.manualqueue.append(Transformer().track(self.session.get_link(track).as_track()))
-    self.updatequeue()
+        BohnifyQueue.Instance().manualqueue.append(Transformer().track(self.session.get_link(track).as_track()))
+        self.updatequeue()
 
 
   def removeFromManual(self,tracks):
@@ -373,9 +372,9 @@ class Bohnify(object):
       if self.status["party"]:
         voteDown(track)
       else:
-        t = self.getUriFromList(self.manualqueue, track)
+        t = self.getUriFromList(BohnifyQueue.Instance().manualqueue, track)
         if t != None:
-          self.manualqueue.remove(t)
+          BohnifyQueue.Instance().manualqueue.remove(t)
     self.updatequeue()
 
 
@@ -383,23 +382,27 @@ class Bohnify(object):
     if self.status["track"] == None:
       self.play(uri)
     else:
-      track = self.getUriFromList(self.votequeue, uri)
+      track = self.getUriFromList(BohnifyQueue.Instance().votequeue, uri)
       if track != None:
         track["vote"] = track["vote"] + 1
       else:
         track = Transformer().track(self.session.get_link(uri).as_track())
         track["vote"] = 1
-        self.votequeue.append(track)
+        BohnifyQueue.Instance().votequeue.append(track)
+      self.voteChange(track["uri"],track["vote"])
       self.updatequeue()
 
-
+  def voteChange(self, uri, vote):
+    list.sort(BohnifyQueue.Instance().votequeue, key=lambda track: (track["vote"]*-1))
+    cherrypy.engine.publish('websocket-broadcast', json.dumps({"votechange" : {"uri": uri, "vote":vote}}))
 
   def voteDown(self,uri):
-    track = self.getUriFromList(self.votequeue, uri)
+    track = self.getUriFromList(BohnifyQueue.Instance().votequeue, uri)
     if track != None:
       track["vote"] = track["vote"] - 1
+      self.voteChange(track["uri"],track["vote"])
       if track["vote"] == 0:
-        self.votequeue.remove(track)
+        BohnifyQueue.Instance().votequeue.remove(track)
     self.updatequeue()
 
   def startQueue(self, queue):
@@ -412,42 +415,42 @@ class Bohnify(object):
 
 
   def setStandard(self, tracks):
-    self.standardqueue = []
+    BohnifyQueue.Instance().standardqueue = []
     for index, track in enumerate(tracks):
       t = Transformer().track(self.session.get_link(track).as_track())
       t["orig"] = index
       t["shuffle"] = index
       t["shuffleround"] = 0
       t["addedbyrepeat"] = False
-      self.standardqueue.append(t)
+      BohnifyQueue.Instance().standardqueue.append(t)
     if self.status["random"]:
       self.shuffleStandardQueue()
     self.clearPlaying()
     self.updatequeue()
 
   def shuffleStandardQueue(self):
-    shuffle(self.standardqueue)
-    for index, track in enumerate(self.standardqueue):
+    shuffle(BohnifyQueue.Instance().standardqueue)
+    for index, track in enumerate(BohnifyQueue.Instance().standardqueue):
       track["shuffle"] = index
       track["shuffleround"] = 0
 
   def clearAddedByRepeat(self):
     def clear(track):
       track["addedbyrepeat"] = False
-    map(clear, self.standardqueue)
+    map(clear, BohnifyQueue.Instance().standardqueue)
 
   def sortStandardQueue(self):
     self.clearAddedByRepeat()
     if self.status["random"]:
-      list.sort(self.standardqueue, key=lambda track: (track["shuffleround"]*100000+track["shuffle"]))
+      list.sort(BohnifyQueue.Instance().standardqueue, key=lambda track: (track["shuffleround"]*100000+track["shuffle"]))
     else:
-      list.sort(self.standardqueue, key=lambda track:track["orig"])
+      list.sort(BohnifyQueue.Instance().standardqueue, key=lambda track:track["orig"])
 
   def removeFromStandard(self, tracks):
     for track in tracks:
-      t = self.getUriFromList(self.standardqueue, track)
+      t = self.getUriFromList(BohnifyQueue.Instance().standardqueue, track)
       if t != None:
-        self.standardqueue.remove(t)
+        BohnifyQueue.Instance().standardqueue.remove(t)
     self.updatequeue()
 
   def getUriFromList(self, list, uri):

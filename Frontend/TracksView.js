@@ -21,6 +21,7 @@ var TracksView = Backbone.View.extend({
     this.options.popularity = typeof options.popularity !== 'undefined' ? options.popularity : true;
     this.options.header = typeof options.header !== 'undefined' ? options.header : true;
     this.options.max = typeof options.max !== 'undefined' ? options.max : 100000;
+    this.options.vote = window.lateststatus && window.lateststatus.party;
   },
   render : function(){
       this.$el.addClass("tracksview");
@@ -29,6 +30,11 @@ var TracksView = Backbone.View.extend({
 
         var html ="<thead><tr><th class='trackindex'><span>#</span></th>";
         this.options.sizes.push({classname : "trackindex", size : "40px"});
+        if(this.options.vote){
+          html += "<th class='trackvote resizable-false'><span>V</span></th>";
+          this.options.sizes.push({classname : "trackvote", size : "40px"});
+        }
+
         if(this.options.image){
           html += "<th class='trackimage resizable-false'><span></span></th>";
           this.options.sizes.push({classname : "trackimage", size : "40px"});
@@ -67,7 +73,8 @@ var TracksView = Backbone.View.extend({
               duration:this.options.duration,
               image:this.options.image,
               extraclass:this.options.extraclass,
-              popularity:this.options.popularity})).render().$el);
+              popularity:this.options.popularity,
+              vote:this.options.vote})).render().$el);
           }
       }.bind(this));
       this.$el.append($.parseHTML("</tbody></table>"));
@@ -90,7 +97,7 @@ var TracksView = Backbone.View.extend({
     tracks = tracks.map(function(t){
       return t.uri;
     });
-    var ob = JSON.stringify({play : {track : track,queue:tracks}});
+    var ob = {play : {track : track,queue:tracks}};
     this.options.ws.send(ob);
   }, fixresize:function(ev){
     if(this.options.resize){

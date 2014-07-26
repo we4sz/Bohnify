@@ -87,7 +87,7 @@ var BrowseHeader = Backbone.View.extend({
     tracks = tracks.map(function(t){
       return t.uri;
     });
-    this.options.ws.send(JSON.stringify({startqueue : tracks}))
+    this.options.ws.send({startqueue : tracks})
   }, menu : function(ev){
     $("#contextmenu").remove();
     var x = ev.clientX;
@@ -105,7 +105,7 @@ var BrowseHeader = Backbone.View.extend({
       tracks = tracks.map(function(t){
         return t.uri;
       });
-      this.options.ws.send(JSON.stringify({standardqueue: tracks}));
+      this.options.ws.send({standardqueue: tracks});
       el.remove();
     }.bind(this));
 

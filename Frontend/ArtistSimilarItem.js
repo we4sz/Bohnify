@@ -26,6 +26,6 @@ var ArtistSimilarItem = Backbone.View.extend({
     }
   },search: function(){
     $("#result").trigger("update",{type: "load"});
-    this.options.ws.send(JSON.stringify({search : this.model.get("uri")}));
+    this.options.ws.send({search : this.model.get("uri")});
   }
 });

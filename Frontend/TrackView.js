@@ -8,7 +8,8 @@ var TrackView = Backbone.View.extend({
     'markcurrent' : 'currenttrack',
     'click .trackartist' : 'browseartist',
     'contextmenu' : 'opencontext',
-    'selecturi' : 'selecturi'
+    'selecturi' : 'selecturi',
+    'votechange' : 'votechange'
   },initialize : function (options) {
     this.options = options || {};
     this.options.title =  options.title;
@@ -18,6 +19,7 @@ var TrackView = Backbone.View.extend({
     this.options.extraclass =  options.extraclass;
     this.options.image =  options.image;
     this.options.popularity =  options.popularity;
+    this.options.vote =  options.vote;
   },tagName: "tr",
   render : function(){
     var artists = "";
@@ -28,6 +30,9 @@ var TrackView = Backbone.View.extend({
     });
     artists = artists.substring(0,artists.length-50);
     var html ="<td><div class='trackindex'>"+(this.options.index+1)+"</div></td>";
+    if(this.options.vote){
+      html += "<td><div class='resize trackvote'>"+this.model.get("vote")+"</div></td>";
+    }
     if(this.options.image){
       var image = imageUrl(this.model.get("album").get("cover"));
       html += "<td><div class='resize trackimage'><img src='"+image+"'/></td>";
@@ -59,13 +64,13 @@ var TrackView = Backbone.View.extend({
     takeInFocus($("#result"),this.$el,first);
   },browsealbum : function(){
     $("#result").trigger("update",{type: "load"});
-    var ob = JSON.stringify({search : this.model.get("album").get("uri")});
+    var ob = {search : this.model.get("album").get("uri")};
     this.options.ws.send(ob);
   },browseartist : function(e){
     $("#result").trigger("update",{type: "load"});
     var index = parseInt($(e.target).index()/2);
     var uri = this.model.get("artists").at(index).get("uri");
-    var ob = JSON.stringify({search : uri});
+    var ob = {search : uri};
     this.options.ws.send(ob);
   }, currenttrack : function(_,status){
     if(status.track){
@@ -73,6 +78,12 @@ var TrackView = Backbone.View.extend({
         this.$el.addClass("current");
       }else{
         this.$el.removeClass("current");
+      }
+    }
+  }, votechange : function(_,vote){
+    if(vote && vote.uri && vote.vote){
+      if(vote.uri == this.model.get("uri")){
+        this.$el.find(".trackvote").html(vote.vote);
       }
     }
   }, opencontext : function(ev){
@@ -88,7 +99,7 @@ var TrackView = Backbone.View.extend({
     var el = $($.parseHTML(html));
 
     el.find("#contextqueue").click(function(ev){
-      this.options.ws.send(JSON.stringify({manualqueue: [this.model.get("uri")]}));
+      this.options.ws.send({manualqueue: [this.model.get("uri")]});
       el.remove();
     }.bind(this));
 

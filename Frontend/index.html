@@ -65,11 +65,11 @@
             $("#contextmenu").remove();
           }
         }
-        var lateststatus;
         var host = window.document.location.host.replace(/:.*/, '');
         var ws = new WebSocket('ws://' + host + ':1650/ws');
+
+
         ws.onopen = function(){
-          console.log("open")
           var loginview = new LoginView({el : $("#loginview"), ws : ws});
           var resultview = new ResultView({el : $("#result"), ws : ws});
           var header = new HeaderView({el : $("#header"), ws : ws});
@@ -77,6 +77,38 @@
           var playlists = new PlaylistCollection();
           var leftmenu = new LeftMenu({model : playlists, el : $("#leftmenu"), ws : ws});
           var control = new ControllerView({el : $("#bottom"), ws : ws});
+          var lastcommand;
+          ws.origSend = ws.send;
+          ws.send = function(sendingobject, preventHistory){
+            if(sendingobject.search){
+              lastcommand = sendingobject;
+              if(!preventHistory){
+                $("#header").trigger("addbrowse",sendingobject)
+              }
+            }else if(sendingobject.gethistory){
+              lastcommand = sendingobject;
+              if(!preventHistory){
+                $("#header").trigger("addbrowse",sendingobject)
+              }
+            }else if(sendingobject.getqueue){
+              lastcommand = sendingobject;
+              if(!preventHistory){
+                $("#header").trigger("addbrowse",sendingobject)
+              }
+            }else if(sendingobject.getstarred){
+              lastcommand = sendingobject;
+              if(!preventHistory){
+                $("#header").trigger("addbrowse",sendingobject)
+              }
+            }else if(sendingobject.gettoplist){
+              lastcommand = sendingobject;
+              if(!preventHistory){
+                $("#header").trigger("addbrowse",sendingobject)
+              }
+            }
+            ws.origSend(JSON.stringify(sendingobject));
+          }
+
           ws.onmessage = function (msg) {
               var data = JSON.parse(msg.data);
               console.log(data);
@@ -90,23 +122,26 @@
                   loginview.render();
                 }
               }else if(data.search){
-                var todo = {type:data.search.type};
-                todo.search = data.search.search;
-                if(data.search.type == "search"){
-                    todo.data = toTrackCollection(data.search.data);
-                    $("#result").trigger("update",todo);
-                }else if(data.search.type == "album"){
-                    todo.data = toAlbum(data.search.data,true);
-                    $("#result").trigger("update",todo);
-                }else if(data.search.type == "artist"){
-                    todo.data = toArtist(data.search.data,true);
-                    $("#result").trigger("update",todo);
-                }else if(data.search.type == "track"){
-                    todo.data = toAlbum(data.search.data,true);
-                    $("#result").trigger("update",todo);
-                }else if(data.search.type == "playlist"){
-                    todo.data = toPlaylist(data.search.data,true);
-                    $("#result").trigger("update",todo);
+                if(lastcommand.search == data.search.search){
+                  var todo = {type:data.search.type};
+                  todo.search = data.search.search;
+                  if(data.search.type == "search"){
+                      todo.data = toTrackCollection(data.search.data);
+                      $("#result").trigger("update",todo);
+                  }else if(data.search.type == "album"){
+                      todo.data = toAlbum(data.search.data,true);
+                      $("#result").trigger("update",todo);
+                  }else if(data.search.type == "artist"){
+                      todo.data = toArtist(data.search.data,true);
+                      $("#result").trigger("update",todo);
+                  }else if(data.search.type == "track"){
+                      todo.data = toAlbum(data.search.data,true);
+                      $("#result").trigger("update",todo);
+                  }else if(data.search.type == "playlist"){
+                      todo.data = toPlaylist(data.search.data,true);
+                      $("#result").trigger("update",todo);
+                      $(".playlistitem").trigger("selectplaylist", data.search.search);
+                  }
                 }
               }else if(data.playlists){
                 var list = [];
@@ -115,21 +150,33 @@
                 });
                 playlists.reset(list);
               }else if(data.queues){
-                data.queues.forEach(function(queue){
-                  queue.queue = toTrackCollection(queue.queue);
-                });
-                $("#result").trigger("update",{type:"queue",data:data.queues});
+                if(lastcommand.getqueue){
+                  data.queues.forEach(function(queue){
+                    queue.queue = toTrackCollection(queue.queue);
+                  });
+                  $("#result").trigger("update",{type:"queue",data:data.queues});
+                  $("#leftmenu").trigger("forceselect", $("#queue"));
+                }
               }else if(data.history){
-                $("#result").trigger("update",{type:"history",data:toTrackCollection(data.history)});
+                if(lastcommand.gethistory){
+                  $("#result").trigger("update",{type:"history",data:toTrackCollection(data.history)});
+                  $("#leftmenu").trigger("forceselect", $("#history"));
+                }
               }else if(data.toplist){
-                $("#result").trigger("update",{type:"toplist",data:toTrackCollection(data.toplist)});
+                if(lastcommand.gettoplist){
+                  $("#result").trigger("update",{type:"toplist",data:toTrackCollection(data.toplist)});
+                  $("#leftmenu").trigger("forceselect", $("#toplist"));
+                }
               }else if(data.starred){
-                $("#result").trigger("update",{type:"starred",data:toPlaylist(data.starred)});
+                if(lastcommand.getstarred){
+                  $("#result").trigger("update",{type:"starred",data:toPlaylist(data.starred)});
+                  $("#leftmenu").trigger("forceselect", $("#starred"));
+                }
               }else if(data.status){
                 if(data.status.track){
                   data.status.track = toTrack(data.status.track);
                 }
-                lateststatus = data.status;
+                window.lateststatus = data.status;
                 $("#bottom").trigger('status',[data.status]);
                 $("#playtrack").trigger('status',[data.status]);
                 $("#result").trigger('status',[data.status]);
@@ -137,6 +184,8 @@
                 $(".queueview").trigger("update");
               }else if(data.historyupdated){
                 $(".historyview").trigger("update");
+              }else if(data.votechange){
+                $(".track").trigger('votechange',[data.votechange]);
               }
           };
         }

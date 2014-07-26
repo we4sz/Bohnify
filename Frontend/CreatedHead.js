@@ -26,7 +26,7 @@ var CreatedHead = Backbone.View.extend({
   }, browse : function(){
     if(this.options.uri){
       $("#result").trigger("update",{type: "load"});
-      this.options.ws.send(JSON.stringify({search : this.options.uri}));
+      this.options.ws.send({search : this.options.uri});
     }
   }
 });

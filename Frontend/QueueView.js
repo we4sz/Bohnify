@@ -39,7 +39,7 @@ var QueueView = Backbone.View.extend({
           this.options.selected = {hasclass : "votetrack", track : this.model[this.options.vote].queue.at(selectedTrack.index())};
         }
     }
-    this.options.ws.send(JSON.stringify({getqueue : true}));
+    this.options.ws.send({getqueue : true});
   }, newqueue : function (_,queue){
     this.model = queue;
     this.render();

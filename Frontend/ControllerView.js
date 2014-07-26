@@ -53,17 +53,17 @@ var ControllerView = Backbone.View.extend({
                 + ')'
                 );
   }, prev : function(){
-    this.options.ws.send(JSON.stringify({prev: true}));
+    this.options.ws.send({prev: true});
   },next : function(){
-    this.options.ws.send(JSON.stringify({next: true}));
+    this.options.ws.send({next: true});
   },pause : function(){
-    this.options.ws.send(JSON.stringify({pause: true}));
+    this.options.ws.send({pause: true});
   },shuffle : function(){
-    this.options.ws.send(JSON.stringify({random: true}));
+    this.options.ws.send({random: true});
   },repeat: function(){
-    this.options.ws.send(JSON.stringify({repeat: true}));
+    this.options.ws.send({repeat: true});
   },party: function(){
-    this.options.ws.send(JSON.stringify({party: true}));
+    this.options.ws.send({party: true});
   },update : function(_,status){
     $("#controllpause").removeClass("active disable").addClass(status.paused ? "disable" : "active");
     $("#controllrepeat").removeClass("active disable").addClass(status.repeat ? "active" : "disable");
@@ -98,17 +98,17 @@ var ControllerView = Backbone.View.extend({
   },disablepos : function(){
     this.options.position = false;
   },activatepos : function(){
-    this.options.ws.send(JSON.stringify({seek: $("#controllposition").val()}));
+    this.options.ws.send({seek: $("#controllposition").val()});
     this.options.position = true;
   },disablevol : function(){
     this.options.volume = false;
   },activatevol : function(){
-    this.options.ws.send(JSON.stringify({volume: $("#controllvolume").val()}));
+    this.options.ws.send({volume: $("#controllvolume").val()});
     this.options.volume = true;
   },increaseVolume : function(){
-    this.options.ws.send(JSON.stringify({increasevolume: true}));
+    this.options.ws.send({increasevolume: true});
   },decreaseVolume : function(){
-    this.options.ws.send(JSON.stringify({decreasevolume: true}));
+    this.options.ws.send({decreasevolume: true});
   },keyactions : function(ev){
     var searchfocus = $("#search").is(":focus");
     if(ev.keyCode == 32 && !searchfocus){

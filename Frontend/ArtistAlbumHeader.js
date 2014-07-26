@@ -26,13 +26,13 @@ var ArtistAlbumHeader = Backbone.View.extend({
     return this;
   },browse : function(){
     $("#result").trigger("update",{type: "load"});
-    this.options.ws.send(JSON.stringify({search : this.model.get("uri")}));
+    this.options.ws.send({search : this.model.get("uri")});
   }, play : function(){
     var tracks = this.model.get("tracks").toJSON();
     tracks = tracks.map(function(t){
       return t.uri;
     });
-    this.options.ws.send(JSON.stringify({startqueue : tracks}))
+    this.options.ws.send({startqueue : tracks})
   }, menu : function(ev){
     $("#contextmenu").remove();
     var x = ev.clientX;
@@ -50,7 +50,7 @@ var ArtistAlbumHeader = Backbone.View.extend({
       tracks = tracks.map(function(t){
         return t.uri;
       });
-      this.options.ws.send(JSON.stringify({standardqueue: tracks}));
+      this.options.ws.send({standardqueue: tracks});
       el.remove();
     }.bind(this));
 

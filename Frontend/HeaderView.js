@@ -1,13 +1,17 @@
 var HeaderView = Backbone.View.extend({
   events : {
     'search' : 'search',
-    'click #headback' : 'back',
-    'click #headfoward' : 'foward',
+    'click #headback.active' : 'back',
+    'click #headfoward.active' : 'foward',
     'focusin #search' : 'focus',
-    'keydown #search' : 'tabb'
+    'keydown #search' : 'tabb',
+    'addbrowse' : 'add'
   },initialize : function (options) {
     this.options = options || {};
     $(document).bind("keydown",this.takefocus.bind(this));
+    this.options.future = [];
+    this.options.history = [];
+    this.options.current;
   },
   render : function(){
       var html =  " <div id='headback' class='disable head'></div>"
@@ -20,12 +24,20 @@ var HeaderView = Backbone.View.extend({
     var val = this.$el.find("#search").val();
     if(val){
       $("#result").trigger("update",{type: "load"});
-      this.options.ws.send(JSON.stringify({search : val}));
+      this.options.ws.send({search : val});
     }
   },back : function(){
-
+    this.options.future.push(this.options.current);
+    this.options.current = this.options.history.pop();
+    $("#result").trigger("update",{type: "load"});
+    this.options.ws.send(this.options.current,true);
+    this.fixClasses();
   },foward : function(){
-
+    this.options.history.push(this.options.current);
+    this.options.current = this.options.future.pop();
+    $("#result").trigger("update",{type: "load"});
+    this.options.ws.send(this.options.current,true);
+    this.fixClasses();
   },focus : function(){
     passiveSelectAll();
     this.$el.find("#search").select();
@@ -62,5 +74,15 @@ var HeaderView = Backbone.View.extend({
       this.$el.find("#search").focus();
       return false;
     }
+  }, add: function(_, command){
+    if(this.options.current){
+      this.options.history.push(this.options.current);
+    }
+    this.options.current = command;
+    this.options.future = []
+    this.fixClasses();
+  }, fixClasses : function(){
+    this.$el.find("#headback").removeClass("disable").removeClass("active").addClass(this.options.history.length > 0 ? "active" : "disable");
+    this.$el.find("#headfoward").removeClass("active").removeClass("disable").addClass(this.options.future.length > 0 ? "active" : "disable");
   }
 });

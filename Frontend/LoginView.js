@@ -49,7 +49,7 @@ var LoginView = Backbone.View.extend({
   },login : function(){
     var un = this.$el.find("#loginusername").val();
     var pass = this.$el.find("#loginpassword").val();
-    this.options.ws.send(JSON.stringify({login : {username: un , password: pass}}));
+    this.options.ws.send({login : {username: un , password: pass}});
     return false;
   },keypress : function(){
     this.options.pass = this.$el.find("#loginpassword").val();

@@ -2,6 +2,7 @@
 from ws4py.websocket import WebSocket
 from ws4py.messaging import TextMessage
 from bohnify import Bohnify
+from bohnifyqueue import BohnifyQueue
 import json
 import spotify
 import time
@@ -47,16 +48,16 @@ class SocketHandler(WebSocket):
         elif "getqueue" in cmd:
           if Bohnify.Instance().status["party"]:
             self.send(json.dumps({"queues" : [
-              {"type" : "vote", "queue" : Bohnify.Instance().votequeue},
-              {"type" : "standard", "queue" : Bohnify.Instance().standardqueue}
+              {"type" : "vote", "queue" : BohnifyQueue.Instance().votequeue},
+              {"type" : "standard", "queue" : BohnifyQueue.Instance().standardqueue}
             ]}))
           else:
             self.send(json.dumps({"queues" : [
-              {"type" : "manual", "queue" : Bohnify.Instance().manualqueue},
-              {"type" : "standard", "queue" : Bohnify.Instance().standardqueue}
+              {"type" : "manual", "queue" : BohnifyQueue.Instance().manualqueue},
+              {"type" : "standard", "queue" : BohnifyQueue.Instance().standardqueue}
             ]}))
         elif "gethistory" in cmd:
-          self.send(json.dumps({"history":Bohnify.Instance().history}))
+          self.send(json.dumps({"history":BohnifyQueue.Instance().history}))
         elif "prev" in cmd:
           if not Bohnify.Instance().status["party"]:
             Bohnify.Instance().prev()

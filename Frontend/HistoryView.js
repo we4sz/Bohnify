@@ -15,7 +15,7 @@ var HistoryView = Backbone.View.extend({
   }, update : function(){
     var index = $(".track.selected").index();
     this.options.selected = {track : this.model.at(index), index : index};
-    this.options.ws.send(JSON.stringify({gethistory : true}));
+    this.options.ws.send({gethistory : true});
   }, newhistory : function(_,history){
     this.model = history;
     this.render();

@@ -9,7 +9,8 @@ var LeftMenu = Backbone.View.extend({
     'click #toplist' :  'gettoplist',
     'select #toplist' :  'gettoplist',
     'click #starred' :  'getstarred',
-    'select #starred' :  'getstarred'
+    'select #starred' :  'getstarred',
+    "forceselect" : "forceselect"
   },
   initialize: function(options) {
 			this.model.on('add', this.render, this);
@@ -93,25 +94,25 @@ var LeftMenu = Backbone.View.extend({
     this.select("#queue",true);
     if($(".queueview").length == 0 ){
       $("#result").trigger("update",{type: "load"});
-      this.options.ws.send(JSON.stringify({getqueue : true}));
+      this.options.ws.send({getqueue : true});
     }
   },gethistory : function(){
     this.select("#history");
     if($(".historyview").length == 0){
       $("#result").trigger("update",{type: "load"});
-      this.options.ws.send(JSON.stringify({gethistory : true}));
+      this.options.ws.send({gethistory : true});
     }
   },gettoplist : function(){
     this.select("#toplist",true);
     if($(".toplistview").length == 0){
       $("#result").trigger("update",{type: "load"});
-      this.options.ws.send(JSON.stringify({gettoplist : true}));
+      this.options.ws.send({gettoplist : true});
     }
   },getstarred : function(){
-    this.select("#starred",true);
+    this.select("#starred");
     if($(".starredview").length == 0){
       $("#result").trigger("update",{type: "load"});
-      this.options.ws.send(JSON.stringify({getstarred : true}));
+      this.options.ws.send({getstarred : true});
     }
   }, select : function(target,first){
     $(".playlistitem.selected").removeClass("selected");
@@ -119,5 +120,7 @@ var LeftMenu = Backbone.View.extend({
     passiveSelectAll($(target));
     takeInFocus($("#leftmenu"),$(target),first);
     $(target).addClass("selected");
+  }, forceselect : function(_,div){
+    this.select(div);
   }
 });
