@@ -27,16 +27,16 @@ var PlaylistItem = Backbone.View.extend({
       }.bind(this));
     }
     return this;
-  },show : function(_,notChange){
+  },show : function(){
+    var update = this.$el.hasClass("passiveselected") || this.$el.hasClass("selected");
     $("#contextmenu").remove();
     $(".playlistitem.selected").removeClass("selected");
     $(".playlistitem.passiveselected").removeClass("passiveselected");
     passiveSelectAll(this.$el);
     takeInFocus($("#leftmenu"),this.$el);
-    if(!notChange && this.$el.find(".playlistfolder").length == 0){
+    if(!update && this.$el.find(".playlistfolder").length == 0){
       $("#result").trigger("update",{type: "load"});
       this.options.ws.send({search : this.model.get("uri")});
-      //$("#result").trigger("update",[this.options.data]);
     }
     return false;
   },click : function(){

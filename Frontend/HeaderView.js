@@ -58,11 +58,11 @@ var HeaderView = Backbone.View.extend({
       }else{
         var playlist = $(".playlistitem.passiveselected");
         if(playlist.length > 0){
-          playlist.trigger("select",[true]);
+          playlist.trigger("select");
         }else{
           var playlists = $(".playlist");
           if(playlists.length > 0){
-            $(playlists.get(0)).trigger("select",[true]);
+            $(playlists.get(0)).trigger("select");
           }
         }
       }
