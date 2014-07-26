@@ -68,10 +68,17 @@ var HeaderView = Backbone.View.extend({
       }
       return false;
     }
+
   },takefocus : function(ev){
     if(ev.keyCode == 76 && ev.ctrlKey){
       ev.preventDefault();
       this.$el.find("#search").focus();
+      return false;
+    }else if(this.$el.find("#headback").hasClass("active") && ev.keyCode == 37 && ev.altKey){
+      this.back();
+      return false;
+    }else if(this.$el.find("#headfoward").hasClass("active") && ev.keyCode == 39 && ev.altKey){
+      this.foward();
       return false;
     }
   }, add: function(_, command){

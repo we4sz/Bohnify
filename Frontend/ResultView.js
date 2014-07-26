@@ -70,10 +70,10 @@ var ResultView = Backbone.View.extend({
       }else if(ev.keyCode == 13){
         $(".track.selected").trigger("playtrack");
         return false;
-      }else if(ev.keyCode == 9 || (ev.keyCode == 37 && !ev.ctrlKey)){
+      }else if(ev.keyCode == 9 || (ev.keyCode == 37 && !ev.ctrlKey && !ev.altKey)){
         ev.preventDefault();
         ev.fromResult=true;
-        if((ev.shiftKey && ev.keyCode == 9) || ev.keyCode == 37){
+        if((ev.shiftKey && ev.keyCode == 9) || (ev.keyCode == 37 && !ev.altKey)){
           var playlist = $(".playlistitem.passiveselected");
           if(playlist.length > 0){
             playlist.trigger("select");
