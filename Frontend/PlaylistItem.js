@@ -7,7 +7,8 @@ var PlaylistItem = Backbone.View.extend({
     'play' : 'play',
     'dblclick .playlist' : 'play',
     'contextmenu .playlist' : 'opencontext',
-    "selectplaylist" : "forceselect"
+    "selectplaylist" : "forceselect",
+    "passiveselect" : "passiveselect"
   },initialize : function (options) {
     this.options = options || {};
     this.options.data = {type: "playlist", data:this.model};
@@ -113,6 +114,15 @@ var PlaylistItem = Backbone.View.extend({
       passiveSelectAll(this.$el);
       takeInFocus($("#leftmenu"),this.$el);
     }
+    return false;
+  }, passiveselect : function(_,passive){
+      $(".playlistitem.selected").removeClass("selected");
+      $(".playlistitem.passiveselected").removeClass("passiveselected");
+      if(passive){
+        this.$el.addClass("passiveselected");
+      }else{
+        passiveSelectAll(this.$el);
+      }
     return false;
   }
 });

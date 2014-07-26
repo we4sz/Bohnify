@@ -81,6 +81,9 @@ class Bohnify(object):
     Cache.Instance().removePlaylist(pl.link.uri)
     cherrypy.engine.publish('websocket-broadcast', json.dumps({"playlistchanged" : pl.link.uri}))
 
+  def containerChanged(self, con, *args):
+    self.getPlaylists();
+
   def increaseVolume(self):
     v = (self.volumeController.getVolume() + 10)
     self.volumeController.setVolume(v if v <= 100 else 100)
@@ -314,7 +317,7 @@ class Bohnify(object):
 
   def getPlaylists(self):
     container = self.session.playlist_container
-    self.cache_playlists = Transformer().playlistContainer(container,0, self.playlistChanged)
+    self.cache_playlists = Transformer().playlistContainer(container,0, self.playlistChanged,self.containerChanged)
     cherrypy.engine.publish('websocket-broadcast', json.dumps({"playlists" : self.cache_playlists}))
 
   def browseTrack(self, link,  ws):

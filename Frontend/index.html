@@ -74,8 +74,7 @@
           var resultview = new ResultView({el : $("#result"), ws : ws});
           var header = new HeaderView({el : $("#header"), ws : ws});
           var current = new CurrentTrackView({el : $("#playtrack"), ws : ws});
-          var playlists = new PlaylistCollection();
-          var leftmenu = new LeftMenu({model : playlists, el : $("#leftmenu"), ws : ws});
+          var leftmenu = new LeftMenu({el : $("#leftmenu"), ws : ws});
           var control = new ControllerView({el : $("#bottom"), ws : ws});
           var lastcommand;
           ws.origSend = ws.send;
@@ -156,11 +155,11 @@
                   }
                 }
               }else if(data.playlists){
-                var list = [];
+                var coll  = new PlaylistCollection();
                 data.playlists.forEach(function(playlist){
-                  list.push(toPlaylist(playlist));
+                  coll.add(toPlaylist(playlist));
                 });
-                playlists.reset(list);
+                $("#leftmenu").trigger("newcon",coll);
               }else if(data.queues){
                 if(lastcommand.getqueue){
                   data.queues.forEach(function(queue){

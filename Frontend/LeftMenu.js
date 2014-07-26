@@ -10,18 +10,17 @@ var LeftMenu = Backbone.View.extend({
     'select #toplist' :  'gettoplist',
     'click #starred' :  'getstarred',
     'select #starred' :  'getstarred',
-    "forceselect" : "forceselect"
+    "forceselect" : "forceselect",
+    "newcon" : "newcon"
   },
   initialize: function(options) {
-			this.model.on('add', this.render, this);
-      this.model.on('remove', this.render, this);
-      this.model.on('reset', this.render, this);
       this.options = options || {};
       this.options.un = "";
       this.options.pass = "";
       $(document).bind("keydown",this.keyevent.bind(this));
 	},
   render: function() {
+      this.$el.html("")
       this.$el.append((new ArtistViewSeparator({model : "MAIN"})).render().$el);
       var html =  "<div class='playlistitem menuitem' id='toplist'><div class='playlistname'>Toplist</div></div>" +
                   "<div class='playlistitem menuitem' id='queue'><div class='playlistname'>Queue</div></div>" +
@@ -114,13 +113,30 @@ var LeftMenu = Backbone.View.extend({
       $("#result").trigger("update",{type: "load"});
       this.options.ws.send({getstarred : true});
     }
-  }, select : function(target,first){
+  }, select : function(target,first,passive){
     $(".playlistitem.selected").removeClass("selected");
     $(".playlistitem.passiveselected").removeClass("passiveselected");
     passiveSelectAll($(target));
     takeInFocus($("#leftmenu"),$(target),first);
-    $(target).addClass("selected");
+    $(target).removeClass("selected").addClass(passive ? "passiveselected" : "selected");
   }, forceselect : function(_,div){
     this.select(div);
+  }, newcon : function(_,pl){
+    var selected = $(".playlistitem.selected").index();
+    selected = selected - (selected > 5 ? 2 : 1);
+    var passive = $(".playlistitem.passiveselected").index();
+    passive = passive - (passive > 5 ? 2 : 1);
+    this.model = pl;
+    console.log(selected);
+    console.log(passive);
+    this.render();
+    if(selected >= 0 && selected < this.model.length){
+      this.select($(this.$el.find(".playlistitem").get(selected)),selected == 0);
+    }else if(passive >= 0 && passive < this.model.length){
+      this.select($(this.$el.find(".playlistitem").get(passive)),passive == 0,true);
+    }else{
+      this.select("#toplist",true, passive >= 0);
+    }
+
   }
 });

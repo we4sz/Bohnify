@@ -4,7 +4,7 @@ from bohnifyqueue import BohnifyQueue
 
 class Transformer(object):
 
-  def playlistContainer(self,con, index=0, listener = None):
+  def playlistContainer(self, con, index=0, listener = None, conlistener = None):
     con.load()
     arr = []
     i = index
@@ -20,13 +20,19 @@ class Transformer(object):
         else:
           return {"playlists" : arr, "index" : i}
       i = i+1
+
+    if conlistener != None and con.num_listeners(spotify.PlaylistContainerEvent.PLAYLIST_ADDED) == 0:
+      con.on(spotify.PlaylistContainerEvent.PLAYLIST_ADDED ,conlistener)
+      con.on(spotify.PlaylistContainerEvent.PLAYLIST_REMOVED ,conlistener)
+      con.on(spotify.PlaylistContainerEvent.PLAYLIST_MOVED ,conlistener)
+
     return arr
 
   def author(self,user):
+    user.load()
     u = Cache.Instance().getUser(user.link.uri)
     if u != None:
       return u
-    user.load()
     u = {
       "nick" : user.display_name,
       "name" :user.canonical_name,
@@ -36,10 +42,10 @@ class Transformer(object):
     return u
 
   def user(self, user):
+    user.load()
     u = Cache.Instance().getUser(user.link.uri, True)
     if u != None:
       return u
-    user.load()
     starred = self.playlist(user.starred)
     starred["name"] =  "Starred"
     playlists = self.playlistContainer(user.published_playlists)
@@ -53,11 +59,11 @@ class Transformer(object):
     return u
 
   def playlist(self,pl, tracks = True, listener=None):
+    pl.load()
     playlist = Cache.Instance().getPlaylist(pl.link.uri)
     if playlist != None:
       return playlist
     else:
-      pl.load()
       playlist = {
         "name" : pl.name,
         "uri" : pl.link.uri,
@@ -69,7 +75,7 @@ class Transformer(object):
         playlist["tracks"] =  self.tracks(pl.tracks)
         Cache.Instance().addPlaylist(playlist)
 
-      if listener != None:
+      if listener != None and pl.num_listeners(spotify.PlaylistEvent.TRACKS_ADDED) == 0:
         pl.on(spotify.PlaylistEvent.TRACKS_ADDED, listener)
         pl.on(spotify.PlaylistEvent.TRACKS_REMOVED, listener)
         pl.on(spotify.PlaylistEvent.TRACKS_MOVED, listener)
@@ -91,6 +97,7 @@ class Transformer(object):
 
 
   def track(self,track):
+    track.load()
     t = Cache.Instance().getTrack(track.link.uri)
     if t != None:
       BohnifyQueue.Instance().setVoteToTrack(t)
@@ -101,7 +108,6 @@ class Transformer(object):
         BohnifyQueue.Instance().setVoteToTrack(t)
         return t
       else:
-        track.load()
         if track.availability == spotify.TrackAvailability.AVAILABLE:
           t = {
             "title" : track.name,
@@ -118,11 +124,11 @@ class Transformer(object):
           return None
 
   def album(self,album):
+    album.load()
     a = Cache.Instance().getAlbum(album.link.uri)
     if a != None:
       return a
     else:
-      album.load()
       cover = None
       try:
         cover = album.cover_link().uri
@@ -177,11 +183,11 @@ class Transformer(object):
     return a
 
   def artist(self, artist):
+    artist.load()
     a = Cache.Instance().getArtist(artist.link.uri)
     if a != None:
       return a
     else:
-      artist.load()
       por = None
       try:
         por = artist.portrait_link().uri
