@@ -6,6 +6,7 @@ var ControllerView = Backbone.View.extend({
     'click #controllnext' : 'next',
     'click #controllshuffle' : 'shuffle',
     'click #controllrepeat' : 'repeat',
+    'click #controllparty' : 'party',
     'input #controllposition' : 'position',
     'status' : 'update',
     'mousedown #controllposition' : 'disablepos',
@@ -27,9 +28,9 @@ var ControllerView = Backbone.View.extend({
                   + "<div id='controlltime' class='controller'>00:00</div>"
                   + "<input id='controllposition' min='0' max='100' value='0' type='range' class='controller'/>"
                   + "<div id='controllduration' class='controller'>00:00</div>"
+                  + "<div id='controllparty' class='disable controller'></div>"
                   + "<div id='controllshuffle' class='disable controller'></div>"
-                  + "<div id='controllrepeat' class='disable controller'></div>"
-                  + "<div id='controllparty' class='disable controller'></div>";
+                  + "<div id='controllrepeat' class='disable controller'></div>";
       this.$el.html(html);
       return this;
   },volume : function(){
@@ -61,6 +62,8 @@ var ControllerView = Backbone.View.extend({
     this.options.ws.send(JSON.stringify({random: true}));
   },repeat: function(){
     this.options.ws.send(JSON.stringify({repeat: true}));
+  },party: function(){
+    this.options.ws.send(JSON.stringify({party: true}));
   },update : function(_,status){
     $("#controllpause").removeClass("active disable").addClass(status.paused ? "disable" : "active");
     $("#controllrepeat").removeClass("active disable").addClass(status.repeat ? "active" : "disable");
@@ -102,6 +105,10 @@ var ControllerView = Backbone.View.extend({
   },activatevol : function(){
     this.options.ws.send(JSON.stringify({volume: $("#controllvolume").val()}));
     this.options.volume = true;
+  },increaseVolume : function(){
+    this.options.ws.send(JSON.stringify({increasevolume: true}));
+  },decreaseVolume : function(){
+    this.options.ws.send(JSON.stringify({decreasevolume: true}));
   },keyactions : function(ev){
     var searchfocus = $("#search").is(":focus");
     if(ev.keyCode == 32 && !searchfocus){
@@ -121,6 +128,14 @@ var ControllerView = Backbone.View.extend({
     }else if(ev.keyCode == 39 && ev.ctrlKey){
       ev.preventDefault();
       this.next();
+      return false;
+    }else if(ev.keyCode == 38 && ev.ctrlKey){
+      ev.preventDefault();
+      this.increaseVolume();
+      return false;
+    }else if(ev.keyCode == 40 && ev.ctrlKey){
+      ev.preventDefault();
+      this.decreaseVolume();
       return false;
     }
   }

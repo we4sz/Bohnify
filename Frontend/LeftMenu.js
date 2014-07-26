@@ -34,7 +34,7 @@ var LeftMenu = Backbone.View.extend({
 	    return this;
 	},keyevent : function(ev){
     if(this.$el.find(".selected").length > 0){
-      if(ev.keyCode == 40 || ev.keyCode == 38){
+      if((ev.keyCode == 40 || ev.keyCode == 38) && !ev.ctrlKey){
         ev.preventDefault();
         if(ev.keyCode == 40 || ev.keyCode == 38){
           var parent =this.$el.find(".selected");

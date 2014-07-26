@@ -64,9 +64,6 @@ class SocketHandler(WebSocket):
           if not Bohnify.Instance().status["party"]:
             Bohnify.Instance().next()
         elif "play" in cmd:
-          if Bohnify.Instance().status["party"]:
-            Bohnify.Instance().voteUp(cmd["play"]["track"])
-          else:
             Bohnify.Instance().playFromUri(cmd["play"]["track"],cmd["play"]["queue"])
         elif "party" in cmd:
           Bohnify.Instance().toggleParty()
@@ -90,6 +87,10 @@ class SocketHandler(WebSocket):
           Bohnify.Instance().volume(cmd["volume"])
         elif "pause" in cmd:
           Bohnify.Instance().togglePause()
+        elif "increasevolume" in cmd:
+          Bohnify.Instance().increaseVolume()
+        elif "decreasevolume" in cmd:
+          Bohnify.Instance().decreaseVolume()
         else:
           print("else")
 

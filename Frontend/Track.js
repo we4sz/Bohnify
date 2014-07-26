@@ -6,7 +6,8 @@ defaults : function(){
       duration : 0,
       popularity : 0,
       title : "",
-      uri : ""
+      uri : "",
+      vote : 0
     }
   }
 });

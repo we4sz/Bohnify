@@ -78,7 +78,6 @@
           var leftmenu = new LeftMenu({model : playlists, el : $("#leftmenu"), ws : ws});
           var control = new ControllerView({el : $("#bottom"), ws : ws});
           ws.onmessage = function (msg) {
-              console.log(msg);
               var data = JSON.parse(msg.data);
               console.log(data);
               if(data.loginstatus){
@@ -191,6 +190,7 @@
         t.set('popularity',track.popularity);
         t.set('duration',track.duration);
         t.set('rate',track.rate ? track.rate : 0);
+        t.set('vote',track.vote ? track.vote : 0);
         return t;
       }
 

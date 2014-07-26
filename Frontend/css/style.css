@@ -789,6 +789,22 @@ min-height: 30px;
   color: #eaf2f1;
 }
 
+
+#controllparty{
+  right: 80px;
+  width: 14px;
+  height: 14px;
+  top: 15px;
+}
+
+#controllparty.disable{
+  background-image: url("/images/shuffle_dis.png");
+}
+
+#controllparty.active{
+  background-image: url("/images/shuffle_act.png");
+}
+
 #controllshuffle{
   right: 51px;
   width: 14px;
