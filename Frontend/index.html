@@ -76,11 +76,13 @@
           var current = new CurrentTrackView({el : $("#playtrack"), ws : ws});
           var leftmenu = new LeftMenu({el : $("#leftmenu"), ws : ws});
           var control = new ControllerView({el : $("#bottom"), ws : ws});
-          var lastcommand;
+          var lastcommand = {};
           ws.origSend = ws.send;
-          ws.send = function(sendingobject, preventHistory){
+          ws.send = function(sendingobject, preventHistory, preventLastCommand){
             if(sendingobject.search){
-              lastcommand = sendingobject;
+              if(!preventLastCommand){
+                lastcommand = sendingobject;
+              }
               if(!preventHistory){
                 $("#header").trigger("addbrowse",sendingobject)
               }
@@ -129,7 +131,7 @@
                   loginview.render();
                 }
               }else if(data.search){
-                if(lastcommand.search == data.search.search){
+                if(lastcommand.search && lastcommand.search == data.search.search){
                   var todo = {type:data.search.type};
                   todo.search = data.search.search;
                   if(data.search.type == "search"){
@@ -145,14 +147,20 @@
                       todo.data = toAlbum(data.search.data,true);
                       $("#result").trigger("update",todo);
                   }else if(data.search.type == "playlist"){
+                    var pl = toPlaylist(data.search.data,true);
                     if($(".playlistview").length == 1){
-                      $(".playlistview").trigger("newplaylist", toPlaylist(data.search.data,true))
+                      $(".playlistview").trigger("newplaylist", pl)
                     }else{
-                      todo.data = toPlaylist(data.search.data,true);
+                      todo.data = pl;
                       $("#result").trigger("update",todo);
                       $(".playlistitem").trigger("selectplaylist", data.search.search);
                     }
                   }
+                }
+
+                if(data.search.type == "playlist"){
+                  var pl = toPlaylist(data.search.data,true);
+                  $(".playlistitem").trigger('update',pl);
                 }
               }else if(data.playlists){
                 var coll  = new PlaylistCollection();
@@ -199,7 +207,11 @@
               }else if(data.votechange){
                 $(".track").trigger('votechange',data.votechange);
               }else if(data.playlistchanged){
-                $(".playlistview").trigger('update',data.playlistchanged);
+                if($(".playlistview").length > 0){
+                  $(".playlistview").trigger('update',data.playlistchanged);
+                }else{
+                  ws.send({search : data.playlistchanged}, true, true);
+                }
               }
           };
         }

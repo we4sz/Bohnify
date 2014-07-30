@@ -47,7 +47,7 @@ class Bohnify(object):
     self.session.on(spotify.SessionEvent.END_OF_TRACK, self.on_end_of_track)
     self.session.preferred_bitrate(spotify.Bitrate.BITRATE_160k)
     try:
-      self.audio_driver = spotify.AlsaSink(self.session)
+      self.audio_driver = spotify.PortAudioSink(self.session)
     except ImportError:
       self.logger.warning('No audio sink found; audio playback unavailable.')
 
@@ -77,8 +77,26 @@ class Bohnify(object):
     self.updateStatus()
     self.next()
 
+  def updatePlaylist(self,con,playlist):
+    for pl in con:
+      if "playlists" in pl:
+        if self.updatePlaylist(pl["playlists"],playlist):
+          break
+      elif pl["uri"] == playlist.link.uri:
+        new_pl = Transformer().playlist(playlist)
+        pl["name"] = new_pl["name"]
+        pl["author"] = new_pl["author"]
+        pl["collaborative"] = new_pl["collaborative"]
+        pl["description"] = new_pl["description"]
+        pl["tracks"] = new_pl["tracks"]
+        return True
+    return False
+
+
   def playlistChanged(self, pl, *args):
     Cache.Instance().removePlaylist(pl.link.uri)
+    if self.cache_playlists != None:
+      self.updatePlaylist(self.cache_playlists,pl)
     cherrypy.engine.publish('websocket-broadcast', json.dumps({"playlistchanged" : pl.link.uri}))
 
   def containerChanged(self, con, *args):

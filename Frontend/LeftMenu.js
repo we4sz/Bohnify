@@ -127,8 +127,6 @@ var LeftMenu = Backbone.View.extend({
     var passive = $(".playlistitem.passiveselected").index();
     passive = passive - (passive > 5 ? 2 : 1);
     this.model = pl;
-    console.log(selected);
-    console.log(passive);
     this.render();
     if(selected >= 0 && selected < this.model.length){
       this.select($(this.$el.find(".playlistitem").get(selected)),selected == 0);

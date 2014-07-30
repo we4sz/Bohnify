@@ -26,9 +26,10 @@ var PlaylistView = Backbone.View.extend({
   },newplaylist: function(_,pl){
     this.model = pl;
     this.render();
-    if(this.options.selected && this.options.selected >= 0 && this.options.selected < this.model.get("tracks").length){
+
+    if(this.options.selected >= 0 && this.options.selected < this.model.get("tracks").length){
       $(this.$el.find(".track").get(this.options.selected)).trigger("select");
-    }else if(this.options.passive && this.options.passive >= 0 && this.options.passive < this.model.get("tracks").length){
+    }else if(this.options.passive >= 0 && this.options.passive < this.model.get("tracks").length){
       $(this.$el.find(".track").get(this.options.passive)).trigger("passiveselect");
     }else{
       this.$el.find(".tracksview").trigger("passiveselectfirst");

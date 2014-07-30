@@ -11,10 +11,11 @@ class Transformer(object):
     while i < len(con):
       playlist = con[i]
       if isinstance(playlist, spotify.Playlist):
-        arr.append(self.playlist(playlist, False, listener))
+        arr.append(self.playlist(playlist, True, listener))
       elif isinstance(playlist, spotify.PlaylistFolder):
         if playlist.type == spotify.PlaylistType.START_FOLDER:
           pls = self.playlistContainer(con,(i+1),listener)
+          print playlist.name
           arr.append({"name" : playlist.name, "playlists" : pls["playlists"]})
           i = pls["index"]
         else:

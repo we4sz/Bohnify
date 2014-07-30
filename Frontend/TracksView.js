@@ -194,7 +194,6 @@ var TracksView = Backbone.View.extend({
     this.render();
     if(selectIndex >= 0){
       $(this.$el.find(".track").get(selectIndex)).trigger("select");
-//      console.log(this.model.at(selectIndex).get("uri"))
     }
   }, passiveselectfirst: function(){
     $(this.$el.find(".track").get(0)).addClass("passiveselected");

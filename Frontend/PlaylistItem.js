@@ -8,13 +8,15 @@ var PlaylistItem = Backbone.View.extend({
     'dblclick .playlist' : 'play',
     'contextmenu .playlist' : 'opencontext',
     "selectplaylist" : "forceselect",
-    "passiveselect" : "passiveselect"
+    "passiveselect" : "passiveselect",
+    "update" : "update"
   },initialize : function (options) {
     this.options = options || {};
     this.options.data = {type: "playlist", data:this.model};
     this.options.isbig = false;
   },
   render : function(){
+    this.$el.html("");
     this.$el.addClass("playlistitem");
     var folderclass = this.model.get("playlists") ? (this.options.isbig ? "playlistfolder" : "playlistfolder") : "playlist";
     var imageclass = this.model.get("playlists") ? (this.options.isbig ? "folderminimize" : "foldermaximize") : "playlistnote";
@@ -36,8 +38,9 @@ var PlaylistItem = Backbone.View.extend({
     passiveSelectAll(this.$el);
     takeInFocus($("#leftmenu"),this.$el);
     if(!update && this.$el.find(".playlistfolder").length == 0){
-      $("#result").trigger("update",{type: "load"});
-      this.options.ws.send({search : this.model.get("uri")});
+      $("#result").trigger("update",{type: "playlist",data: this.model});
+      //this.options.ws.send({search : this.model.get("uri")});
+
     }
     return false;
   },click : function(){
@@ -63,6 +66,7 @@ var PlaylistItem = Backbone.View.extend({
       return false;
     }
   }, opencontext : function(ev){
+    this.show();
     $("#contextmenu").remove();
     var x = ev.clientX;
     var y = ev.clientY;
@@ -124,5 +128,10 @@ var PlaylistItem = Backbone.View.extend({
         passiveSelectAll(this.$el);
       }
     return false;
+  }, update : function(_,pl){
+    if(pl.get("uri") == this.model.get("uri")){
+      this.model = pl;
+      this.render();
+    }
   }
 });

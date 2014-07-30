@@ -93,6 +93,7 @@ var TrackView = Backbone.View.extend({
       }
     }
   }, opencontext : function(ev){
+    this.select();
     $("#contextmenu").remove();
     var x = ev.clientX;
     var y = ev.clientY;
