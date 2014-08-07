@@ -84,7 +84,7 @@ class Bohnify(object):
           break
       elif pl["uri"] == playlist.link.uri:
         new_pl = Transformer().playlist(playlist)
-        pl["name"] = new_pl["name"]
+        pl["name"] = "Starred" if "starred" in new_pl["uri"] else new_pl["name"]
         pl["author"] = new_pl["author"]
         pl["collaborative"] = new_pl["collaborative"]
         pl["description"] = new_pl["description"]
@@ -97,7 +97,9 @@ class Bohnify(object):
     Cache.Instance().removePlaylist(pl.link.uri)
     if self.cache_playlists != None:
       self.updatePlaylist(self.cache_playlists,pl)
-    cherrypy.engine.publish('websocket-broadcast', json.dumps({"playlistchanged" : pl.link.uri}))
+    playlist = Transformer().playlist(pl, True, self.playlistChanged)
+    playlist["name"] = "Starred" if "starred" in playlist["uri"] else playlist["name"]
+    cherrypy.engine.publish('websocket-broadcast', json.dumps({"playlistchanged" : playlist}))
 
   def containerChanged(self, con, *args):
     self.getPlaylists();
@@ -335,7 +337,7 @@ class Bohnify(object):
 
   def getPlaylists(self):
     container = self.session.playlist_container
-    self.cache_playlists = Transformer().playlistContainer(container,0, self.playlistChanged,self.containerChanged)
+    self.cache_playlists = Transformer().playlistContainer(container,0, self.playlistChanged,self.containerChanged, self.session.get_starred())
     cherrypy.engine.publish('websocket-broadcast', json.dumps({"playlists" : self.cache_playlists}))
 
   def browseTrack(self, link,  ws):
@@ -375,10 +377,10 @@ class Bohnify(object):
     tracks = Transformer().tracks(toplist.tracks)
     ws.send(json.dumps({"toplist" : tracks }))
 
-  def starred(self,ws):
-    pl = Transformer().playlist(self.session.get_starred())
-    pl["name"] = "Starred"
-    ws.send(json.dumps({"starred" : pl }))
+#  def starred(self,ws):
+#    pl = Transformer().playlist(self.session.get_starred())
+#    pl["name"] = "Starred"
+#    ws.send(json.dumps({"starred" : pl }))
 
   def addToManual(self, tracks):
     for track in tracks:

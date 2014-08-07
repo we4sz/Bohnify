@@ -31,8 +31,6 @@ var ResultView = Backbone.View.extend({
           }
         }else if(this.options.data.type == "toplist"){
           this.$el.html((new ToplistView({model : this.options.data.data, ws:this.options.ws})).render().$el);
-        }else if(this.options.data.type == "starred"){
-          this.$el.html((new StarredView({model : this.options.data.data, ws:this.options.ws})).render().$el);
         }else if(this.options.data.type == "history"){
           if($(".historyview").length == 0){
             this.$el.html((new HistoryView({model : this.options.data.data, ws:this.options.ws})).render().$el);

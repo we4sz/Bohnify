@@ -4,10 +4,15 @@ from bohnifyqueue import BohnifyQueue
 
 class Transformer(object):
 
-  def playlistContainer(self, con, index=0, listener = None, conlistener = None):
+  def playlistContainer(self, con, index=0, listener = None, conlistener = None, starred = None):
     con.load()
     arr = []
     i = index
+    if starred != None:
+      pl = self.playlist(starred, True, listener)
+      pl["name"] = "Starred"
+      arr.append(pl)
+
     while i < len(con):
       playlist = con[i]
       if isinstance(playlist, spotify.Playlist):

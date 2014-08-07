@@ -9,7 +9,8 @@ var PlaylistItem = Backbone.View.extend({
     'contextmenu .playlist' : 'opencontext',
     "selectplaylist" : "forceselect",
     "passiveselect" : "passiveselect",
-    "update" : "update"
+    "update" : "update",
+    "selectfromuri" : "selectfromuri"
   },initialize : function (options) {
     this.options = options || {};
     this.options.data = {type: "playlist", data:this.model};
@@ -30,7 +31,7 @@ var PlaylistItem = Backbone.View.extend({
       }.bind(this));
     }
     return this;
-  },show : function(){
+  },show : function(ev){
     var update = this.$el.hasClass("passiveselected") || this.$el.hasClass("selected");
     $("#contextmenu").remove();
     $(".playlistitem.selected").removeClass("selected");
@@ -39,8 +40,7 @@ var PlaylistItem = Backbone.View.extend({
     takeInFocus($("#leftmenu"),this.$el);
     if(!update && this.$el.find(".playlistfolder").length == 0){
       $("#result").trigger("update",{type: "playlist",data: this.model});
-      //this.options.ws.send({search : this.model.get("uri")});
-
+      $("#header").trigger("addbrowse",{type: "playlist",data: this.model})
     }
     return false;
   },click : function(){
@@ -132,6 +132,19 @@ var PlaylistItem = Backbone.View.extend({
     if(pl.get("uri") == this.model.get("uri")){
       this.model = pl;
       this.render();
+    }
+  }, selectfromuri : function(_,pl){
+    if(pl.get("uri") == this.model.get("uri")){
+      var update = this.$el.hasClass("passiveselected") || this.$el.hasClass("selected");
+      $("#contextmenu").remove();
+      $(".playlistitem.selected").removeClass("selected");
+      $(".playlistitem.passiveselected").removeClass("passiveselected");
+      passiveSelectAll(this.$el);
+      takeInFocus($("#leftmenu"),this.$el);
+      if(!update && this.$el.find(".playlistfolder").length == 0){
+        $("#result").trigger("update",{type: "playlist",data: this.model});
+      }
+      return false;
     }
   }
 });

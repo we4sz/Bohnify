@@ -29,14 +29,22 @@ var HeaderView = Backbone.View.extend({
   },back : function(){
     this.options.future.push(this.options.current);
     this.options.current = this.options.history.pop();
-    $("#result").trigger("update",{type: "load"});
-    this.options.ws.send(this.options.current,true);
+    if(this.options.current.type === "playlist"){
+      $(".playlistitem").trigger("selectfromuri",this.options.current.data);
+    }else{
+      $("#result").trigger("update",{type: "load"});
+      this.options.ws.send(this.options.current,true);
+    }
     this.fixClasses();
   },foward : function(){
     this.options.history.push(this.options.current);
     this.options.current = this.options.future.pop();
-    $("#result").trigger("update",{type: "load"});
-    this.options.ws.send(this.options.current,true);
+    if(this.options.current.type === "playlist"){
+      $(".playlistitem").trigger("selectfromuri",this.options.current.data);
+    }else{
+      $("#result").trigger("update",{type: "load"});
+      this.options.ws.send(this.options.current,true);
+    }
     this.fixClasses();
   },focus : function(){
     passiveSelectAll();

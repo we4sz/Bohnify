@@ -43,8 +43,6 @@ class SocketHandler(WebSocket):
             Bohnify.Instance().search(cmd["search"],self)
         elif "gettoplist" in cmd:
           Bohnify.Instance().toplist(self)
-        elif "getstarred" in cmd:
-          Bohnify.Instance().starred(self)
         elif "getqueue" in cmd:
           if Bohnify.Instance().status["party"]:
             self.send(json.dumps({"queues" : [
