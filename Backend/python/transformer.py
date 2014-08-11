@@ -148,17 +148,17 @@ class Transformer(object):
       Cache.Instance().addAlbum(a)
       return a
 
-  def albums_b(self,albums, callback):
+  def albums_b(self,albums, callback, artist):
     arr = []
     def albumLoaded(album):
       arr.append(album)
       if(len(arr) == len(albums)):
         callback(arr)
     for album in albums:
-      self.album_b(album,albumLoaded)
+      self.album_b(album,albumLoaded,artist)
 
 
-  def album_b(self,album, callback):
+  def album_b(self,album, callback, artist = None):
     a = Cache.Instance().getAlbum(album.link.uri, True)
     if a != None:
       callback(a)
@@ -174,11 +174,14 @@ class Transformer(object):
           "title" : album.album.name,
           "cover" : cover,
           "type" : album.album.type,
-          "tracks" : self.tracks(album.tracks),
           "artists" : [self.artist(album.artist)],
           "year" : album.album.year
         }
-        Cache.Instance().addAlbum(a, True)
+        if artist == None or artist == album.artist.link.uri:
+          a["tracks"] = self.tracks(album.tracks)
+          Cache.Instance().addAlbum(a, True)
+        else:
+          a["type"] = 3
         callback(a)
       album = album.browse(albumBrowsed)
 
@@ -230,5 +233,5 @@ class Transformer(object):
           a["albums"] = albums
           Cache.Instance().addArtist(a, True)
           callback(a)
-        self.albums_b(artist.albums,albumsBrowsed)
+        self.albums_b(artist.albums,albumsBrowsed,artist.artist.link.uri)
       artist = artist.browse(spotify.ArtistBrowserType.NO_TRACKS,artistBrowsed)
