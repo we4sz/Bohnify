@@ -65,7 +65,7 @@ var ArtistView = Backbone.View.extend({
       if(appears.length>0){
         this.$el.append((new ArtistViewSeparator({model : "APPEARS ON"})).render().$el);
         _.each(appears,function(album, i) {
-            this.$el.append((new ArtistAlbumView({model: album, ws : this.options.ws})).render().$el);
+            this.$el.append((new ArtistAlbumView({model: album, ws : this.options.ws, max : 0})).render().$el);
         }.bind(this));
       }
 
