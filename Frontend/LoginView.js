@@ -13,7 +13,7 @@ var LoginView = Backbone.View.extend({
         html =    "<div id='logincon'>"
                   + "<div id='logindiv'>"
                   + "<div id='loginimage'></div>"
-                  + "<div id='logintext'>Bohnify</div>"
+                  + "<div id='logintext'>Bohnifyzzz</div>"
                   + "<form id='loginprogress'>"
                   + "</div>"
                   + "</div>";
