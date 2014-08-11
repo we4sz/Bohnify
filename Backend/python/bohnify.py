@@ -47,7 +47,7 @@ class Bohnify(object):
     self.session.on(spotify.SessionEvent.END_OF_TRACK, self.on_end_of_track)
     self.session.preferred_bitrate(spotify.Bitrate.BITRATE_160k)
     try:
-      self.audio_driver = spotify.PortAudioSink(self.session)
+      self.audio_driver = spotify.AlsaSink(self.session)
     except ImportError:
       self.logger.warning('No audio sink found; audio playback unavailable.')
 
@@ -115,7 +115,7 @@ class Bohnify(object):
     self.volumeChange(self.volumeController.getVolume())
 
   def updateStatus(self):
-    self.status["position"] = self.session.player.get_position()
+    self.status["position"] = 0 #self.session.player.get_position()
     cherrypy.engine.publish('websocket-broadcast', json.dumps({"status" : self.status }))
 
   def togglePause(self):
@@ -191,7 +191,7 @@ class Bohnify(object):
         self.updatequeue()
 
   def prev(self):
-    if self.session.player.get_position() > 3000:
+    if False:#self.session.player.get_position() > 3000:
       self.seek(0)
     else:
       track = None
@@ -283,7 +283,7 @@ class Bohnify(object):
 
   def play(self, track, add=True):
     def startTrack(t):
-      if self.session.player.get_position() < 3000 and len(BohnifyQueue.Instance().history) > 0:
+      if False: #self.session.player.get_position() < 3000 and len(BohnifyQueue.Instance().history) > 0:
         BohnifyQueue.Instance().history.pop(0)
       self.session.player.unload()
       try:

@@ -1,6 +1,5 @@
 var ResultView = Backbone.View.extend({
   events : {
-    'keyup' : 'test',
     'update' : 'update',
     'status' : 'newstatus'
   },initialize : function (options) {

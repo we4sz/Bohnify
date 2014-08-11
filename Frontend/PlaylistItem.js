@@ -2,10 +2,10 @@ var PlaylistItem = Backbone.View.extend({
   events : {
     'click .playlistfolder' : 'expand',
     'click .playlist' : 'show',
+    'dblclick .playlist' : 'play',
     'select': 'show',
     'expand' : 'expand',
     'play' : 'play',
-    'dblclick .playlist' : 'play',
     'contextmenu .playlist' : 'opencontext',
     "selectplaylist" : "forceselect",
     "passiveselect" : "passiveselect",
