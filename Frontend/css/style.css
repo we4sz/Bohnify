@@ -214,6 +214,50 @@ body{
   --------------------------------------------------------------
 */
 
+.artistappearsview{
+  float: left;
+  margin-top: 10px;
+  width: 180px;
+  margin-left: 10px;
+  background-color: #222326;
+}
+
+.artistappearsimage{
+  width: 180px;
+  height: 180px;
+}
+
+.artistappearsimage:hover{
+  cursor: pointer;
+}
+
+.artistappearstextcon{
+  height: 90px;
+  width: 180px;
+}
+
+.artistappearsname{
+  height: 50px;
+  margin-top: 10px;
+  margin-left: 10px;
+  width: 160px;
+  color: #cff2da;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.artistappearsname:hover{
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.artistappearstext{
+  margin-top: 10px;
+  margin-left: 10px;
+  font-size: 14px;
+  color: #949595;
+}
 
 .artistalbumhead{
   margin-top: 10px;

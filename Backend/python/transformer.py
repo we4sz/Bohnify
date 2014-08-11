@@ -175,6 +175,8 @@ class Transformer(object):
       callback(a)
     else:
       def albumBrowsed(album):
+        album.load()
+        album.album.load()
         if arr != None:
           if self.arrayContainsAlbum(arr, album.album.name):
             return callback(None)
