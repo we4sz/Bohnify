@@ -15,6 +15,7 @@ var ArtistView = Backbone.View.extend({
       var albums = [];
       var appears = [];
       var compilations = [];
+      var others = [];
       _.each(this.model.get("albums").toArray(), function(album, i) {
         if(album.get("type") == 0 ){
           albums.push(album);
@@ -23,6 +24,8 @@ var ArtistView = Backbone.View.extend({
         }else if(album.get("type") == 2 ){
           compilations.push(album);
         }else if(album.get("type") == 3 ){
+          others.push(album);
+        }else if(album.get("type") == 4 ){
           appears.push(album);
         }
       });
@@ -32,6 +35,10 @@ var ArtistView = Backbone.View.extend({
       })
 
       singles.sort(function(a,b){
+        return b.get("year")-a.get("year");
+      })
+
+      others.sort(function(a,b){
         return b.get("year")-a.get("year");
       })
 
@@ -62,10 +69,17 @@ var ArtistView = Backbone.View.extend({
         }.bind(this));
       }
 
+      if(others.length>0){
+        this.$el.append((new ArtistViewSeparator({model : "OTHERS"})).render().$el);
+        _.each(others,function(album, i) {
+            this.$el.append((new ArtistAlbumView({model: album, ws : this.options.ws})).render().$el);
+        }.bind(this));
+      }
+
       if(appears.length>0){
         this.$el.append((new ArtistViewSeparator({model : "APPEARS ON"})).render().$el);
         _.each(appears,function(album, i) {
-            this.$el.append((new ArtistAlbumView({model: album, ws : this.options.ws, max : 0})).render().$el);
+            this.$el.append((new ArtistAlbumView({model: album, ws : this.options.ws})).render().$el);
         }.bind(this));
       }
 

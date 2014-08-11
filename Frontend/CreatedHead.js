@@ -11,8 +11,8 @@ var CreatedHead = Backbone.View.extend({
     }else if(this.model instanceof Artist){
 
     }else if(this.model instanceof Album){
-      this.options.uri = this.model.get("artists").at(0).get("uri");
-      text = "By <span>"+this.model.get("artists").at(0).get("name")+"</span> - "+this.model.get("year")+" - "+this.model.get("tracks").length+" songs, "+getDurationOfTracks(this.model.get("tracks"));
+      this.options.uri = this.model.get("artist").get("uri");
+      text = "By <span>"+this.model.get("artist").get("name")+"</span> - "+this.model.get("year")+" - "+this.model.get("tracks").length+" songs, "+getDurationOfTracks(this.model.get("tracks"));
     }else if(this.model instanceof Playlist){
       this.options.uri = this.model.get("author").get("uri");
       text = "Created by: <span>"+this.model.get("author").get("nick")+"</span> - "+this.model.get("tracks").length+" songs, "+getDurationOfTracks(this.model.get("tracks"));

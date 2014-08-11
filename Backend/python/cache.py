@@ -59,8 +59,9 @@ class Cache(object):
       for track in artist["topTracks"]:
         BohnifyQueue.Instance().setVoteToTrack(track)
       for album in artist["albums"]:
-        for track in album["tracks"]:
-          BohnifyQueue.Instance().setVoteToTrack(track)
+        if "tracks" in album:
+          for track in album["tracks"]:
+            BohnifyQueue.Instance().setVoteToTrack(track)
     return artist
 
   def removeTrack(self,uri):

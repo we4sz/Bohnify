@@ -234,8 +234,10 @@
         if(browse){
           a.set("type", album.type);
           a.set('year', album.year);
-          a.set('artists', toArtistCollection(album.artists));
-          a.set('tracks', toTrackCollection(album.tracks));
+          a.set('artist', toArtist(album.artist));
+          if(album.type != 4){
+            a.set('tracks', toTrackCollection(album.tracks));
+          }
         }
         return a;
       }

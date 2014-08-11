@@ -20,7 +20,6 @@ class Transformer(object):
       elif isinstance(playlist, spotify.PlaylistFolder):
         if playlist.type == spotify.PlaylistType.START_FOLDER:
           pls = self.playlistContainer(con,(i+1),listener)
-          print playlist.name
           arr.append({"name" : playlist.name, "playlists" : pls["playlists"]})
           i = pls["index"]
         else:
@@ -150,20 +149,35 @@ class Transformer(object):
 
   def albums_b(self,albums, callback, artist):
     arr = []
+    tmp = []
     def albumLoaded(album):
-      arr.append(album)
-      if(len(arr) == len(albums)):
+      tmp.append(album)
+      if album != None:
+        arr.append(album)
+      if(len(tmp) == len(albums)):
         callback(arr)
     for album in albums:
-      self.album_b(album,albumLoaded,artist)
+      self.album_b(album,albumLoaded,artist,arr)
 
+  def arrayContainsAlbum(self, arr, album):
+    for a in arr:
+      if a["title"] == album:
+        return True
+    return False
 
-  def album_b(self,album, callback, artist = None):
+  def album_b(self,album, callback, artist = None, arr = None):
     a = Cache.Instance().getAlbum(album.link.uri, True)
+    if arr != None:
+      album.load()
+      if self.arrayContainsAlbum(arr, album.name):
+        return callback(None)
     if a != None:
       callback(a)
     else:
       def albumBrowsed(album):
+        if arr != None:
+          if self.arrayContainsAlbum(arr, album.album.name):
+            return callback(None)
         cover = None
         try:
           cover = album.album.cover_link().uri
@@ -174,14 +188,17 @@ class Transformer(object):
           "title" : album.album.name,
           "cover" : cover,
           "type" : album.album.type,
-          "artists" : [self.artist(album.artist)],
+          "artist" : self.artist(album.artist),
           "year" : album.album.year
         }
         if artist == None or artist == album.artist.link.uri:
           a["tracks"] = self.tracks(album.tracks)
           Cache.Instance().addAlbum(a, True)
         else:
-          a["type"] = 3
+          a["type"] = 4
+        if arr != None:
+          if ("tracks" in a and len(a["tracks"]) == 0) or self.arrayContainsAlbum(arr, album.album.name):
+            return callback(None)
         callback(a)
       album = album.browse(albumBrowsed)
 
