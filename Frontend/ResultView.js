@@ -39,6 +39,10 @@ var ResultView = Backbone.View.extend({
         }else if(this.options.data.type == "load"){
           var html = "<div class='resultloader'></div>";
           this.$el.html(html);
+        }else if(this.options.data.type == "clear"){
+          this.$el.html("");
+        }else if(this.options.data.type == "mymusic"){
+          this.$el.html((new MyMusicView({model : this.options.data.data, ws:this.options.ws})).render().$el);
         }
       }
       if(this.options.status){

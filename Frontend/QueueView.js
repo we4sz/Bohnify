@@ -46,7 +46,7 @@ var QueueView = Backbone.View.extend({
     this.model = queue;
     this.render();
     if(this.options.selected && this.options.selected.track){
-      $(".track."+this.options.selected.hasclass).trigger("selecturi",this.options.selected.track.get("uri"));
+      $(".track."+this.options.selected.hasclass).trigger("selecturi",this.options.selected.track.uri);
       if($(".track.selected").length == 0){
         $("#queue").trigger("select");
       }
@@ -56,13 +56,13 @@ var QueueView = Backbone.View.extend({
     if(selectedTrack){
         if(selectedTrack.hasClass("manualtrack")){
           track = this.model[this.options.manual].queue.at(selectedTrack.index());
-          this.options.ws.send({removemanualqueue : [track.get("uri")]});
+          this.options.ws.send({removemanualqueue : [track.uri]});
         }else if(selectedTrack.hasClass("standardtrack")){
           track = this.model[this.options.standard].queue.at(selectedTrack.index());
-          this.options.ws.send({removestandardqueue : [track.get("uri")]});
+          this.options.ws.send({removestandardqueue : [track.uri]});
         }else if(selectedTrack.hasClass("votetrack")){
           track = this.model[this.options.vote].queue.at(selectedTrack.index());
-          this.options.ws.send({removemanualqueue : [track.get("uri")]});
+          this.options.ws.send({removemanualqueue : [track.uri]});
         }
     }
   }

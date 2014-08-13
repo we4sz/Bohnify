@@ -8,12 +8,12 @@ var ArtistSimilarItem = Backbone.View.extend({
   render : function(){
     this.$el.addClass("artistsimilaritem");
     var image = "/images/similarimage.png";
-    var cover = this.model.get("portrait");
+    var cover = this.model.portrait;
     if(cover){
       image = imageUrl(cover);
     }
     var html =  "<img class='artistsimilarimage' src='"+image+"'/>"
-                + "<div class='artistsimilarname'>"+this.model.get("name")+"</div>";
+                + "<div class='artistsimilarname'>"+this.model.name+"</div>";
     this.$el.html(html);
     return this;
   },show : function(_,notChange){
@@ -26,6 +26,6 @@ var ArtistSimilarItem = Backbone.View.extend({
     }
   },search: function(){
     $("#result").trigger("update",{type: "load"});
-    this.options.ws.send({search : this.model.get("uri")});
+    this.options.ws.send({search : this.model.uri});
   }
 });

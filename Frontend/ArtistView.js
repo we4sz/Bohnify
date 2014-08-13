@@ -16,38 +16,38 @@ var ArtistView = Backbone.View.extend({
       var appears = [];
       var compilations = [];
       var others = [];
-      _.each(this.model.get("albums").toArray(), function(album, i) {
-        if(album.get("type") == 0 ){
+      this.model.albums.forEach(function(album, i) {
+        if(album.type == 0 ){
           albums.push(album);
-        }else if(album.get("type") == 1 ){
+        }else if(album.type == 1 ){
           singles.push(album);
-        }else if(album.get("type") == 2 ){
+        }else if(album.type == 2 ){
           compilations.push(album);
-        }else if(album.get("type") == 3 ){
+        }else if(album.type == 3 ){
           others.push(album);
-        }else if(album.get("type") == 4 ){
+        }else if(album.type == 4 ){
           appears.push(album);
         }
       });
 
       albums.sort(function(a,b){
-        return b.get("year")-a.get("year");
+        return b.year-a.year;
       })
 
       singles.sort(function(a,b){
-        return b.get("year")-a.get("year");
+        return b.year-a.year;
       })
 
       others.sort(function(a,b){
-        return b.get("year")-a.get("year");
+        return b.year-a.year;
       })
 
       compilations.sort(function(a,b){
-        return b.get("year")-a.get("year");
+        return b.year-a.year;
       })
 
       appears.sort(function(a,b){
-        return b.get("year")-a.get("year");
+        return b.year-a.year;
       })
       if(albums.length>0){
         this.$el.append((new ArtistViewSeparator({model : "ALBUMS"})).render().$el);

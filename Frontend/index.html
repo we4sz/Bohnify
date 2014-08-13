@@ -4,19 +4,24 @@
   <script type="text/javascript" src="jquery.js"></script>
   <script type="text/javascript" src="underscore.js"></script>
   <script type="text/javascript" src="backbone.js"></script>
-  <script type="text/javascript" src="backbone.touch.js"></script>
   <script type="text/javascript" src="HeaderView.js"></script>
+  <script type="text/javascript" src="HeaderMobileView.js"></script>
   <script type="text/javascript" src="ControllerView.js"></script>
+  <script type="text/javascript" src="ControllerMobileView.js"></script>
   <script type="text/javascript" src="LoginView.js"></script>
+  <script type="text/javascript" src="LoginMobileView.js"></script>
   <script type="text/javascript" src="PlaylistView.js"></script>
   <script type="text/javascript" src="BrowseHeader.js"></script>
+  <script type="text/javascript" src="MyMusicView.js"></script>
   <script type="text/javascript" src="ArtistAlbumHeader.js"></script>
   <script type="text/javascript" src="PlaylistItem.js"></script>
   <script type="text/javascript" src="SearchView.js"></script>
   <script type="text/javascript" src="LeftMenu.js"></script>
+  <script type="text/javascript" src="PlaylistCard.js"></script>
+  <script type="text/javascript" src="LeftMobileMenu.js"></script>
   <script type="text/javascript" src="ResultView.js"></script>
-  <script type="text/javascript" src="Playlist.js"></script>
   <script type="text/javascript" src="CurrentTrackView.js"></script>
+  <script type="text/javascript" src="CurrentTrackMobileView.js"></script>
   <script type="text/javascript" src="ArtistSimilarItem.js"></script>
   <script type="text/javascript" src="ArtistViewSeparator.js"></script>
   <script type="text/javascript" src="AlbumView.js"></script>
@@ -24,23 +29,14 @@
   <script type="text/javascript" src="ArtistAlbumView.js"></script>
   <script type="text/javascript" src="ArtistAppearsView.js"></script>
   <script type="text/javascript" src="ArtistTopView.js"></script>
-  <script type="text/javascript" src="Track.js"></script>
-  <script type="text/javascript" src="Album.js"></script>
-  <script type="text/javascript" src="Artist.js"></script>
-  <script type="text/javascript" src="PlaylistCollection.js"></script>
-  <script type="text/javascript" src="TrackCollection.js"></script>
-  <script type="text/javascript" src="AlbumCollection.js"></script>
-  <script type="text/javascript" src="ArtistCollection.js"></script>
   <script type="text/javascript" src="TrackView.js"></script>
   <script type="text/javascript" src="TracksView.js"></script>
   <script type="text/javascript" src="QueueView.js"></script>
   <script type="text/javascript" src="ToplistView.js"></script>
   <script type="text/javascript" src="HistoryView.js"></script>
   <script type="text/javascript" src="CreatedHead.js"></script>
-  <script type="text/javascript" src="User.js"></script>
   <script type="text/javascript" src="jquery.dataTables.min.js"></script>
   <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
-  <link rel="stylesheet" type="text/css" href="css/style.css">
    <script>
 
       $.fn.textWidth = function(){
@@ -61,6 +57,13 @@
           return false;
         });
 
+        if(isMobile()){
+          $('head').append('<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />');
+          $('head').append('<link rel="stylesheet" type="text/css" href="css/mobile.css">');
+        }else{
+          $('head').append('<link rel="stylesheet" type="text/css" href="css/style.css">');
+        }
+
         document.body.onclick= function(ev){
           if(ev.target.id != "contextmenu" && !ev.target.classList.contains("contextitem")){
             $("#contextmenu").remove();
@@ -69,14 +72,14 @@
         var host = window.document.location.host.replace(/:.*/, '');
         var ws = new WebSocket('ws://' + host + ':1650/ws');
 
-
         ws.onopen = function(){
-          var loginview = new LoginView({el : $("#loginview"), ws : ws});
+          var loginview = isMobile() ? new LoginMobileView({el : $("#loginview"), ws : ws}) :  new LoginView({el : $("#loginview"), ws : ws});
           var resultview = new ResultView({el : $("#result"), ws : ws});
-          var header = new HeaderView({el : $("#header"), ws : ws});
-          var current = new CurrentTrackView({el : $("#playtrack"), ws : ws});
-          var leftmenu = new LeftMenu({el : $("#leftmenu"), ws : ws});
-          var control = new ControllerView({el : $("#bottom"), ws : ws});
+          var header = isMobile() ? new HeaderMobileView({el : $("#header"), ws : ws}) : new HeaderView({el : $("#header"), ws : ws});
+          var current = isMobile() ? new CurrentTrackMobileView({el : $("#playtrack"), ws : ws}) : new CurrentTrackView({el : $("#playtrack"), ws : ws});
+          var leftmenu = isMobile() ? new LeftMobileMenu({el : $("#leftmenu"), ws : ws}) : new LeftMenu({el : $("#leftmenu"), ws : ws});
+          var control = isMobile() ? new ControllerMobileView({el : $("#bottom"), ws : ws}) : new ControllerView({el : $("#bottom"), ws : ws});
+          leftmenu.render();
           var lastcommand = {};
           ws.origSend = ws.send;
           ws.send = function(sendingobject, preventHistory, preventLastCommand){
@@ -129,19 +132,19 @@
                   var todo = {type:data.search.type};
                   todo.search = data.search.search;
                   if(data.search.type == "search"){
-                      todo.data = toTrackCollection(data.search.data);
+                      todo.data = data.search.data;
                       $("#result").trigger("update",todo);
                   }else if(data.search.type == "album"){
-                      todo.data = toAlbum(data.search.data,true);
+                      todo.data = data.search.data;
                       $("#result").trigger("update",todo);
                   }else if(data.search.type == "artist"){
-                      todo.data = toArtist(data.search.data,true);
+                      todo.data = data.search.data;
                       $("#result").trigger("update",todo);
                   }else if(data.search.type == "track"){
-                      todo.data = toAlbum(data.search.data,true);
+                      todo.data = data.search.data;
                       $("#result").trigger("update",todo);
                   }else if(data.search.type == "playlist"){
-                    var pl = toPlaylist(data.search.data,true);
+                    var pl = data.search.data;
                     if($(".playlistview").length == 1){
                       $(".playlistview").trigger("newplaylist", pl)
                     }else{
@@ -152,29 +155,25 @@
                   }
                 }
               }else if(data.playlists){
-                var coll  = new PlaylistCollection();
-                data.playlists.forEach(function(playlist){
-                  coll.add(toPlaylist(playlist));
-                });
-                $("#leftmenu").trigger("newcon",coll);
+                $("#leftmenu").trigger("newcon",[data.playlists]);
               }else if(data.queues){
                 if(lastcommand.getqueue){
                   data.queues.forEach(function(queue){
-                    queue.queue = toTrackCollection(queue.queue);
+                    queue.queue = queue.queue;
                   });
                   $("#result").trigger("update",{type:"queue",data:data.queues});
                 }
               }else if(data.history){
                 if(lastcommand.gethistory){
-                  $("#result").trigger("update",{type:"history",data:toTrackCollection(data.history)});
+                  $("#result").trigger("update",{type:"history",data:data.history});
                 }
               }else if(data.toplist){
                 if(lastcommand.gettoplist){
-                  $("#result").trigger("update",{type:"toplist",data:toTrackCollection(data.toplist)});
+                  $("#result").trigger("update",{type:"toplist",data:data.toplist});
                 }
               }else if(data.status){
                 if(data.status.track){
-                  data.status.track = toTrack(data.status.track);
+                  data.status.track = data.status.track;
                 }
                 if(window.lateststatus && window.lateststatus.party != data.status.party){
                   window.lateststatus = data.status;
@@ -192,7 +191,7 @@
               }else if(data.votechange){
                 $(".track").trigger('votechange',data.votechange);
               }else if(data.playlistchanged){
-                var pl = toPlaylist(data.playlistchanged,true);
+                var pl = data.playlistchanged;
                 $(".playlistview").trigger('update',pl);
                 $(".playlistitem").trigger('update',pl);
               }
@@ -200,99 +199,6 @@
         }
       }
 
-
-      var toPlaylist = function(playlist){
-        var p = new Playlist();
-        var isFolder = playlist.playlists;
-        p.set("name",playlist.name);
-        if(isFolder){
-          p.set("playlists",playlist.playlists.map(toPlaylist));
-        } else{
-          p.set("description",playlist.description);
-          p.set("author",toAuthor(playlist.author));
-          if(playlist.tracks){
-            p.set("tracks",toTrackCollection(playlist.tracks));
-          }
-          p.set("collaborative",playlist.collaborative);
-          p.set("uri",playlist.uri);
-        }
-        return p;
-      }
-
-      var toAuthor = function(author){
-        var a = new User();
-        a.set("nick",author.nick);
-        a.set("name",author.name);
-        a.set("uri",author.uri);
-        return a;
-      }
-
-      var toAlbum = function(album,browse){
-        var a = new Album();
-        a.set('title', album.title);
-        a.set('uri', album.uri);
-        a.set('cover', album.cover);
-        if(browse){
-          a.set("type", album.type);
-          a.set('year', album.year);
-          a.set('artist', toArtist(album.artist));
-          if(album.type != 4){
-            a.set('tracks', toTrackCollection(album.tracks));
-          }
-        }
-        return a;
-      }
-
-      var toTrack = function(track){
-        var t = new Track();
-        t.set('title',track.title);
-        t.set('uri',track.uri);
-        t.set('artists',toArtistCollection(track.artists));
-        t.set('album',toAlbum(track.album));
-        t.set('popularity',track.popularity);
-        t.set('duration',track.duration);
-        t.set('rate',track.rate ? track.rate : 0);
-        t.set('vote',track.vote ? track.vote : 0);
-        return t;
-      }
-
-      var toArtist = function(artist,browse){
-        var a = new Artist();
-        a.set('name',artist.name);
-        a.set('uri',artist.uri);
-        a.set("portrait", artist.portrait);
-        if(browse){
-          a.set("similar", toArtistCollection(artist.similar));
-          a.set("albums",toAlbumCollection(artist.albums,true));
-          a.set("bio",artist.bio);
-          a.set("toptracks", toTrackCollection(artist.topTracks));
-        }
-        return a;
-      }
-
-      var toArtistCollection = function(artists){
-        var col = new ArtistCollection();
-        artists.forEach(function(artist){
-          col.add(toArtist(artist));
-        });
-        return col;
-      }
-
-      var toAlbumCollection = function(albums,browse){
-        var col = new AlbumCollection();
-        albums.forEach(function(album){
-          col.add(toAlbum(album,browse));
-        });
-        return col;
-      }
-
-      var toTrackCollection = function(tracks){
-        var col = new TrackCollection();
-        tracks.forEach(function(track){
-          col.add(toTrack(track));
-        });
-        return col;
-      }
 
       var toMinutesAndSeconds = function(time){
         var time = parseInt(time);
@@ -305,8 +211,8 @@
 
       var getDurationOfTracks = function(tracks){
         var seconds = 0;
-        _.each(tracks.toArray(), function(track){
-          seconds += track.get("duration");
+        _.each(tracks, function(track){
+          seconds += track.duration;
         });
         seconds = seconds / 1000;
         var text = "";

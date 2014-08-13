@@ -26,32 +26,32 @@ var TrackView = Backbone.View.extend({
     var artists = "";
     this.$el.addClass("track");
     this.$el.addClass(this.options.extraclass);
-    _.each(this.model.get("artists").toArray(), function(artist, i) {
-        artists += "<span class='trackartist'>"+artist.get("name")+"</span><span class='trackartistsseparator'>,&nbsp;</span>";
+    _.each(this.model.artists, function(artist, i) {
+        artists += "<span class='trackartist'>"+artist.name+"</span><span class='trackartistsseparator'>,&nbsp;</span>";
     });
     artists = artists.substring(0,artists.length-50);
     var html ="<td><div class='trackindex'>"+(this.options.index+1)+"</div></td>";
     if(this.options.vote){
-      html += "<td><div class='resize trackvote'>"+this.model.get("vote")+"</div></td>";
+      html += "<td><div class='resize trackvote'>"+this.model.vote+"</div></td>";
     }
     if(this.options.image){
-      var image = imageUrl(this.model.get("album").get("cover"));
+      var image = imageUrl(this.model.album.cover);
       html += "<td><div class='resize trackimage'><img src='"+image+"'/></td>";
     }
     if(this.options.title){
-      html += "<td><div class='resize tracktitle'>"+this.model.get("title")+"</div></td>";
+      html += "<td><div class='resize tracktitle'>"+this.model.title+"</div></td>";
     }
     if(this.options.artist){
       html += "<td><div class='resize trackartists'>"+artists+"</div></td>";
     }
     if(this.options.duration){
-      html += "<td><div class='trackduration'>"+toMinutesAndSeconds(this.model.get("duration")/1000)+"</div></td>";
+      html += "<td><div class='trackduration'>"+toMinutesAndSeconds(this.model.duration/1000)+"</div></td>";
     }
     if(this.options.album){
-      html += "<td><div class='resize trackalbum'><span class='trackalbumtext'>"+this.model.get("album").get("title")+"</span></div></td>";
+      html += "<td><div class='resize trackalbum'><span class='trackalbumtext'>"+this.model.album.title+"</span></div></td>";
     }
     if(this.options.popularity){
-      html += "<td><div class='trackpopularity'>"+this.model.get("popularity")+"</div></td>";
+      html += "<td><div class='trackpopularity'>"+this.model.popularity+"</div></td>";
     }
     this.$el.html(html);
     return this;
@@ -69,26 +69,26 @@ var TrackView = Backbone.View.extend({
     this.$el.addClass("passiveselected");
   },browsealbum : function(){
     $("#result").trigger("update",{type: "load"});
-    var ob = {search : this.model.get("album").get("uri")};
+    var ob = {search : this.model.album.uri};
     this.options.ws.send(ob);
   },browseartist : function(e){
     $("#result").trigger("update",{type: "load"});
     var index = parseInt($(e.target).index()/2);
-    var uri = this.model.get("artists").at(index).get("uri");
+    var uri = this.model.artists[index].uri;
     var ob = {search : uri};
     this.options.ws.send(ob);
   }, currenttrack : function(_,status){
     if(status.track){
-      if(status.track.get("uri") == this.model.get("uri")){
+      if(status.track.uri == this.model.uri){
         this.$el.addClass("current");
-        this.$el.find(".trackvote").html(status.track.get("vote"));
+        this.$el.find(".trackvote").html(status.track.vote);
       }else{
         this.$el.removeClass("current");
       }
     }
   }, votechange : function(_,vote){
     if(vote && vote.uri && vote.vote){
-      if(vote.uri == this.model.get("uri")){
+      if(vote.uri == this.model.uri){
         this.$el.find(".trackvote").html(vote.vote);
       }
     }
@@ -99,14 +99,14 @@ var TrackView = Backbone.View.extend({
     var y = ev.clientY;
     var html =  "<div id='contextmenu'>" +
                 "<div id='contextqueue' class='contextitem'>Queue track</div>" +
-                "<div id='contexttrackuri' class='contextitem'>"+this.model.get("uri")+"</div>" +
-                "<div id='contextartisturi' class='contextitem'>"+this.model.get("artists").at(0).get("uri")+"</div>" +
-                "<div id='contextalbumuri' class='contextitem'>"+this.model.get("album").get("uri")+"</div>" +
+                "<div id='contexttrackuri' class='contextitem'>"+this.model.uri+"</div>" +
+                "<div id='contextartisturi' class='contextitem'>"+this.model.artists[0].uri+"</div>" +
+                "<div id='contextalbumuri' class='contextitem'>"+this.model.album.uri+"</div>" +
                 "</div>";
     var el = $($.parseHTML(html));
 
     el.find("#contextqueue").click(function(ev){
-      this.options.ws.send({manualqueue: [this.model.get("uri")]});
+      this.options.ws.send({manualqueue: [this.model.uri]});
       el.remove();
     }.bind(this));
 
@@ -130,7 +130,7 @@ var TrackView = Backbone.View.extend({
     }
     return false;
   }, selecturi : function(_,uri){
-    if(this.model.get("uri") == uri) {
+    if(this.model.uri == uri) {
       this.select();
     }
   }

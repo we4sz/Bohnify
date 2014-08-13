@@ -11,42 +11,42 @@ var BrowseHeader = Backbone.View.extend({
     var name = "FÄÄST!";
     var addCreated = false;
 
-    if(this.model instanceof Track){
+    if(this.model.uri.indexOf(":track:")>=0){
 
-    }else if(this.model instanceof Artist){
-      name = this.model.get("name");
+    }else if(this.model.uri.indexOf(":artist:")>=0){
+      name = this.model.name;
       text = "ARTIST";
-      var cover = this.model.get("portrait");
+      var cover = this.model.portrait;
       if(cover){
         image = imageUrl(cover);
       }else{
-        var albums = this.model.get("albums");
+        var albums = this.model.albums;
         if(albums.length>0){
-          var cover = albums.at(0).get("cover");
+          var cover = albums.at(0).cover;
           if(cover){
             image = imageUrl(cover);
           }
         }
       }
-    }else if(this.model instanceof Album){
+    }else if(this.model.uri.indexOf(":album:")>=0){
       addCreated = true;
-      name = this.model.get("title");
+      name = this.model.title;
       text = "ALBUM";
-      if(this.model.get("cover")){
-        image = imageUrl(this.model.get("cover"));
+      if(this.model.cover){
+        image = imageUrl(this.model.cover);
       }
-    }else if(this.model instanceof Playlist){
+    }else if(this.model.uri.indexOf(":playlist:")>=0 || this.model.uri.indexOf(":starred")>=0){
       addCreated = true;
-      name = this.model.get("name");
+      name = this.model.name;
       text = "PLAYLIST";
-      var tracks = this.model.get("tracks");
+      var tracks = this.model.tracks;
       if(tracks.length>0){
         var covers = [];
-        _.each(tracks.toArray(),function(track){
-          if(track.get("album").get("cover") &&
-          track.get("album").get("cover") != "" &&
-          covers.indexOf(track.get("album").get("cover")) < 0){
-            covers.push(track.get("album").get("cover"));
+        _.each(tracks,function(track){
+          if(track.album.cover &&
+          track.album.cover != "" &&
+          covers.indexOf(track.album.cover) < 0){
+            covers.push(track.album.cover);
           }
         });
 
@@ -61,7 +61,7 @@ var BrowseHeader = Backbone.View.extend({
           }
         }
       }
-    }else if(this.model instanceof User){
+    }else if(this.model.uri.indexOf(":user:")>=0){
 
     }
     this.$el.addClass("browsehead");
@@ -95,7 +95,7 @@ var BrowseHeader = Backbone.View.extend({
     var html =  "<div id='contextmenu'>" +
                 "<div id='contextplay' class='contextitem'>Play</div>" +
                 "<div id='contextqueue' class='contextitem'>Queue</div>" +
-                "<div id='contexturi' class='contextitem'>"+this.model.get("uri")+"</div>" +
+                "<div id='contexturi' class='contextitem'>"+this.model.uri+"</div>" +
                 "</div>";
     var el = $($.parseHTML(html));
 
@@ -136,13 +136,13 @@ var BrowseHeader = Backbone.View.extend({
     return false;
   }, getTracks : function(){
     var tracks;
-    if(this.model instanceof Playlist){
-      tracks = this.model.get("tracks").toJSON();
-    }else if(this.model instanceof Album){
-      tracks = this.model.get("tracks").toJSON();
-    }else if(this.model instanceof Artist){
-      tracks = this.model.get("toptracks").toJSON();
-    }else if(this.model instanceof Track){
+    if(this.model.uri.indexOf(":playlist:")>=0){
+      tracks = this.model.tracks;
+    }else if(this.model.uri.indexOf(":album:")>=0){
+      tracks = this.model.tracks;
+    }else if(this.model.uri.indexOf(":artist:")>=0){
+      tracks = this.model.toptracks;
+    }else if(this.model.uri.indexOf(":track:")>=0){
       tracks = [this.model];
     }
     return tracks;

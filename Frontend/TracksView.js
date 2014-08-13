@@ -66,7 +66,7 @@ var TracksView = Backbone.View.extend({
         child.html(html);
       }
       child.append($.parseHTML("<tbody>"));
-      _.each(this.model.toArray(), function(track, i) {
+      _.each(this.model, function(track, i) {
         if(i<this.options.max){
           child.append((
             new TrackView({model: track,
@@ -95,7 +95,7 @@ var TracksView = Backbone.View.extend({
       this.$el.append(child);
       return this;
   },play : function(_,index){
-    var tracks = this.model.toJSON();
+    var tracks = this.model.slice(0);
     var track = tracks[index].uri;
     tracks.splice(index,1);
     tracks = tracks.map(function(t){

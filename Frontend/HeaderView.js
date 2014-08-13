@@ -31,6 +31,8 @@ var HeaderView = Backbone.View.extend({
     this.options.current = this.options.history.pop();
     if(this.options.current.type === "playlist"){
       $(".playlistitem").trigger("selectfromuri",this.options.current.data);
+    }else if(this.options.current.type === "mymusic"){
+      $("#mymusic").trigger("select",true);
     }else{
       $("#result").trigger("update",{type: "load"});
       this.options.ws.send(this.options.current,true);
@@ -41,6 +43,8 @@ var HeaderView = Backbone.View.extend({
     this.options.current = this.options.future.pop();
     if(this.options.current.type === "playlist"){
       $(".playlistitem").trigger("selectfromuri",this.options.current.data);
+    }else if(this.options.current.type === "mymusic"){
+      $("#mymusic").trigger("select",true);
     }else{
       $("#result").trigger("update",{type: "load"});
       this.options.ws.send(this.options.current,true);

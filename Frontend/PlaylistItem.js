@@ -19,14 +19,14 @@ var PlaylistItem = Backbone.View.extend({
   render : function(){
     this.$el.html("");
     this.$el.addClass("playlistitem");
-    var folderclass = this.model.get("playlists") ? (this.options.isbig ? "playlistfolder" : "playlistfolder") : "playlist";
-    var imageclass = this.model.get("playlists") ? (this.options.isbig ? "folderminimize" : "foldermaximize") : "playlistnote";
+    var folderclass = this.model.playlists ? (this.options.isbig ? "playlistfolder" : "playlistfolder") : "playlist";
+    var imageclass = this.model.playlists ? (this.options.isbig ? "folderminimize" : "foldermaximize") : "playlistnote";
 
     var html = $.parseHTML("<div class='"+folderclass+"'><div class='"+imageclass+"'></div>"
-          + "<div class='playlistname'>"+this.model.get("name")+"</div></div>");
+          + "<div class='playlistname'>"+this.model.name+"</div></div>");
         this.$el.html(html);
     if(this.options.isbig){
-      _.each(this.model.get("playlists"), function(playlist, i) {
+      _.each(this.model.playlists, function(playlist, i) {
           this.$el.append((new PlaylistItem({model: playlist, ws : this.options.ws, index:i})).render().$el);
       }.bind(this));
     }
@@ -40,7 +40,7 @@ var PlaylistItem = Backbone.View.extend({
     takeInFocus($("#leftmenu"),this.$el);
     if(!update && this.$el.find(".playlistfolder").length == 0){
       $("#result").trigger("update",{type: "playlist",data: this.model});
-      $("#header").trigger("addbrowse",{type: "playlist",data: this.model})
+      $("#header").trigger("addbrowse",{type: "playlist",data: this.model});
     }
     return false;
   },click : function(){
@@ -57,7 +57,7 @@ var PlaylistItem = Backbone.View.extend({
     if(this.$el.find(".playlistfolder").length > 0){
       this.expand();
     }else{
-      var tracks = this.model.get("tracks").toJSON();
+      var tracks = this.model.tracks;
       tracks = tracks.map(function(t){
         return t.uri;
       });
@@ -73,12 +73,12 @@ var PlaylistItem = Backbone.View.extend({
     var html =  "<div id='contextmenu'>" +
                 "<div id='contextplay' class='contextitem'>Play</div>" +
                 "<div id='contextqueue' class='contextitem'>Choose as Current Playlist</div>" +
-                "<div id='contexturi' class='contextitem'>"+this.model.get("uri")+"</div>" +
+                "<div id='contexturi' class='contextitem'>"+this.model.uri+"</div>" +
                 "</div>";
     var el = $($.parseHTML(html));
 
     el.find("#contextqueue").click(function(ev){
-      var tracks = this.model.get("tracks").toJSON();
+      var tracks = this.model.tracks;
       tracks = tracks.map(function(t){
         return t.uri;
       });
@@ -112,7 +112,7 @@ var PlaylistItem = Backbone.View.extend({
     }
     return false;
   }, forceselect : function(_, uri){
-    if(uri == this.model.get("uri")){
+    if(uri == this.model.uri){
       $(".playlistitem.selected").removeClass("selected");
       $(".playlistitem.passiveselected").removeClass("passiveselected");
       passiveSelectAll(this.$el);
@@ -129,12 +129,12 @@ var PlaylistItem = Backbone.View.extend({
       }
     return false;
   }, update : function(_,pl){
-    if(pl.get("uri") == this.model.get("uri")){
+    if(pl.uri == this.model.uri){
       this.model = pl;
       this.render();
     }
-  }, selectfromuri : function(_,pl){
-    if(pl.get("uri") == this.model.get("uri")){
+  }, selectfromuri : function(_,pl,add){
+    if(pl.uri == this.model.uri){
       var update = this.$el.hasClass("passiveselected") || this.$el.hasClass("selected");
       $("#contextmenu").remove();
       $(".playlistitem.selected").removeClass("selected");
@@ -143,6 +143,9 @@ var PlaylistItem = Backbone.View.extend({
       takeInFocus($("#leftmenu"),this.$el);
       if(!update && this.$el.find(".playlistfolder").length == 0){
         $("#result").trigger("update",{type: "playlist",data: this.model});
+        if(add){
+          $("#header").trigger("addbrowse",{type: "playlist",data: this.model})
+        }
       }
       return false;
     }

@@ -1,0 +1,562 @@
+body, html{
+  width:100%;
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: default;
+  color: #ebebeb;
+}
+
+*{
+ outline: none;
+}
+
+
+/*
+  --------------------------------------------------------------
+  Current Track Content
+  --------------------------------------------------------------
+*/
+
+#playtrack{
+  position: absolute;
+  left: 0px;
+  bottom: 0px;
+  height: 50px;
+  width: 100%;
+}
+
+.currentimage{
+  float:left;
+  width: 50px;
+  height: 50px;
+}
+
+.currentlayer{
+  float:left;
+  height: 50px;
+  width: calc(100% - 50px);
+  background-color: rgba(37, 37, 37, 0.7);
+}
+
+.currenttitle{
+  margin-left: 10px;
+  font-size:14px;
+  height:20px;
+  margin-top: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: calc(100% - 50px);
+  color: #ffffff;
+}
+
+.currentartists{
+  height:20px;
+  width: calc(100% - 50px);
+  margin-top: 0px;
+  vertical-align: middle;
+  margin-left: 10px;
+  font-size:14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #ffffff;
+}
+
+.currentpaused{
+  float:left;
+  margin-left: -50px;
+  width: 50px;
+  height: 50px;
+  background-image:url("/images/playcircle.png");
+  background-size:40px 40px;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 2;
+}
+
+.currentplay{
+  float:left;
+  margin-left: -50px;
+  width: 50px;
+  height: 50px;
+  background-image:url("/images/pausecircle.png");
+  background-size:40px 40px;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 2;
+}
+
+
+/*
+  --------------------------------------------------------------
+  login Content
+  --------------------------------------------------------------
+*/
+
+#logincon {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  width: 100%;
+  height: 100%;
+  background-color: #121314;
+}
+
+
+#loginimage {
+  width: 112px;
+  height: 112px;
+  background-image: url("/images/loginimage.png");
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#logintext{
+  width: 112px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  color: #ffffff;
+  margin-top: 20px;
+  font-size: 20px;
+}
+
+#loginerror{
+  width: 200px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  color: #ff0000;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+#loginprogress {
+  width: 112px;
+  height: 112px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  margin-top: 20px;
+  background-repeat:no-repeat;
+  background-position:center;
+  background-image: url("/images/ajax-loader.gif");
+}
+
+#loginusername{
+  width: 80%;
+  margin-left: 10%;
+  margin-top: 20px;
+  height: 40px;
+  padding-left: 20px;
+  border-radius: 5px;
+  border: none;
+}
+#loginpassword{
+  width: 80%;
+  margin-left: 10%;
+  height: 40px;
+  margin-top: 20px;
+  padding-left: 20px;
+  border-radius: 5px;
+  border: none;
+}
+
+#loginbutton{
+  margin-top: 20px;
+  width: 80%;
+  height: 30px;
+  background-color: #618f00;
+  border-radius: 10px;
+  border: none;
+  color : #ffffff;
+  margin-left: 10%;
+}
+
+#loginusername:focus{
+  outline: none;
+}
+#loginpassword:focus{
+  outline: none;
+}
+
+#loginbutton:focus{
+  outline: none;
+}
+
+/*
+  --------------------------------------------------------------
+  Controller Content
+  --------------------------------------------------------------
+*/
+
+#bottom{
+  z-index:4;
+  visibility: hidden;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0px;
+  top:0px;
+  background-size: cover;
+}
+
+#controlllayer{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0px;
+  top:0px;
+  background-color: rgba(37, 37, 37, 0.7);
+  z-index:-1;
+}
+
+.controlltop{
+  width: 100%;
+  height: 50px;
+}
+
+#controllexit{
+  height: 50px;
+  width: 50px;
+  background-image: url("/images/exit.png");
+  background-repeat: no-repeat;
+  background-size: 40px 40px;
+  background-position: center;
+}
+
+#controlltrackimage{
+  width: calc(100% - 40px);
+  margin-left: 20px;
+  height: auto;
+}
+
+.controllbottom{
+  width: 100%;
+  margin-top: 15px;
+  text-align: center;
+}
+
+.controllbottomleft{
+  float:left;
+  width: 50px;
+}
+
+.controllbottommiddle{
+  float:left;
+  width: calc(100% - 100px);
+}
+
+.controllbottomright{
+  float:left;
+  width: 50px;
+}
+
+#controlltrackname{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#controlltrackartists{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#controllparty{
+  height: 50px;
+  width: 50px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 30px 30px;
+  background-image: url("/images/party_act.png");
+}
+
+#controllparty.disable{
+  background-image: url("/images/party_deact.png");
+}
+
+#controllshuffle{
+  height: 50px;
+  width: 50px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 30px 30px;
+  background-image: url("/images/shuffle_act.png");
+}
+
+#controllshuffle.disable{
+  background-image: url("/images/shuffle_deact.png");
+}
+
+
+#controllrepeat{
+  height: 50px;
+  width: 50px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 30px 30px;
+  background-image: url("/images/repeat_act.png");
+}
+
+#controllrepeat.disable{
+  background-image: url("/images/repeat_deact.png");
+}
+
+#controlltime{
+
+}
+
+#controllposition{
+  width: 90%;
+  margin-top: 15px;
+}
+
+.controllplayback{
+  width: 100%;
+  margin-top: 20px;
+}
+
+#controllprev{
+  margin-left: 12.5%;
+  float:left;
+  width: 25%;
+  margin-top: 25px;
+  height: 50px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: fit;
+  background-image: url("/images/previous.png");
+}
+
+
+#controllpause{
+  float:left;
+  width: 25%;
+  height: 100px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: fit;
+  background-image: url("/images/pausecircle.png");
+}
+
+#controllpause.disable{
+  background-image: url("/images/playcircle.png");
+}
+
+
+
+#controllnext{
+  float:left;
+  width: 25%;
+  height: 50px;
+  margin-top: 25px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: fit;
+  background-image: url("/images/nexttrack.png");
+}
+
+#controllmenu{
+  height: 50px;
+  width: 50px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 30px 30px;
+  background-image: url("/images/menu.png");
+}
+
+#controllduration{
+
+
+}
+
+#controllvolume{
+  height: 50px;
+  margin-top: 40px;
+  width: 50px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 30px 30px;
+  background-image: url("/images/volume.png");
+
+}
+
+
+
+/*
+  --------------------------------------------------------------
+  Slider
+  --------------------------------------------------------------
+*/
+
+input[type="range"]{
+  -webkit-appearance: none !important;
+   height: 3px;
+ }
+
+input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance: none !important;
+   width: 15px;
+   height: 15px;
+   background-color: #ebebeb;
+   border-radius: 15px;
+}
+
+input[type="range"]:focus {
+  outline: none;
+}
+
+
+/*
+  --------------------------------------------------------------
+  Header Content
+  --------------------------------------------------------------
+*/
+
+
+
+#header {
+  position: absolute;
+  background-color: #222326;
+  height :60px;
+  top: 0px;
+  left : 0px;
+  right: 0px;
+}
+
+#headtext{
+  color: #bebebe;
+  display: inline-block;
+  margin-top: 10px;
+  padding-top: 10px;
+  padding-left: 30px;
+  background-image: url("/images/headmenu.png");
+  background-size: 30px 30px;
+  background-repeat: no-repeat;
+  width: 100px;
+  height: 30px;
+  float: left;
+  font-size: 16px;
+}
+
+#search {
+  float: left;
+  background-color: #dfe0e6;
+  border: none;
+  width: calc(100% - 140px);
+  border-radius: 12px;
+  margin-top: 10px;
+  height: 40px;
+  font-size: 16px;
+}
+
+#search:focus{
+  outline: none;
+}
+
+
+
+
+/*
+  --------------------------------------------------------------
+  Leftmenu
+  --------------------------------------------------------------
+*/
+
+#leftmenu{
+  position: absolute;
+  top: 59px;
+  bottom: 0px;
+  left: 0px;
+  width: 0px;
+  overflow: hidden;
+  -webkit-transition: width 0.3s; /* For Safari 3.1 to 6.0 */
+  transition: width 0.3s;
+  background: rgb(9,9,9); /* Old browsers */
+  background: -moz-linear-gradient(left,  rgba(9,9,9,1) 64%, rgba(9,9,9,1) 64%, rgba(33,33,33,1) 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, right top, color-stop(64%,rgba(9,9,9,1)), color-stop(64%,rgba(9,9,9,1)), color-stop(100%,rgba(33,33,33,1))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(left,  rgba(9,9,9,1) 64%,rgba(9,9,9,1) 64%,rgba(33,33,33,1) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(left,  rgba(9,9,9,1) 64%,rgba(9,9,9,1) 64%,rgba(33,33,33,1) 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(left,  rgba(9,9,9,1) 64%,rgba(9,9,9,1) 64%,rgba(33,33,33,1) 100%); /* IE10+ */
+  background: linear-gradient(to right,  rgba(9,9,9,1) 64%,rgba(9,9,9,1) 64%,rgba(33,33,33,1) 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#090909', endColorstr='#212121',GradientType=1 ); /* IE6-9 */
+  z-index: 2;
+}
+
+#leftmenu.wide{
+  width:70%;
+}
+
+#leftmenu .menuitem{
+  height: 60px;
+  width: 100%;
+  margin-left: 5px;
+}
+
+
+#leftmenu .menuitem.selected{
+  border-left: 5px solid #448844;
+  margin-left:0px;
+}
+
+#leftmenu .menuitem .name{
+  font-size: 16px;
+  height: 60px;
+  color: #bebebe;
+  font-size: 16px;
+  margin-left: 30px;
+  display: inline-block;
+  margin-top: 10px;
+  padding-top: 10px;
+  padding-left: 50px;
+  background-size: 40px 40px;
+  background-repeat: no-repeat;
+}
+
+#leftmenu .menuitem.selected .name{
+  font-weight:bold;
+}
+
+#menusearch .name{
+  background-image: url("/images/search.png");
+}
+
+#menuhome .name{
+  background-image: url("/images/library.png");
+}
+
+#menutoplist .name{
+  background-image: url("/images/toplist.png");
+}
+
+#menuqueue .name{
+  background-image: url("/images/queue.png");
+}
+
+#menuhistory .name{
+  background-image: url("/images/history.png");
+}
+
+
+
+#result{
+  position: absolute;
+  width: 100%;
+  left: 0px;
+  top: 60px;
+  bottom: 50px;
+  background-color: #111213;
+}

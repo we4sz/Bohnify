@@ -245,7 +245,7 @@ class Transformer(object):
           "uri" : artist.artist.link.uri,
           "portrait" : por,
           "bio" : artist.biography,
-          "topTracks" : self.tracks(artist.tophit_tracks),
+          "toptracks" : self.tracks(artist.tophit_tracks),
           "similar" : self.artists(artist.similar_artists)
         }
         def albumsBrowsed(albums):

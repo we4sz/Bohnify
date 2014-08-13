@@ -7,10 +7,10 @@ var ArtistAppearsView = Backbone.View.extend({
   },
   render : function(){
     var image = "/images/playlistdefault.png";
-    var name = this.model.get("title");
-    var text = this.model.get("year");
-    if(this.model.get("cover")){
-      image = imageUrl(this.model.get("cover"));
+    var name = this.model.title;
+    var text = this.model.year;
+    if(this.model.cover){
+      image = imageUrl(this.model.cover);
     }
     this.$el.addClass("artistappearsview");
     var html =    "<img class='artistappearsimage' src='"+image+"'/>"
@@ -23,6 +23,6 @@ var ArtistAppearsView = Backbone.View.extend({
     return this;
   },browse : function(){
     $("#result").trigger("update",{type: "load"});
-    this.options.ws.send({search : this.model.get("uri")});
+    this.options.ws.send({search : this.model.uri});
   }
 });

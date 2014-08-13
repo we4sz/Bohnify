@@ -7,11 +7,11 @@ var ArtistTopView = Backbone.View.extend({
       var left = $.parseHTML("<div class='artisttoptracks'></div>");
       var right = $.parseHTML("<div class='artistsimilar'></div>");
       $(left).append((new ArtistViewSeparator({model : "POPULAR"})).render().$el);
-      $(left).append((new TracksView({model: this.model.get("toptracks"), ws : this.options.ws,artist:false,album:false,image:true,max:5})).render().$el);
+      $(left).append((new TracksView({model: this.model.toptracks, ws : this.options.ws,artist:false,album:false,image:true,max:5})).render().$el);
 
 
       $(right).append((new ArtistViewSeparator({model : "RELATED ARTISTS"})).render().$el);
-      _.each(this.model.get("similar").toArray(), function(artist, i) {
+      this.model.similar.forEach(function(artist, i) {
           if(i<4){
             $(right).append((new ArtistSimilarItem({model: artist, ws : this.options.ws})).render().$el);
           }

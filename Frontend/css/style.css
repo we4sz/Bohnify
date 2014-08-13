@@ -207,6 +207,71 @@ body{
   color : #dfe0e6;
 }
 
+/*
+  --------------------------------------------------------------
+  playlistcard Content
+  --------------------------------------------------------------
+*/
+
+
+
+.playlistcardview{
+  float: left;
+  margin-top: 10px;
+  width: 180px;
+  margin-left: 10px;
+  background-color: #222326;
+}
+
+.playlistcardimagecon{
+  width:180px;
+  height: 180px;
+}
+.playlistcardimage:only-child {
+  width: 180px;
+  height: 180px;
+}
+
+.playlistcardimage:nth-child(1):nth-last-child(4),
+.playlistcardimage:nth-child(2):nth-last-child(3),
+.playlistcardimage:nth-child(3):nth-last-child(2),
+.playlistcardimage:nth-child(4):nth-last-child(1) {
+    width: 90px;
+    height: 90px;
+}
+
+
+.playlistcardimage:hover{
+  cursor: pointer;
+}
+
+.playlistcardtextcon{
+  height: 90px;
+  width: 180px;
+}
+
+.playlistcardname{
+  height: 50px;
+  margin-top: 10px;
+  margin-left: 10px;
+  width: 160px;
+  color: #cff2da;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.playlistcardname:hover{
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.playlistcardtext{
+  margin-top: 10px;
+  margin-left: 10px;
+  font-size: 14px;
+  color: #949595;
+}
 
 /*
   --------------------------------------------------------------
@@ -338,6 +403,15 @@ body{
 .queueview .artistseparator{
   margin-top: 10px;
 }
+
+.mymusicview .artistseparator:first-child{
+  margin-top: 0px;
+}
+
+.playlistcardview .artistseparator{
+  margin-top: 10px;
+}
+
 
 .historyview .artistseparator{
   margin-top: 0px;
@@ -841,28 +915,30 @@ min-height: 30px;
 
 #controllparty{
   right: 80px;
-  width: 14px;
-  height: 14px;
-  top: 15px;
+  width: 20px;
+  height: 20px;
+  top: 11px;
+  background-size: 20px 20px;
 }
 
 #controllparty.disable{
-  background-image: url("/images/shuffle_dis.png");
+  background-image: url("/images/party_deact.png");
 }
 
 #controllparty.active{
-  background-image: url("/images/shuffle_act.png");
+  background-image: url("/images/party_act.png");
 }
 
 #controllshuffle{
   right: 51px;
-  width: 14px;
-  height: 14px;
-  top: 15px;
+  width: 20px;
+  height: 20px;
+  top: 11px;
+  background-size: 20px 20px;
 }
 
 #controllshuffle.disable{
-  background-image: url("/images/shuffle_dis.png");
+  background-image: url("/images/shuffle_deact.png");
 }
 
 #controllshuffle.active{
@@ -871,13 +947,14 @@ min-height: 30px;
 
 #controllrepeat{
   right: 22px;
-  width: 14px;
-  height: 14px;
-  top: 15px;
+  width: 20px;
+  height: 20px;
+  top: 11px;
+  background-size: 20px 20px;
 }
 
 #controllrepeat.disable{
-  background-image: url("/images/repeat_dis.png");
+  background-image: url("/images/repeat_deact.png");
 }
 
 #controllrepeat.active{

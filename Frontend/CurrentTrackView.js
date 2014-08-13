@@ -15,14 +15,14 @@ var CurrentTrackView = Backbone.View.extend({
       var html ="";
       if(this.options.track){
         var image = "/images/playlistdefault.png";
-        var cover = this.options.track.get("album").get("cover");
+        var cover = this.options.track.album.cover;
         if(cover){
           image = imageUrl(cover);
         }
-        var title = this.options.track.get("title");
+        var title = this.options.track.title;
         var artists = "";
-        _.each(this.options.track.get("artists").toArray(), function(artist, i) {
-            artists += "<span class='currentartist'>"+artist.get("name")+"</span><span class='currentartistsseparator'>,&nbsp;</span>";
+        _.each(this.options.track.artists, function(artist, i) {
+            artists += "<span class='currentartist'>"+artist.name+"</span><span class='currentartistsseparator'>,&nbsp;</span>";
         });
         artists = artists.substring(0,artists.length-52);
         var sizeclass = "small";
@@ -57,11 +57,11 @@ var CurrentTrackView = Backbone.View.extend({
   }, browseartist : function(e){
     $("#result").trigger("update",{type: "load"});
     var index = parseInt($(e.target).index()/2);
-    var uri = this.options.track.get("artists").at(index).get("uri");
+    var uri = this.options.track.artists[index].uri;
     this.options.ws.send({search : uri});
   }, browsetrack : function(){
     $("#result").trigger("update",{type: "load"});
-    var uri = this.options.track.get("uri");
+    var uri = this.options.track.uri;
     this.options.ws.send({search : uri});
   }
 });

@@ -8,10 +8,10 @@ var ArtistAlbumHeader = Backbone.View.extend({
   },
   render : function(){
     var image = "/images/playlistdefault.png";
-    var name = this.model.get("title");
-    var text = this.model.get("year");
-    if(this.model.get("cover")){
-      image = imageUrl(this.model.get("cover"));
+    var name = this.model.title;
+    var text = this.model.year;
+    if(this.model.cover){
+      image = imageUrl(this.model.cover);
     }
     this.$el.addClass("artistalbumhead");
     var html =  "<img class='artistalbumimage' src='"+image+"'/>"
@@ -26,9 +26,9 @@ var ArtistAlbumHeader = Backbone.View.extend({
     return this;
   },browse : function(){
     $("#result").trigger("update",{type: "load"});
-    this.options.ws.send({search : this.model.get("uri")});
+    this.options.ws.send({search : this.model.uri});
   }, play : function(){
-    var tracks = this.model.get("tracks").toJSON();
+    var tracks = this.model.tracks;
     tracks = tracks.map(function(t){
       return t.uri;
     });
@@ -40,13 +40,13 @@ var ArtistAlbumHeader = Backbone.View.extend({
     var html =  "<div id='contextmenu'>" +
                 "<div id='contextplay' class='contextitem'>Play</div>" +
                 "<div id='contextqueue' class='contextitem'>Queue</div>" +
-                "<div id='contexturi' class='contextitem'>"+this.model.get("uri")+"</div>" +
+                "<div id='contexturi' class='contextitem'>"+this.model.uri+"</div>" +
                 "</div>";
     var el = $($.parseHTML(html));
 
     el.find("#contextqueue").click(function(ev){
 
-      var tracks = this.model.get("tracks").toJSON();
+      var tracks = this.model.tracks;
       tracks = tracks.map(function(t){
         return t.uri;
       });

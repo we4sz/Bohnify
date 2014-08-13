@@ -6,6 +6,8 @@ var LeftMenu = Backbone.View.extend({
     'select #queue' :  'getqueue',
     'click #history' :  'gethistory',
     'select #history' :  'gethistory',
+    'click #mymusic' :  'getmymusic',
+    'select #mymusic' :  'getmymusic',
     'click #toplist' :  'gettoplist',
     'select #toplist' :  'gettoplist',
     "forceselect" : "forceselect",
@@ -20,12 +22,13 @@ var LeftMenu = Backbone.View.extend({
   render: function() {
       this.$el.html("")
       this.$el.append((new ArtistViewSeparator({model : "MAIN"})).render().$el);
-      var html =  "<div class='playlistitem menuitem' id='toplist'><div class='playlistname'>Toplist</div></div>" +
+      var html =  "<div class='playlistitem menuitem' id='mymusic'><div class='playlistname'>My Music</div></div>" +
+                  "<div class='playlistitem menuitem' id='toplist'><div class='playlistname'>Toplist</div></div>" +
                   "<div class='playlistitem menuitem' id='queue'><div class='playlistname'>Queue</div></div>" +
                   "<div class='playlistitem menuitem' id='history'><div class='playlistname'>History</div></div>";
       this.$el.append($.parseHTML(html));
       this.$el.append((new ArtistViewSeparator({model : "YOUR MUSIC"})).render().$el);
-    	_.each(this.model.toArray(), function(playlist, i) {
+    	_.each(this.model, function(playlist, i) {
     		this.$el.append((new PlaylistItem({model: playlist, ws: this.options.ws,resultView : this.options.resultView})).render().$el);
     	}.bind(this));
 	    return this;
@@ -104,6 +107,14 @@ var LeftMenu = Backbone.View.extend({
       $("#result").trigger("update",{type: "load"});
       this.options.ws.send({gettoplist : true});
     }
+  },getmymusic : function(_,dontadd){
+    this.select("#mymusic",true);
+    if($(".mymusicview").length == 0){
+      $("#result").trigger("update",{type: "mymusic", data:this.model});
+      if(!dontadd){
+        $("#header").trigger("addbrowse",{type: "mymusic"});
+      }
+    }
   }, select : function(target,first,passive){
     $(".playlistitem.selected").removeClass("selected");
     $(".playlistitem.passiveselected").removeClass("passiveselected");
@@ -119,13 +130,16 @@ var LeftMenu = Backbone.View.extend({
     passive = passive - (passive > 5 ? 2 : 1);
     this.model = pl;
     this.render();
-    if(selected >= 0 && selected < this.model.length){
-      this.select($(this.$el.find(".playlistitem").get(selected)),selected == 0);
-    }else if(passive >= 0 && passive < this.model.length){
-      this.select($(this.$el.find(".playlistitem").get(passive)),passive == 0,true);
+    if(!this.options.first){
+      $("#mymusic").click();
     }else{
-      this.select("#toplist",true, passive >= 0);
+      if(selected >= 0 && selected < this.model.length){
+        this.select($(this.$el.find(".playlistitem").get(selected)),selected == 0);
+      }else if(passive >= 0 && passive < this.model.length){
+        this.select($(this.$el.find(".playlistitem").get(passive)),passive == 0,true);
+      }else{
+        this.select("#mymusic",true, passive >= 0);
+      }
     }
-
   }
 });
