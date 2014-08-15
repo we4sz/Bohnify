@@ -2,7 +2,10 @@ var HeaderMobileView = Backbone.View.extend({
   events : {
     'search' : 'search',
     'click #headtext' : 'toggleleftmenu',
-    'addbrowse' : 'add'
+    'addbrowse' : 'add',
+    'focus #search' : 'focus',
+    'searchfocus' : 'searchfocus',
+    'blur #search' : 'blur'
   },initialize : function (options) {
     this.options = options || {};
     this.options.future = [];
@@ -17,7 +20,9 @@ var HeaderMobileView = Backbone.View.extend({
   },
   search : function(ev){
     var val = this.$el.find("#search").val();
+    this.$el.find("#search").blur();
     if(val){
+      $("#leftmenu").trigger("selectsearch");
       $("#result").trigger("update",{type: "load"});
       this.options.ws.send({search : val});
     }
@@ -42,6 +47,13 @@ var HeaderMobileView = Backbone.View.extend({
     $("#leftmenu").trigger("toggle");
   },removeblink : function(){
     this.$el.find("#headtext").css("background-color","transparent");
+  }, focus : function(){
+    $("#leftmenu").trigger("toggle",true);
+  }, blur : function(){
+    $("#search").css("visibility","hidden");
+  }, searchfocus : function(){
+    $("#search").css("visibility","visible");
+    $("#search").focus();
   }
 
 });

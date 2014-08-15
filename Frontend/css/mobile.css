@@ -11,6 +11,9 @@ body, html{
   user-select: none;
   cursor: default;
   color: #ebebeb;
+  overflow: hidden;
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+ font-weight: 300;
 }
 
 *{
@@ -32,37 +35,57 @@ body, html{
   width: 100%;
 }
 
-.currentimage{
+#currentimage{
   float:left;
   width: 50px;
   height: 50px;
 }
 
-.currentlayer{
-  float:left;
+#currentlayer{
+  position: absolute;
   height: 50px;
+  left: 50px;
+  bottom: 0px;
   width: calc(100% - 50px);
-  background-color: rgba(37, 37, 37, 0.7);
+  z-index: -1;
 }
 
-.currenttitle{
+#currentlayer div{
+  height: calc(100%);
+  width: calc(100% );
+  background-position: center;
+  filter: blur(3px) brightness(60%);
+  -webkit-filter: blur(3px) brightness(60%);
+  -moz-filter: blur(3px) brightness(60%);
+  -o-filter: blur(3px) brightness(60%);
+  -ms-filter: blur(3px) brightness(60%);
+  background-repeat: no-repeat;
+  background-size: cover;
+  !margin-top: -10px;
+  !margin-left: -10px;
+}
+
+#currenttext{
+  float: left;
   margin-left: 10px;
+  width: calc(100% - 110px);
+}
+
+#currenttitle{
   font-size:14px;
-  height:20px;
-  margin-top: 5px;
+  margin-top: 10px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: calc(100% - 50px);
+  width: 100%;
   color: #ffffff;
 }
 
-.currentartists{
+#currentartists{
   height:20px;
-  width: calc(100% - 50px);
+  width: 100%;
   margin-top: 0px;
   vertical-align: middle;
-  margin-left: 10px;
   font-size:14px;
   white-space: nowrap;
   overflow: hidden;
@@ -72,7 +95,6 @@ body, html{
 
 .currentpaused{
   float:left;
-  margin-left: -50px;
   width: 50px;
   height: 50px;
   background-image:url("/images/playcircle.png");
@@ -84,7 +106,6 @@ body, html{
 
 .currentplay{
   float:left;
-  margin-left: -50px;
   width: 50px;
   height: 50px;
   background-image:url("/images/pausecircle.png");
@@ -201,6 +222,13 @@ body, html{
   --------------------------------------------------------------
 */
 
+table {
+    border-collapse: collapse;
+}
+th, td {
+    padding: 0;
+}
+
 #bottom{
   z-index:4;
   visibility: hidden;
@@ -209,58 +237,29 @@ body, html{
   height: 100%;
   left: 0px;
   top:0px;
-  background-size: cover;
 }
+
 
 #controlllayer{
   position: absolute;
-  width: 100%;
-  height: 100%;
+  width: calc(100% );
+  height: calc(100% );
   left: 0px;
   top:0px;
-  background-color: rgba(37, 37, 37, 0.7);
-  z-index:-1;
-}
-
-.controlltop{
-  width: 100%;
-  height: 50px;
-}
-
-#controllexit{
-  height: 50px;
-  width: 50px;
-  background-image: url("/images/exit.png");
   background-repeat: no-repeat;
-  background-size: 40px 40px;
+  background-size: cover;
+  background-color: #111213;
   background-position: center;
-}
+  z-index:-1;
+  filter: blur(3px) brightness(60%);
+  -webkit-filter: blur(3px) brightness(60%);
+  -moz-filter: blur(3px) brightness(60%);
+  -o-filter: blur(3px) brightness(60%);
+  -ms-filter: blur(3px) brightness(60%);
+  !margin-top: -10px;
+  !margin-left: -10px;
 
-#controlltrackimage{
-  width: calc(100% - 40px);
-  margin-left: 20px;
-  height: auto;
-}
-
-.controllbottom{
-  width: 100%;
-  margin-top: 15px;
-  text-align: center;
-}
-
-.controllbottomleft{
-  float:left;
-  width: 50px;
-}
-
-.controllbottommiddle{
-  float:left;
-  width: calc(100% - 100px);
-}
-
-.controllbottomright{
-  float:left;
-  width: 50px;
+  overflow-x: hidden;
 }
 
 #controlltrackname{
@@ -275,124 +274,398 @@ body, html{
   text-overflow: ellipsis;
 }
 
-#controllparty{
-  height: 50px;
-  width: 50px;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 30px 30px;
-  background-image: url("/images/party_act.png");
+@media all and (orientation:portrait) {
+  #controlltop{
+    width: 100%;
+    height: 50px;
+  }
+
+  .controllcolumn{
+    float:left;
+  }
+
+  #controllexit{
+    height: 50px;
+    width: 50px;
+    background-image: url("/images/exit.png");
+    background-repeat: no-repeat;
+    background-size: 40px 40px;
+    background-position: center;
+  }
+
+  #controllmiddle{
+    width:100%;
+    height: calc(100% - 50px - 200px);
+  }
+
+  #controllmiddleleft{
+
+    margin-left: 20px;
+    text-align: center;
+  }
+
+  #controlltrackimage{
+    height: 100%;
+    width: calc(100% - 40px);
+    margin-left: 20px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+  }
+
+  #controllbottom{
+    width: 100%;
+    text-align: center;
+  }
+
+  #controllbottomleft{
+    float:left;
+    width: 50px;
+  }
+
+  #controllbottommiddle{
+    float:left;
+    width: calc(100% - 100px);
+  }
+
+  #controllbottomright{
+    float:left;
+    width: 50px;
+  }
+
+  #controlltrack{
+    margin-top: 20px;
+  }
+
+
+
+  #controllparty{
+    margin-top: 10px;
+    height: 50px;
+    width: 50px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 30px 30px;
+    background-image: url("/images/party_act.png");
+  }
+
+  #controllparty.disable{
+    background-image: url("/images/party_deact.png");
+  }
+
+  #controllshuffle{
+    height: 50px;
+    width: 50px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 30px 30px;
+    background-image: url("/images/shuffle_act.png");
+  }
+
+  #controllshuffle.disable{
+    background-image: url("/images/shuffle_deact.png");
+  }
+
+
+  #controllrepeat{
+    height: 50px;
+    width: 50px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 30px 30px;
+    background-image: url("/images/repeat_act.png");
+  }
+
+  #controllrepeat.disable{
+    background-image: url("/images/repeat_deact.png");
+  }
+
+  #controlltime{
+
+  }
+
+  #controllposition{
+    width: 90%;
+  }
+
+  #controllplayback{
+    width: 100%;
+  }
+
+  #controllprev{
+    margin-left: 12.5%;
+    float:left;
+    width: 25%;
+    margin-top: 25px;
+    height: 50px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: fit;
+    background-image: url("/images/previoustrack.png");
+  }
+
+
+  #controllpause{
+    float:left;
+    width: 25%;
+    height: 100px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: fit;
+    background-image: url("/images/pausecircle.png");
+  }
+
+  #controllpause.disable{
+    background-image: url("/images/playcircle.png");
+  }
+
+
+
+  #controllnext{
+    float:left;
+    width: 25%;
+    height: 50px;
+    margin-top: 25px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: fit;
+    background-image: url("/images/nexttrack.png");
+  }
+
+  #controllmenu{
+    height: 50px;
+    width: 50px;
+    margin-top: 10px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 30px 30px;
+    background-image: url("/images/menu.png");
+  }
+
+  #controllduration{
+    margin-top: 18px;
+
+  }
+
+  #controllvolume{
+    height: 50px;
+    margin-top: 30px;
+    width: 50px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 30px 30px;
+    background-image: url("/images/volume.png");
+  }
 }
 
-#controllparty.disable{
-  background-image: url("/images/party_deact.png");
+@media all and (orientation:landscape) {
+  #controlltop{
+    width: 100%;
+    height: 50px;
+  }
+
+  .controllcolumn{
+    float:left;
+  }
+
+  #controllexit{
+    height: 50px;
+    width: 50px;
+    background-image: url("/images/exit.png");
+    background-repeat: no-repeat;
+    background-size: 40px 40px;
+    background-position: center;
+  }
+
+  #controllmiddle{
+    width: 100%;
+    height: calc(100% - 50px - 50px - 70px);
+  }
+
+  #controllmiddleleft{
+    height: 100%;
+  }
+
+  #controlltrackimage{
+    margin-left: 10px;
+    height: 100%;
+    background-size: contain;
+  }
+
+
+  #controllmiddlemiddle{
+    height: 100%;
+    width: 100%;
+  }
+
+  #controlltrack{
+    margin-left: 10px;
+  }
+
+
+  #controllmiddleright{
+    text-align: right;
+    height: 100%;
+  }
+
+
+  #controllmenu{
+    height: 50px;
+    width: 50px;
+    margin-left: calc(100% - 50px);
+    margin-top: 0px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 30px 30px;
+    background-image: url("/images/menu.png");
+  }
+
+  #controlldownmiddle{
+    height: 30px;
+    margin-top: 20px;
+    width: 100%;
+  }
+
+  #controlldownmiddleleft{
+    height: 100%;
+    width: 60px;
+  }
+
+  #controlltime{
+    margin-left: 10px;
+    width: 50px;
+  }
+
+  #controlldownmiddlemiddle{
+    height: 100%;
+  }
+
+  #controllposition{
+    width: 100%;
+  }
+
+  #controlldownmiddleright{
+    height: 100%;
+    width: 60px;
+  }
+
+  #controllduration{
+    margin-left: 10px;
+    width: 50px;
+  }
+
+  #controllbottom{
+    height: 60px;
+    width: 100%;
+  }
+
+
+  #controlltogglers{
+    width: 150px;
+  }
+
+  #controllparty{
+    float: left;
+    height: 50px;
+    width: 50px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 30px 30px;
+    background-image: url("/images/party_act.png");
+  }
+
+  #controllparty.disable{
+    background-image: url("/images/party_deact.png");
+  }
+
+  #controllshuffle{
+    float: left;
+    height: 50px;
+    width: 50px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 30px 30px;
+    background-image: url("/images/shuffle_act.png");
+  }
+
+  #controllshuffle.disable{
+    background-image: url("/images/shuffle_deact.png");
+  }
+
+  #controllrepeat{
+    float: left;
+    height: 50px;
+    width: 50px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 30px 30px;
+    background-image: url("/images/repeat_act.png");
+  }
+
+  #controllrepeat.disable{
+    background-image: url("/images/repeat_deact.png");
+  }
+
+
+  #controllplayback{
+    width: 100%;
+  }
+
+  #controllprev{
+    float:left;
+    width: 50px;
+    height: 50px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: fit;
+    background-image: url("/images/previoustrack.png");
+  }
+
+
+  #controllpause{
+    margin-left: 10px;
+    float:left;
+    width: 50px;
+    height: 50px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: fit;
+    background-image: url("/images/pausecircle.png");
+  }
+
+  #controllpause.disable{
+    background-image: url("/images/playcircle.png");
+  }
+
+
+
+  #controllnext{
+    margin-left: 10px;
+    float:left;
+    width: 50px;
+    height: 50px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: fit;
+    background-image: url("/images/nexttrack.png");
+  }
+
+  #controllbottomright{
+    width: 150px;
+  }
+
+  #controllvolume{
+    margin-left: 100px;
+    height: 50px;
+    width: 50px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 30px 30px;
+    background-image: url("/images/volume.png");
+  }
+
 }
 
-#controllshuffle{
-  height: 50px;
-  width: 50px;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 30px 30px;
-  background-image: url("/images/shuffle_act.png");
-}
-
-#controllshuffle.disable{
-  background-image: url("/images/shuffle_deact.png");
-}
-
-
-#controllrepeat{
-  height: 50px;
-  width: 50px;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 30px 30px;
-  background-image: url("/images/repeat_act.png");
-}
-
-#controllrepeat.disable{
-  background-image: url("/images/repeat_deact.png");
-}
-
-#controlltime{
-
-}
-
-#controllposition{
-  width: 90%;
-  margin-top: 15px;
-}
-
-.controllplayback{
-  width: 100%;
-  margin-top: 20px;
-}
-
-#controllprev{
-  margin-left: 12.5%;
-  float:left;
-  width: 25%;
-  margin-top: 25px;
-  height: 50px;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: fit;
-  background-image: url("/images/previous.png");
-}
-
-
-#controllpause{
-  float:left;
-  width: 25%;
-  height: 100px;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: fit;
-  background-image: url("/images/pausecircle.png");
-}
-
-#controllpause.disable{
-  background-image: url("/images/playcircle.png");
-}
-
-
-
-#controllnext{
-  float:left;
-  width: 25%;
-  height: 50px;
-  margin-top: 25px;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: fit;
-  background-image: url("/images/nexttrack.png");
-}
-
-#controllmenu{
-  height: 50px;
-  width: 50px;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 30px 30px;
-  background-image: url("/images/menu.png");
-}
-
-#controllduration{
-
-
-}
-
-#controllvolume{
-  height: 50px;
-  margin-top: 40px;
-  width: 50px;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 30px 30px;
-  background-image: url("/images/volume.png");
-
-}
 
 
 
@@ -418,6 +691,39 @@ input[type="range"]::-webkit-slider-thumb{
 input[type="range"]:focus {
   outline: none;
 }
+
+/*
+  --------------------------------------------------------------
+  Context menu
+  --------------------------------------------------------------
+*/
+
+  #contextmenu{
+    width: 50%;
+    z-index: 400;
+    margin: auto;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+  }
+
+  .contextitem:first-child{
+    border-top: 1px solid #797979;
+  }
+
+  .contextitem:last-child{
+    border-bottom: 1px solid #797979;
+  }
+
+
+  .contextitem{
+    width: 100%;
+    padding: 15px;
+    border-top: 1px solid #acacac;
+    border-left: 1px solid #797979;
+    border-right: 1px solid #797979;
+    background-color: #353535;
+  }
+
 
 
 /*
@@ -461,13 +767,76 @@ input[type="range"]:focus {
   margin-top: 10px;
   height: 40px;
   font-size: 16px;
+  visibility: hidden;
 }
 
 #search:focus{
   outline: none;
 }
 
+/*
+  --------------------------------------------------------------
+  Track Content
+  --------------------------------------------------------------
+*/
 
+  .track{
+    width: calc(100% - 20px);
+    margin-left: 10px;
+    border-bottom: 1px solid #2e2f33;
+    background-color: #121314;
+    padding: 10px 0px;
+    display: inline-block;
+  }
+
+  .trackvote{
+    float: left;
+    height: 28px;
+    width: 28px;
+    margin-top: 10px;
+    text-align: center;
+  }
+
+  .track > .tracktext:first-child{
+    float: left;
+    width: calc(100% - 50px);
+  }
+
+  .tracktext{
+    float: left;
+    width: calc(100% - 78px);
+  }
+
+  .tracktitle{
+    color: #ffffff;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .trackartistsalbum{
+    color: #adaeb3;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .trackmenu{
+    float: left;
+    height: 30px;
+    width: 50px;
+    margin-top: 5px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 30px 30px;
+    background-image: url("/images/menu.png");
+  }
+
+  .track.current .tracktitle{
+    color: #ab11a9;
+  }
 
 
 /*
@@ -559,4 +928,6 @@ input[type="range"]:focus {
   top: 60px;
   bottom: 50px;
   background-color: #111213;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
 }

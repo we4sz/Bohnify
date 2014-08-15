@@ -16,10 +16,12 @@
   <script type="text/javascript" src="ArtistAlbumHeader.js"></script>
   <script type="text/javascript" src="PlaylistItem.js"></script>
   <script type="text/javascript" src="SearchView.js"></script>
+  <script type="text/javascript" src="SearchMobileView.js"></script>
   <script type="text/javascript" src="LeftMenu.js"></script>
   <script type="text/javascript" src="PlaylistCard.js"></script>
   <script type="text/javascript" src="LeftMobileMenu.js"></script>
   <script type="text/javascript" src="ResultView.js"></script>
+  <script type="text/javascript" src="ResultMobileView.js"></script>
   <script type="text/javascript" src="CurrentTrackView.js"></script>
   <script type="text/javascript" src="CurrentTrackMobileView.js"></script>
   <script type="text/javascript" src="ArtistSimilarItem.js"></script>
@@ -30,10 +32,15 @@
   <script type="text/javascript" src="ArtistAppearsView.js"></script>
   <script type="text/javascript" src="ArtistTopView.js"></script>
   <script type="text/javascript" src="TrackView.js"></script>
+  <script type="text/javascript" src="TrackMobileView.js"></script>
   <script type="text/javascript" src="TracksView.js"></script>
+  <script type="text/javascript" src="TracksMobileView.js"></script>
   <script type="text/javascript" src="QueueView.js"></script>
+  <script type="text/javascript" src="QueueMobileView.js"></script>
   <script type="text/javascript" src="ToplistView.js"></script>
+  <script type="text/javascript" src="ToplistMobileView.js"></script>
   <script type="text/javascript" src="HistoryView.js"></script>
+  <script type="text/javascript" src="HistoryMobileView.js"></script>
   <script type="text/javascript" src="CreatedHead.js"></script>
   <script type="text/javascript" src="jquery.dataTables.min.js"></script>
   <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
@@ -64,22 +71,46 @@
           $('head').append('<link rel="stylesheet" type="text/css" href="css/style.css">');
         }
 
+        var removeContextEvent = function(ev){
+          if($("#contextmenu").length > 0 && ev.target.id != "contextmenu" && !ev.target.classList.contains("contextitem")){
+            $("#contextmenu").remove();
+            console.log("asd")
+            ev.preventDefault();
+            ev.stopPropagation();
+            return false;
+          }
+        }
+
+
+        document.ontouchstart = removeContextEvent;
+        document.body.onclick= removeContextEvent;
+
         document.body.onclick= function(ev){
           if(ev.target.id != "contextmenu" && !ev.target.classList.contains("contextitem")){
             $("#contextmenu").remove();
+            ev.stopPropagation();
           }
         }
         var host = window.document.location.host.replace(/:.*/, '');
-        var ws = new WebSocket('ws://' + host + ':1650/ws');
+        var ws = new WebSocket('ws://' + "johanssonjohn.com" + ':1650/ws');
+
+        ws.onclose = function(){
+          console.log("socket close");
+        }
+
+        ws.onerror = function(err){
+          console.log(err);
+        }
 
         ws.onopen = function(){
           var loginview = isMobile() ? new LoginMobileView({el : $("#loginview"), ws : ws}) :  new LoginView({el : $("#loginview"), ws : ws});
-          var resultview = new ResultView({el : $("#result"), ws : ws});
+          var resultview = isMobile() ? new ResultMobileView({el : $("#result"), ws : ws}) : new ResultView({el : $("#result"), ws : ws});
           var header = isMobile() ? new HeaderMobileView({el : $("#header"), ws : ws}) : new HeaderView({el : $("#header"), ws : ws});
           var current = isMobile() ? new CurrentTrackMobileView({el : $("#playtrack"), ws : ws}) : new CurrentTrackView({el : $("#playtrack"), ws : ws});
           var leftmenu = isMobile() ? new LeftMobileMenu({el : $("#leftmenu"), ws : ws}) : new LeftMenu({el : $("#leftmenu"), ws : ws});
           var control = isMobile() ? new ControllerMobileView({el : $("#bottom"), ws : ws}) : new ControllerView({el : $("#bottom"), ws : ws});
           leftmenu.render();
+          current.render();
           var lastcommand = {};
           ws.origSend = ws.send;
           ws.send = function(sendingobject, preventHistory, preventLastCommand){

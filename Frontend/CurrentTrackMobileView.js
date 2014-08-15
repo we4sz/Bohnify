@@ -10,31 +10,38 @@ var CurrentTrackMobileView = Backbone.View.extend({
   },
   render : function(){
       var html ="";
-      var image = "/images/playlistdefault.png";
-      var title = "";
-      var artists = "";
-      if(this.options.status && this.options.status.track){
-        var cover = this.options.status.track.album.cover;
-        if(cover){
-          image = imageUrl(cover);
-        }
-        title = this.options.status.track.title;
-        _.each(this.options.status.track.artists, function(artist, i) {
-            artists += artist.name +",&nbsp;";
-        });
-        artists = artists.substring(0,artists.length-7);
-      }
-      this.$el.css("background-image","url('"+image+"')");
-      html =    "<img class='currentimage' src='"+image+"'/>"
-              + "<div class='currentlayer'>"
-              + "<div class='currenttitle'>"+title+"</div>"
-              + "<div class='currentartists'>"+artists+"</div>"
+              html = "<div id='currentlayer'><div></div></div>"
+              + "<img id='currentimage' src='/images/playlistdefault.png'/>"
+              + "<div id='currenttext'>"
+              + "<div id='currenttitle'></div>"
+              + "<div id='currentartists'></div>"
               + "</div>"
-              + "<div class='"+ (this.options.status.paused ? "currentpaused" : "currentplay") +"'></div>";
+              + "<div id='currentplayback' class='currentpaused'></div>";
       this.$el.html(html);
+      return this;
   },update : function(_,status){
-    this.options.status = status;
-    this.render();
+    $("#currentplayback").removeClass("currentpaused").removeClass("currentplay").addClass(status.paused ? "currentpaused" : "currentplay");
+
+    var image = "/images/playlistdefault.png";
+    var title = "";
+    var artists = "";
+    if(status && status.track){
+      var cover = status.track.album.cover;
+      if(cover){
+        image = imageUrl(cover);
+      }
+      title = status.track.title;
+      status.track.artists.forEach(function(artist, i) {
+          artists += artist.name +",&nbsp;";
+      });
+      artists = artists.substring(0,artists.length-7);
+    }
+
+    $("#currentimage").attr("src",image);
+    $("#currentlayer div").css("background-image","url('"+image+"')");
+    $("#currentlayer").css("background-image","url('"+image+"')");
+    $("#currenttitle").html(title);
+    $("#currentartists").html(artists);
   },play : function(ev){
     this.options.ws.send({pause: true});
     ev.stopPropagation();
