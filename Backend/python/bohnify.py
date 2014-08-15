@@ -81,7 +81,7 @@ class Bohnify(object):
   def on_play_token_lost(self, session):
     self.session.player.pause()
     self.status["paused"] = True
-	cherrypy.engine.publish('websocket-broadcast', json.dumps({"playtoken" : True}))
+    cherrypy.engine.publish('websocket-broadcast', json.dumps({"playtoken" : True}))
     self.updateStatus()
 
   def updatePlaylist(self,con,playlist):
