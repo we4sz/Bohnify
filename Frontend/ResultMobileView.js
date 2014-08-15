@@ -42,7 +42,8 @@ var ResultMobileView = Backbone.View.extend({
         }else if(this.options.data.type == "clear"){
           this.$el.html("");
         }else if(this.options.data.type == "mymusic"){
-          this.$el.html((new MyMusicView({model : this.options.data.data, ws:this.options.ws})).render().$el);
+          console.log(this.model);
+          this.$el.html((new MyMusicMobileView({model : this.options.data.data, ws:this.options.ws})).render().$el);
         }
       }
       if(this.options.status){

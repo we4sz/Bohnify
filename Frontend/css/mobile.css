@@ -20,6 +20,146 @@ body, html{
  outline: none;
 }
 
+/*
+  --------------------------------------------------------------
+  My Music Content
+  --------------------------------------------------------------
+*/
+
+#mymusicheader{
+  height: 50px;
+  width: 100%;
+  background-color: #222326;
+}
+
+.mymusictab{
+  height: 50px;
+  text-align: center;
+}
+
+.mymusictab.tabselected{
+  height: 45px;
+  text-align: center;
+  border-bottom: 5px solid #678678;
+}
+
+
+.mymusictab div{
+  text-align: center;
+  border-right: 1px solid #ffffff;
+}
+
+#mymusicplaylists div{
+  border-right: none;
+}
+
+#mymusiccon{
+  width: 100%;
+  height: calc(100% - 50px);
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+
+/*
+  --------------------------------------------------------------
+  Playlistitem Content
+  --------------------------------------------------------------
+*/
+
+.playlist,
+.playlistfolder{
+  width: calc(100% - 20px);
+  margin-left: 10px;
+  border-bottom: 1px solid #2e2f33;
+  background-color: #121314;
+  padding: 10px 0px;
+  display: inline-block;
+}
+
+
+.playlistitem > .playlistitem > .playlist{
+  width: calc(100% - 40px);
+  margin-left: 30px;
+}
+
+.playlistitemimagecon{
+  float:left;
+  height: 50px;
+  width: 50px;
+}
+
+.playlistitemimage:nth-child(1):nth-last-child(4),
+.playlistitemimage:nth-child(2):nth-last-child(3),
+.playlistitemimage:nth-child(3):nth-last-child(2),
+.playlistitemimage:nth-child(4):nth-last-child(1) {
+    width: 25px;
+    height: 25px;
+}
+
+.playlistitemimage:only-child{
+  height: 50px;
+  width: 50px;
+}
+
+
+.playlistitemtext{
+  float: left;
+  margin-left: 10px;
+  margin-top: 7px;
+  width: calc(100% - 110px);
+}
+
+
+
+.playlistitemname{
+  color: #ffffff;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.playlistitemdesc{
+  color: #adaeb3;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.playlistitemmenu{
+  float: left;
+  height: 30px;
+  width: 50px;
+  margin-top: 12px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 30px 30px;
+  background-image: url("/images/menu.png");
+}
+
+.foldermaximize{
+  float: left;
+  height: 30px;
+  width: 50px;
+  margin-top: 12px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 30px 30px;
+  background-image: url("/images/expand.png");
+}
+
+.folderminimize{
+  float: left;
+  height: 30px;
+  width: 50px;
+  margin-top: 12px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 30px 30px;
+  background-image: url("/images/collapse.png");
+}
 
 /*
   --------------------------------------------------------------
@@ -925,9 +1065,9 @@ input[type="range"]:focus {
   position: absolute;
   width: 100%;
   left: 0px;
-  top: 60px;
+  top: 59px;
   bottom: 50px;
   background-color: #111213;
-  overflow-y: scroll;
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }

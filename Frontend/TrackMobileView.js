@@ -21,8 +21,10 @@ var TrackMobileView = Backbone.View.extend({
     if(window.lateststatus.party){
       html += "<div class='trackvote'>"+this.model.vote+"</div>";
     }
-    html += "<div class='tracktext'><div class='tracktitle'>"+this.model.title+"</div>";
-    html += "<div class='trackartistsalbum'>"+artists+" &#8226; "+this.model.album.title+"</div></div>";
+    html += "<div class='tracktext'>";
+    html += "<div class='tracktitle'>"+this.model.title+"</div>";
+    html += "<div class='trackartistsalbum'>"+artists+" &#8226; "+this.model.album.title+"</div>"
+    html += "</div>";
     html += "<div class='trackmenu'></div>";
     this.$el.html(html);
     return this;

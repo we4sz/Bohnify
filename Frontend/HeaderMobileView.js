@@ -5,7 +5,9 @@ var HeaderMobileView = Backbone.View.extend({
     'addbrowse' : 'add',
     'focus #search' : 'focus',
     'searchfocus' : 'searchfocus',
-    'blur #search' : 'blur'
+    'blur #search' : 'blur',
+    'searchunfocus' : 'searchunfocus',
+    'settext' : 'settext'
   },initialize : function (options) {
     this.options = options || {};
     this.options.future = [];
@@ -50,10 +52,15 @@ var HeaderMobileView = Backbone.View.extend({
   }, focus : function(){
     $("#leftmenu").trigger("toggle",true);
   }, blur : function(){
-    $("#search").css("visibility","hidden");
+    //$("#search").css("visibility","hidden");
   }, searchfocus : function(){
     $("#search").css("visibility","visible");
     $("#search").focus();
+  }, searchunfocus: function(){
+    $("#search").css("visibility","hidden");
+    $("#search").blur();
+  }, settext: function(_,text){
+    this.$el.find("#headtext").html(text);
   }
 
 });

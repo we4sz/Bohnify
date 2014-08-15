@@ -121,7 +121,6 @@ var PlaylistItem = Backbone.View.extend({
     }
     return false;
   }, select : function(){
-    console.log("asd")
     $(".playlistitem.selected").removeClass("selected");
     $(".playlistitem.passiveselected").removeClass("passiveselected");
     passiveSelectAll(this.$el);

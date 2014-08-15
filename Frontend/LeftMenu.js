@@ -132,6 +132,7 @@ var LeftMenu = Backbone.View.extend({
     this.render();
     if(!this.options.first){
       $("#mymusic").click();
+      this.options.first = true;
     }else{
       if(selected >= 0 && selected < this.model.length){
         this.select($(this.$el.find(".playlistitem").get(selected)),selected == 0);

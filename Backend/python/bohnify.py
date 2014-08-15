@@ -45,6 +45,7 @@ class Bohnify(object):
     self.session = spotify.Session()
     self.session.on(spotify.SessionEvent.CONNECTION_STATE_UPDATED, self.on_connection_state_changed)
     self.session.on(spotify.SessionEvent.END_OF_TRACK, self.on_end_of_track)
+    self.session.on(spotify.SessionEvent.PLAY_TOKEN_LOST, self.on_play_token_lost)
     self.session.preferred_bitrate(spotify.Bitrate.BITRATE_160k)
     try:
       self.audio_driver = spotify.AlsaSink(self.session)
@@ -76,6 +77,12 @@ class Bohnify(object):
     self.status["track"] = None
     self.updateStatus()
     self.next()
+	
+  def on_play_token_lost(self, session):
+    self.session.player.pause()
+    self.status["paused"] = True
+	cherrypy.engine.publish('websocket-broadcast', json.dumps({"playtoken" : True}))
+    self.updateStatus()
 
   def updatePlaylist(self,con,playlist):
     for pl in con:

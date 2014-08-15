@@ -6,6 +6,7 @@ var LeftMobileMenu = Backbone.View.extend({
     'click #menuhome' :  'gethome',
     'click #menusearch' :  'getsearch',
     'click #menutoplist' :  'gettoplist',
+    'newcon' :  'newcon',
     'selectsearch' : 'selectsearch'
   },
   initialize: function(options) {
@@ -14,7 +15,7 @@ var LeftMobileMenu = Backbone.View.extend({
   render: function() {
       this.$el.html(
                   "<div class='menuitem' id='menusearch'><div class='name'>Search</div></div>" +
-                  "<div class='menuitem selected' id='menuhome'><div class='name'>Your music</div></div>" +
+                  "<div class='menuitem' id='menuhome'><div class='name'>Your music</div></div>" +
                   "<div class='menuitem' id='menutoplist'><div class='name'>Toplist</div></div>" +
                   "<div class='menuitem' id='menuqueue'><div class='name'>Queue</div></div>" +
                   "<div class='menuitem' id='menuhistory'><div class='name'>History</div></div>");
@@ -31,36 +32,51 @@ var LeftMobileMenu = Backbone.View.extend({
       $("#result").trigger("update",{type: "load"});
       this.options.ws.send({getqueue : true});
     }
-    this.toggle();
+    this.toggle(false,true);
+    $("#search").trigger("searchunfocus");
+    $("#header").trigger("settext","QUEUE");
   },gethistory : function(){
     this.select("#menuhistory");
     if($(".historyview").length == 0){
       $("#result").trigger("update",{type: "load"});
       this.options.ws.send({gethistory : true});
     }
-    this.toggle();
+    this.toggle(false,true);
+    $("#search").trigger("searchunfocus");
+    $("#header").trigger("settext","HISTORY");
   },gettoplist : function(){
     this.select("#menutoplist");
     if($(".toplistview").length == 0){
       $("#result").trigger("update",{type: "load"});
       this.options.ws.send({gettoplist : true});
     }
-    this.toggle();
+    this.toggle(false,true);
+    $("#search").trigger("searchunfocus");
+    $("#header").trigger("settext","TOPLIST");
   },gethome : function(){
     this.select("#menuhome");
-    if($(".toplistview").length == 0){
-      $("#result").trigger("update",{type: "mymusic"});
+    if($(".mymusicview").length == 0){
+      $("#result").trigger("update",{type: "mymusic", data:this.options.con});
     }
-    this.toggle();
+    this.toggle(false,true);
+    $("#search").trigger("searchunfocus");
+    $("#header").trigger("settext","YOUR MUSIC");
   },getsearch : function(){
     this.select("#menusearch");
-    this.toggle();
+    this.toggle(false,true);
     $("#search").trigger("searchfocus");
+    $("#header").trigger("settext","SEARCH");
   }, select : function(target,first,passive){
     $(".menuitem.selected").removeClass("selected");
     $(".menuitem.passiveselected").removeClass("passiveselected");
     $(target).addClass("selected");
   }, selectsearch : function(){
     this.select("#menusearch");
+  }, newcon : function(_,con){
+    this.options.con = con;
+    if(!this.options.first){
+      $("#menuhome").click();
+      this.options.first = true;
+    }
   }
 });
