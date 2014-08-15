@@ -31,37 +31,49 @@ var QueueView = Backbone.View.extend({
     $(this.$el.find(".tracksview").get(0)).trigger("passiveselectfirst");
     return this;
   }, update : function(){
-    var selectedTrack = $(".track.selected");
-    if(selectedTrack){
-        if(selectedTrack.hasClass("manualtrack")){
-          this.options.selected = {hasclass : "manualtrack", track : this.model[this.options.manual].queue.at(selectedTrack.index())};
-        }else if(selectedTrack.hasClass("standardtrack")){
-          this.options.selected = {hasclass : "standardtrack", track : this.model[this.options.standard].queue.at(selectedTrack.index())};
-        }else if(selectedTrack.hasClass("votetrack")){
-          this.options.selected = {hasclass : "votetrack", track : this.model[this.options.vote].queue.at(selectedTrack.index())};
-        }
-    }
     this.options.ws.send({getqueue : true});
   }, newqueue : function (_,queue){
+    var index = -1;
+    var passive = false;
+    var tracks = $(".track");
+    tracks.each(function(i){
+      if($( this ).hasClass("selected")){
+        index = i;
+        return false;
+      }else if($( this ).hasClass("passiveselected")){
+        index = i;
+        passive = true;
+        return false;
+      }
+    })
+
+    var scroll = $("#result").scrollTop();
     this.model = queue;
     this.render();
-    if(this.options.selected && this.options.selected.track){
-      $(".track."+this.options.selected.hasclass).trigger("selecturi",this.options.selected.track.uri);
-      if($(".track.selected").length == 0){
-        $("#queue").trigger("select");
+    tracks = $(".track");
+    if(index >= 0){
+      if(tracks.length > index){
+        $(tracks.get(index)).trigger(passive ? "passiveselect" : "select");
+      }else if(tracks.length > 0){
+        $(tracks.get(tracks.length -1)).trigger(passive ? "passiveselect" : "select");
+      }else{
+        $(".playlistitem.passiveselected").trigger("makeselect");
       }
+    }else if(tracks.length > 0){
+      $(tracks.get(0)).trigger(passive ? "passiveselect" : "select");
     }
+    $("#result").scrollTop(scroll);
   }, delete : function(){
     var selectedTrack = $(".track.selected");
     if(selectedTrack){
         if(selectedTrack.hasClass("manualtrack")){
-          track = this.model[this.options.manual].queue.at(selectedTrack.index());
+          track = this.model[this.options.manual].queue[selectedTrack.index()];
           this.options.ws.send({removemanualqueue : [track.uri]});
         }else if(selectedTrack.hasClass("standardtrack")){
-          track = this.model[this.options.standard].queue.at(selectedTrack.index());
+          track = this.model[this.options.standard].queue[selectedTrack.index()];
           this.options.ws.send({removestandardqueue : [track.uri]});
         }else if(selectedTrack.hasClass("votetrack")){
-          track = this.model[this.options.vote].queue.at(selectedTrack.index());
+          track = this.model[this.options.vote].queue[selectedTrack.index()];
           this.options.ws.send({removemanualqueue : [track.uri]});
         }
     }

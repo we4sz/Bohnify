@@ -34,7 +34,7 @@ var ResultView = Backbone.View.extend({
           if($(".historyview").length == 0){
             this.$el.html((new HistoryView({model : this.options.data.data, ws:this.options.ws})).render().$el);
           }else{
-            $(".historyview").trigger("newhistory",this.options.data.data);
+            $(".historyview").trigger("newhistory",[this.options.data.data]);
           }
         }else if(this.options.data.type == "load"){
           var html = "<div class='resultloader'></div>";

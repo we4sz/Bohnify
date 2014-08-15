@@ -18,21 +18,35 @@ var PlaylistView = Backbone.View.extend({
       return this;
   }, update : function(_,pl){
     if(this.model.uri == pl.uri){
-      var selected = $(".track.selected").index();
-      var passive = $(".track.passiveselected").index();
+      var index = -1;
+      var passive = true;
+      var tracks = $(".track");
+      tracks.each(function(i){
+        if($( this ).hasClass("selected")){
+          index = i;
+          passive = false;
+          return false;
+        }else if($( this ).hasClass("passiveselected")){
+          index = i;
+          return false;
+        }
+      })
+
       var scroll = $("#result").scrollTop();
       this.model = pl;
       this.render();
-      if(selected >= 0 && selected < this.model.tracks.length){
-        $(this.$el.find(".track").get(selected)).trigger("select");
-      }else if(passive >= 0 && passive < this.model.tracks.length){
-        $(this.$el.find(".track").get(passive)).trigger("passiveselect");
-      }else if(selected){
-        this.$el.find(".tracksview").trigger("select");
-      }else{
-        this.$el.find(".tracksview").trigger("passiveselectfirst");
+      tracks = $(".track");
+      if(index >= 0){
+        if(tracks.length > index){
+          $(tracks.get(index)).trigger(passive ? "passiveselect" : "select");
+        }else if(tracks.length > 0){
+          $(tracks.get(tracks.length -1)).trigger(passive ? "passiveselect" : "select");
+        }else{
+          $(".playlistitem.passiveselected").trigger("makeselect");
+        }
+      }else if(tracks.length > 0){
+        $(tracks.get(0)).trigger(passive ? "passiveselect" : "select");
       }
-
       $("#result").scrollTop(scroll);
     }
   }
