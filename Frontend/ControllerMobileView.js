@@ -176,9 +176,12 @@ var ControllerMobileView = Backbone.View.extend({
   },decreaseVolume : function(){
     this.options.ws.send({decreasevolume: true});
   }, show : function(){
-    this.$el.css("visibility","visible");
+    this.$el.css("display","inline");
+    this.fixsize();
   }, close : function(){
-    this.$el.css("visibility","hidden");
+    this.$el.css("display","none");
+    this.fixsize();
+
   }, changeorientation : function(){
     var topl = $("#controlltopleft");
     var topm = $("#controlltopmiddle");
