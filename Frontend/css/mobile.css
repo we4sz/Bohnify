@@ -20,6 +20,78 @@ body, html{
  outline: none;
 }
 
+
+
+div.click,
+p.click,
+td.click{
+  background-color: #333437;
+}
+
+div.click,
+p.click,
+td.click{
+  background-color: #333437;
+}
+
+
+/*
+  --------------------------------------------------------------
+  Separator Content
+  --------------------------------------------------------------
+*/
+
+.artistseparator{
+  margin-left: 10px;
+  margin-top: 30px;
+  width: calc(100% - 20px);
+  border-bottom: 1px solid #222326;
+}
+
+.artistseparatortext{
+  color: #84898c;
+  font-size: 16px;
+}
+
+
+
+/*
+  --------------------------------------------------------------
+  Artist Content
+  --------------------------------------------------------------
+*/
+
+#artistrelated{
+  overflow: hidden;
+  border-top: solid 10px rgba(0, 0, 0, 0);
+  border-bottom: solid 10px rgba(0, 0, 0, 0);
+  margin-left: 10px;
+  width: calc(100% - 20px);
+}
+
+#artistrelated p {
+  position:relative;
+  line-height:1.0em;
+  height:3em;
+  margin: 0px;
+}
+#artistrelated p::after {
+  content:"...";
+  font-weight:bold;
+  position:absolute;
+  bottom:0;
+  right:0;
+  padding:0 20px 1px 5px;
+  background-color: #111213;
+}
+
+
+
+#artistrelated p.click::after{
+  background-color: #333437;
+}
+
+
 /*
   --------------------------------------------------------------
   My Music Content
@@ -73,7 +145,8 @@ body, html{
   margin-left: 10px;
   border-bottom: 1px solid #2e2f33;
   background-color: #121314;
-  padding: 10px 0px;
+  border-top: solid 10px rgba(0, 0, 0, 0);
+  border-bottom: solid 10px rgba(0, 0, 0, 0);
   display: inline-block;
 }
 
@@ -899,10 +972,13 @@ input[type="range"]:focus {
   background-image: url("/images/headmenu.png");
   background-size: 30px 30px;
   background-repeat: no-repeat;
-  width: 100px;
+  max-width: 100px;
   height: 30px;
   float: left;
   font-size: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 #search {
@@ -920,6 +996,75 @@ input[type="range"]:focus {
 #search:focus{
   outline: none;
 }
+
+
+/*
+  --------------------------------------------------------------
+  Albumcard Content
+  --------------------------------------------------------------
+*/
+
+
+.albumcard{
+  width: 150px;
+  background-color: #222326;
+  float:left;
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+.albumcardimage{
+  width:150px;
+  height: 150px;
+}
+
+.albumcardtextcon{
+  width: 100%;
+}
+
+.albumcardname{
+  width: calc(100% - 10px);
+  font-size: 12px;
+  color:#fafafa;
+  margin-left: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 5px;
+}
+
+
+.albumcardtracks{
+  width: calc(100% - 10px);
+  color: #adaeb3;
+  font-size: 10px;
+  margin-left: 5px;
+}
+
+.albumcardyear{
+  width: calc(100% - 10px);
+  color: #bdbdbe;
+  font-size: 8px;
+  padding-bottom: 5px;
+  margin-left: 5px;
+  margin-top: 15px;
+}
+
+.artistalbumcon{
+  width: 100%;
+  display: inline-block;
+  padding-bottom: 5px;
+}
+
+
+/*
+  --------------------------------------------------------------
+  Browse Content
+  --------------------------------------------------------------
+*/
+
+
+
 
 /*
   --------------------------------------------------------------
@@ -992,6 +1137,7 @@ input[type="range"]:focus {
   --------------------------------------------------------------
 */
 
+
 #leftmenu{
   position: absolute;
   top: 59px;
@@ -1001,6 +1147,13 @@ input[type="range"]:focus {
   overflow: hidden;
   -webkit-transition: width 0.3s; /* For Safari 3.1 to 6.0 */
   transition: width 0.3s;
+  z-index: 300;
+}
+
+#leftmenumenu{
+  width: 70%;
+  float:left;
+  height: 100%;
   background: rgb(9,9,9); /* Old browsers */
   background: -moz-linear-gradient(left,  rgba(9,9,9,1) 64%, rgba(9,9,9,1) 64%, rgba(33,33,33,1) 100%); /* FF3.6+ */
   background: -webkit-gradient(linear, left top, right top, color-stop(64%,rgba(9,9,9,1)), color-stop(64%,rgba(9,9,9,1)), color-stop(100%,rgba(33,33,33,1))); /* Chrome,Safari4+ */
@@ -1009,11 +1162,17 @@ input[type="range"]:focus {
   background: -ms-linear-gradient(left,  rgba(9,9,9,1) 64%,rgba(9,9,9,1) 64%,rgba(33,33,33,1) 100%); /* IE10+ */
   background: linear-gradient(to right,  rgba(9,9,9,1) 64%,rgba(9,9,9,1) 64%,rgba(33,33,33,1) 100%); /* W3C */
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#090909', endColorstr='#212121',GradientType=1 ); /* IE6-9 */
-  z-index: 2;
+}
+
+#leftmenuoverflow{
+  width: 30%;
+  float:left;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
 }
 
 #leftmenu.wide{
-  width:70%;
+  width:100%;
 }
 
 #leftmenu .menuitem{

@@ -3,7 +3,9 @@ var PlaylistMobileItem = Backbone.View.extend({
     'click .playlistfolder' : 'expand',
     'click .playlist' : 'show',
     'click .playlistitemmenu' : 'opencontext',
-    "update" : "update"
+    "update" : "update",
+    'touchstart .playlistitemitem' : 'select',
+    'touchend .playlistitemitem' : 'unselect'
   },initialize : function (options) {
     this.options = options || {};
     this.options.isbig = false;
@@ -49,7 +51,7 @@ var PlaylistMobileItem = Backbone.View.extend({
 
 
     var html = $.parseHTML(
-        "<div class='"+folderclass+"'>"
+        "<div class='"+folderclass+" playlistitemitem'>"
       + "<div class='playlistitemimagecon'>"
       + "<img class='playlistitemimage' src='"+image+"'/>"
       + "</div>"
@@ -73,27 +75,12 @@ var PlaylistMobileItem = Backbone.View.extend({
     }
     return this;
   },show : function(ev){
-    var el = this.$el.find(".playlist");
-    var color = el.css("background-color");
-    this.options.blink = setTimeout(function(){
-      el.css("background-color", color);
-    },300);
-    el.css("background-color", "#333437");
-
     $("#result").trigger("update",{type: "playlist",data: this.model});
     $("#header").trigger("addbrowse",{type: "playlist",data: this.model});
-
-
     return false;
   },expand : function(){
     this.options.isbig = !this.options.isbig;
     this.render();
-    var el = this.$el.find(".playlistfolder");
-    var color = el.css("background-color");
-    this.options.blink = setTimeout(function(){
-      el.css("background-color", color);
-    },300);
-    el.css("background-color", "#333437");
   },play : function(ev){
     if(this.$el.find(".playlistfolder").length > 0){
       this.expand();
@@ -153,5 +140,9 @@ var PlaylistMobileItem = Backbone.View.extend({
       this.model = pl;
       this.render();
     }
+  }, select:function(){
+    this.$el.find(".playlistitemitem").toggleClass("click");
+  }, unselect:function(){
+    this.$el.find(".playlistitemitem").removeClass("click");
   }
 });

@@ -168,11 +168,15 @@ class Transformer(object):
   def album_b(self,album, callback, artist = None, arr = None):
     a = Cache.Instance().getAlbum(album.link.uri, True)
     if arr != None:
-      album.load()
+      self.album(album)
       if self.arrayContainsAlbum(arr, album.name):
         return callback(None)
+      elif album.type > 1:
+        return callback(None)
+      elif artist != None and artist != album.artist.link.uri:
+        return callback(None)
     if a != None:
-      callback(a)
+      return callback(a)
     else:
       def albumBrowsed(album):
         album.load()
@@ -201,7 +205,7 @@ class Transformer(object):
         if arr != None:
           if ("tracks" in a and len(a["tracks"]) == 0) or self.arrayContainsAlbum(arr, album.album.name):
             return callback(None)
-        callback(a)
+        return callback(a)
       album = album.browse(albumBrowsed)
 
   def artists(self,artists):

@@ -56,7 +56,7 @@ class Cache(object):
     uri = uri+"_b" if browse else uri
     artist = self.artists[uri] if uri in self.artists else None
     if browse and artist != None:
-      for track in artist["topTracks"]:
+      for track in artist["toptracks"]:
         BohnifyQueue.Instance().setVoteToTrack(track)
       for album in artist["albums"]:
         if "tracks" in album:

@@ -13,9 +13,11 @@
   <script type="text/javascript" src="PlaylistView.js"></script>
   <script type="text/javascript" src="PlaylistMobileView.js"></script>
   <script type="text/javascript" src="BrowseHeader.js"></script>
+  <script type="text/javascript" src="BrowseMobileHeader.js"></script>
   <script type="text/javascript" src="MyMusicView.js"></script>
   <script type="text/javascript" src="MyMusicMobileView.js"></script>
   <script type="text/javascript" src="ArtistAlbumHeader.js"></script>
+  <script type="text/javascript" src="AlbumMobileCard.js"></script>
   <script type="text/javascript" src="PlaylistItem.js"></script>
   <script type="text/javascript" src="PlaylistMobileItem.js"></script>
   <script type="text/javascript" src="SearchView.js"></script>
@@ -32,6 +34,7 @@
   <script type="text/javascript" src="AlbumView.js"></script>
   <script type="text/javascript" src="AlbumMobileView.js"></script>
   <script type="text/javascript" src="ArtistView.js"></script>
+  <script type="text/javascript" src="ArtistMobileView.js"></script>
   <script type="text/javascript" src="ArtistAlbumView.js"></script>
   <script type="text/javascript" src="ArtistAppearsView.js"></script>
   <script type="text/javascript" src="ArtistTopView.js"></script>
@@ -88,21 +91,16 @@
         document.ontouchstart = removeContextEvent;
         document.body.onclick= removeContextEvent;
 
-        document.body.onclick= function(ev){
-          if(ev.target.id != "contextmenu" && !ev.target.classList.contains("contextitem")){
-            $("#contextmenu").remove();
-            ev.stopPropagation();
-          }
-        }
+
         var host = window.document.location.host.replace(/:.*/, '');
         var ws = new WebSocket('ws://' + host + ':1650/ws');
 
         ws.onclose = function(){
-          console.log("socket close");
+          document.location.reload(true);
         }
 
         ws.onerror = function(err){
-          console.log(err);
+          document.location.reload(true);
         }
 
         ws.onopen = function(){

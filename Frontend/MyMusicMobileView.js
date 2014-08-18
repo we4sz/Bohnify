@@ -43,7 +43,6 @@ var MyMusicMobileView = Backbone.View.extend({
     var parent = this.$el.find("#mymusiccon");
     parent.html("");
     if(el[0].id == "mymusicplaylists"){
-      console.log(this.model);
       this.model.forEach(function(pl){
         parent.append((new PlaylistMobileItem({model: pl, ws: this.options.ws})).render().$el);
       }.bind(this));

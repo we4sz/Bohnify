@@ -13,12 +13,17 @@ var ResultMobileView = Backbone.View.extend({
           $("#header").trigger("settext",playlist.name);
           this.$el.html((new PlaylistMobileView({model : playlist, ws:this.options.ws})).render().$el);
         }else if(this.options.data.type == "search"){
+          $("#header").trigger("settext","SEARCH");
           this.$el.html((new SearchMobileView({model : this.options.data.data, ws:this.options.ws})).render().$el);
+        }else if(this.options.data.type == "newsearch"){
+          $("#header").trigger("settext","SEARCH");
+          this.$el.html("");
         }else if(this.options.data.type == "album"){
           $("#header").trigger("settext",this.options.data.data.title);
           this.$el.html((new AlbumMobileView({model : this.options.data.data, ws:this.options.ws})).render().$el);
         }else if(this.options.data.type == "artist"){
-          this.$el.html((new ArtistView({model : this.options.data.data, ws:this.options.ws})).render().$el);
+          $("#header").trigger("settext", this.options.data.data.name);
+          this.$el.html((new ArtistMobileView({model : this.options.data.data, ws:this.options.ws})).render().$el);
         }else if(this.options.data.type == "track"){
           $("#header").trigger("settext", this.options.data.data.name);
           this.$el.html((new AlbumMobileView({model : this.options.data.data, ws:this.options.ws})).render().$el);

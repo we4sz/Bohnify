@@ -7,18 +7,25 @@ var LeftMobileMenu = Backbone.View.extend({
     'click #menusearch' :  'getsearch',
     'click #menutoplist' :  'gettoplist',
     'newcon' :  'newcon',
-    'selectsearch' : 'selectsearch'
+    'selectsearch' : 'selectsearch',
+    'touchstart .menuitem' : 'clickselect',
+    'touchend .menuitem' : 'clickunselect',
+    'click #leftmenuoverflow' : 'toggle'
   },
   initialize: function(options) {
       this.options = options || {};
   },
   render: function() {
       this.$el.html(
+                  "<div id='leftmenumenu'>" +
                   "<div class='menuitem' id='menusearch'><div class='name'>Search</div></div>" +
                   "<div class='menuitem' id='menuhome'><div class='name'>Your music</div></div>" +
                   "<div class='menuitem' id='menutoplist'><div class='name'>Toplist</div></div>" +
                   "<div class='menuitem' id='menuqueue'><div class='name'>Queue</div></div>" +
-                  "<div class='menuitem' id='menuhistory'><div class='name'>History</div></div>");
+                  "<div class='menuitem' id='menuhistory'><div class='name'>History</div></div>" +
+                  "</div>" +
+                  "<div id='leftmenuoverflow'></div>"
+                  );
       return this;
   },toggle : function(_, remove, search){
     if(this.$el.hasClass("wide") || remove){
@@ -34,6 +41,7 @@ var LeftMobileMenu = Backbone.View.extend({
     }
     this.toggle(false,true);
     $("#search").trigger("searchunfocus");
+    return false;
   },gethistory : function(){
     this.select("#menuhistory");
     if($(".historyview").length == 0){
@@ -42,6 +50,7 @@ var LeftMobileMenu = Backbone.View.extend({
     }
     this.toggle(false,true);
     $("#search").trigger("searchunfocus");
+    return false;
   },gettoplist : function(){
     this.select("#menutoplist");
     if($(".toplistview").length == 0){
@@ -50,6 +59,7 @@ var LeftMobileMenu = Backbone.View.extend({
     }
     this.toggle(false,true);
     $("#search").trigger("searchunfocus");
+    return false;
   },gethome : function(){
     this.select("#menuhome");
     if($(".mymusicview").length == 0){
@@ -58,11 +68,15 @@ var LeftMobileMenu = Backbone.View.extend({
     this.toggle(false,true);
     $("#search").trigger("searchunfocus");
     $("#header").trigger("addbrowse",{type: "mymusic"});
+    return false;
   },getsearch : function(){
     this.select("#menusearch");
     this.toggle(false,true);
-    $("#search").trigger("searchfocus");
-    $("#header").trigger("settext","SEARCH");
+    if($(".searchview").length == 0){
+      $("#search").trigger("searchfocus");
+      $("#result").trigger("update",{type: "newsearch"});
+    }
+    return false;
   }, select : function(target,first,passive){
     $(".menuitem.selected").removeClass("selected");
     $(".menuitem.passiveselected").removeClass("passiveselected");
@@ -75,5 +89,17 @@ var LeftMobileMenu = Backbone.View.extend({
       $("#menuhome").click();
       this.options.first = true;
     }
+  }, clickselect:function(ev){
+    console.log("as")
+    var el = $(ev.target);
+    while(!el.hasClass("menuitem")){
+      el = $(el.parent());
+    }
+    this.options.touched = el;
+    el.toggleClass("click");
+  }, clickunselect:function(){
+    $(this.options.touched).removeClass("click");
+  }, hide: function(ev){
+    console.log("asdasd")
   }
 });

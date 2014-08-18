@@ -4,7 +4,9 @@ var TrackMobileView = Backbone.View.extend({
     'click .trackmenu' : 'opencontext',
     'contextmenu' : 'opencontext',
     'markcurrent' : 'currenttrack',
-    'votechange' : 'votechange'
+    'votechange' : 'votechange',
+    'touchstart' : 'select',
+    'touchend' : 'unselect'
   },initialize : function (options) {
     this.options = options || {};
     this.options.extraclass =  options.extraclass;
@@ -29,11 +31,6 @@ var TrackMobileView = Backbone.View.extend({
     this.$el.html(html);
     return this;
   },play : function(){
-    var color = this.$el.css("background-color");
-    this.options.blink = setTimeout(function(){
-      this.$el.css("background-color", color);
-    }.bind(this),300);
-    this.$el.css("background-color", "#333437");
     this.$el.parent().trigger("play",[this.options.index]);
   },browsealbum : function(){
     $("#result").trigger("update",{type: "load"});
@@ -81,11 +78,13 @@ var TrackMobileView = Backbone.View.extend({
       });
 
       el.find("#contextartist").click(function(ev){
+        $("#result").trigger("update",{type: "load"});
         this.options.ws.send({search : this.model.artists[0].uri});
         el.remove();
       }.bind(this));
 
       el.find("#contextalbum").click(function(ev){
+        $("#result").trigger("update",{type: "load"});
         this.options.ws.send({search : this.model.album.uri});
         el.remove();
       }.bind(this));
@@ -96,5 +95,9 @@ var TrackMobileView = Backbone.View.extend({
       el.css('height',(h*el.find(".contextitem").length)+"px");
       return false;
     }
+  }, select:function(){
+    this.$el.toggleClass("click");
+  }, unselect:function(){
+    this.$el.removeClass("click");
   }
 });

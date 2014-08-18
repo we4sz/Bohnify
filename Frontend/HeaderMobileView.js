@@ -2,6 +2,8 @@ var HeaderMobileView = Backbone.View.extend({
   events : {
     'search' : 'search',
     'click #headtext' : 'toggleleftmenu',
+    'touchstart #headtext' : 'select',
+    'touchend #headtext' : 'unselect',
     'addbrowse' : 'add',
     'focus #search' : 'focus',
     'searchfocus' : 'searchfocus',
@@ -58,23 +60,26 @@ var HeaderMobileView = Backbone.View.extend({
     this.options.current = command;
     this.options.future = []
   },toggleleftmenu : function(){
-    this.options.blink = setTimeout(this.removeblink.bind(this),300);
-    this.$el.find("#headtext").css("background-color","#333437");
     $("#leftmenu").trigger("toggle");
-  },removeblink : function(){
-    this.$el.find("#headtext").css("background-color","transparent");
   }, focus : function(){
     $("#leftmenu").trigger("toggle",true);
   }, blur : function(){
     //$("#search").css("visibility","hidden");
   }, searchfocus : function(){
     $("#search").css("visibility","visible");
+    $("#headtext").css("width","100px");
     $("#search").focus();
   }, searchunfocus: function(){
     $("#search").css("visibility","hidden");
+    $("#headtext").css({"max-width": "calc(100% - 40px)",
+                        "width" : ""});
     $("#search").blur();
   }, settext: function(_,text){
     this.$el.find("#headtext").html(text);
+  }, select:function(){
+    this.$el.find("#headtext").toggleClass("click");
+  }, unselect:function(){
+    this.$el.find("#headtext").removeClass("click");
   }
 
 });

@@ -300,11 +300,13 @@ var ControllerMobileView = Backbone.View.extend({
       });
 
       el.find("#contextartist").click(function(ev){
+        $("#result").trigger("update",{type: "load"});
         this.options.ws.send({search : this.model.track.artists[0].uri});
         el.remove();
       }.bind(this));
 
       el.find("#contextalbum").click(function(ev){
+        $("#result").trigger("update",{type: "load"});
         this.options.ws.send({search : this.model.track.album.uri});
         el.remove();
       }.bind(this));
