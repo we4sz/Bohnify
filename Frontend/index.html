@@ -11,6 +11,7 @@
   <script type="text/javascript" src="LoginView.js"></script>
   <script type="text/javascript" src="LoginMobileView.js"></script>
   <script type="text/javascript" src="PlaylistView.js"></script>
+  <script type="text/javascript" src="PlaylistMobileView.js"></script>
   <script type="text/javascript" src="BrowseHeader.js"></script>
   <script type="text/javascript" src="MyMusicView.js"></script>
   <script type="text/javascript" src="MyMusicMobileView.js"></script>
@@ -29,6 +30,7 @@
   <script type="text/javascript" src="ArtistSimilarItem.js"></script>
   <script type="text/javascript" src="ArtistViewSeparator.js"></script>
   <script type="text/javascript" src="AlbumView.js"></script>
+  <script type="text/javascript" src="AlbumMobileView.js"></script>
   <script type="text/javascript" src="ArtistView.js"></script>
   <script type="text/javascript" src="ArtistAlbumView.js"></script>
   <script type="text/javascript" src="ArtistAppearsView.js"></script>
@@ -74,9 +76,8 @@
         }
 
         var removeContextEvent = function(ev){
-          if($("#contextmenu").length > 0 && ev.target.id != "contextmenu" && !ev.target.classList.contains("contextitem")){
+          if($("#contextmenu").length > 0 && ev.target.id != "contextmenu" && ev.target.id != "contextvolume" && !ev.target.classList.contains("contextitem")){
             $("#contextmenu").remove();
-            console.log("asd")
             ev.preventDefault();
             ev.stopPropagation();
             return false;
@@ -94,7 +95,7 @@
           }
         }
         var host = window.document.location.host.replace(/:.*/, '');
-        var ws = new WebSocket('ws://' + "johanssonjohn.com" + ':1650/ws');
+        var ws = new WebSocket('ws://' + host + ':1650/ws');
 
         ws.onclose = function(){
           console.log("socket close");

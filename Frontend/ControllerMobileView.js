@@ -1,6 +1,5 @@
 var ControllerMobileView = Backbone.View.extend({
   events : {
-    'input #controllvolume' : 'volume',
     'click #controllprev' : 'prev',
     'click #controllpause' : 'pause',
     'click #controllnext' : 'next',
@@ -13,8 +12,7 @@ var ControllerMobileView = Backbone.View.extend({
     'status' : 'update',
     'touchstart #controllposition' : 'disablepos',
     'touchend #controllposition' : 'activatepos',
-    'touchstart #controllvolume' : 'disablevol',
-    'touchend #controllvolume' : 'activatevol',
+    'click #controllvolume' : 'showvol',
     'show' : 'show',
     'click #controllexit' : 'close'
   },initialize : function (options) {
@@ -77,15 +75,6 @@ var ControllerMobileView = Backbone.View.extend({
     this.changeorientation();
     this.fixsize();
     return this;
-  },volume : function(){
-    var s = $("#controllvolume");
-    var val = ($(s).val() - $(s).attr('min')) / ($(s).attr('max') - $(s).attr('min'));
-    $(s).css('background-image',
-                '-webkit-gradient(linear, left top, right top, '
-                + 'color-stop(' + val + ', #88898c), '
-                + 'color-stop(' + val + ', #3d3d3f)'
-                + ')'
-                );
   },position : function(){
     var s = $("#controllposition");
     var val = ($(s).val() - $(s).attr('min')) / ($(s).attr('max') - $(s).attr('min'));
@@ -156,21 +145,58 @@ var ControllerMobileView = Backbone.View.extend({
         this.position();
       }
     }.bind(this),200);
-    if(this.options.volume){
-      $("#controllvolume").val(status.volume);
+
+    if(this.options.volume && $("#contextvolume").length == 1){
+      $("#contextvolume").val(status.volume);
       this.volume();
     }
+
     $("#controlltime").text(toMinutesAndSeconds(status.position/1000));
   },disablepos : function(){
     this.options.position = false;
   },activatepos : function(){
     this.options.ws.send({seek: $("#controllposition").val()});
     this.options.position = true;
-  },disablevol : function(){
-    this.options.volume = false;
-  },activatevol : function(){
-    this.options.ws.send({volume: $("#controllvolume").val()});
-    this.options.volume = true;
+  },volume: function(){
+    var s = $("#contextvolume");
+    var val = ($(s).val() - $(s).attr('min')) / ($(s).attr('max') - $(s).attr('min'));
+    $(s).css('background-image',
+                '-webkit-gradient(linear, left top, right top, '
+                + 'color-stop(' + val + ', #88898c), '
+                + 'color-stop(' + val + ', #1a1a1a)'
+                + ')'
+                );
+  },showvol: function(){
+    var add = $("#contextmenu").length == 0;
+    $("#contextmenu").remove();
+    if(this.model && this.model.track && add){
+      var html =  "<div id='contextmenu'>" +
+                  "<div class='contextitem'><input id='contextvolume' max=100 min=0 value="+this.model.volume+" type='range' /></div>" +
+                  "</div>";
+      var el = $($.parseHTML(html));
+
+
+
+      el.find("#contextvolume").on("touchstart",function(){
+        this.options.volume = false;
+      }.bind(this));
+
+      el.find("#contextvolume").on("touchend",function(){
+        this.options.ws.send({volume: $("#contextvolume").val()});
+        this.options.volume = true;
+      }.bind(this));
+
+      el.find("#contextvolume").on("input",function(){
+        this.volume();
+      }.bind(this));
+
+
+      $(document.body).append(el);
+      var h = el.find(".contextitem").outerHeight();
+      el.css('height',(h*el.find(".contextitem").length)+"px");
+      this.volume();
+      return false;
+    }
   },increaseVolume : function(){
     this.options.ws.send({increasevolume: true});
   },decreaseVolume : function(){
@@ -241,10 +267,18 @@ var ControllerMobileView = Backbone.View.extend({
   }, fixsize: function(){
     var middle = $("#controllmiddle");
     var img = $("#controlltrackimage");
+    var left = $("#controllmiddleleft");
     img.css("width","0px");
     img.css("height","0px");
-    img.css("width",middle.innerHeight()+"px");
-    img.css("height",middle.innerHeight()+"px");
+    if(window.orientation == 0 ){
+      img.css("width","100%");
+      img.css("height",middle.innerHeight()+"px");
+      left.css("width","100%");
+    }else{
+      img.css("width",middle.innerHeight()+"px");
+      img.css("height",middle.innerHeight()+"px");
+      left.css("width",img.outerWidth(true)+"px");
+    }
   }, menu : function(){
     var add = $("#contextmenu").length == 0;
     $("#contextmenu").remove();

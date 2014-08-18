@@ -37,7 +37,21 @@ var HeaderMobileView = Backbone.View.extend({
       $("#result").trigger("update",{type: "load"});
       this.options.ws.send(this.options.current,true);
     }
+  },foward : function(){
+    this.options.history.push(this.options.current);
+    this.options.current = this.options.future.pop();
+    if(this.options.current.type === "playlist"){
+      $(".playlistitem").trigger("selectfromuri",this.options.current.data);
+    }else if(this.options.current.type === "mymusic"){
+      $("#mymusic").trigger("select",true);
+    }else{
+      $("#result").trigger("update",{type: "load"});
+      this.options.ws.send(this.options.current,true);
+    }
+    this.fixClasses();
   },add: function(_, command){
+    var host = window.document.location.host.replace(/:.*/, '');
+
     if(this.options.current){
       this.options.history.push(this.options.current);
     }

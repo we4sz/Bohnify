@@ -34,7 +34,6 @@ var LeftMobileMenu = Backbone.View.extend({
     }
     this.toggle(false,true);
     $("#search").trigger("searchunfocus");
-    $("#header").trigger("settext","QUEUE");
   },gethistory : function(){
     this.select("#menuhistory");
     if($(".historyview").length == 0){
@@ -43,7 +42,6 @@ var LeftMobileMenu = Backbone.View.extend({
     }
     this.toggle(false,true);
     $("#search").trigger("searchunfocus");
-    $("#header").trigger("settext","HISTORY");
   },gettoplist : function(){
     this.select("#menutoplist");
     if($(".toplistview").length == 0){
@@ -52,7 +50,6 @@ var LeftMobileMenu = Backbone.View.extend({
     }
     this.toggle(false,true);
     $("#search").trigger("searchunfocus");
-    $("#header").trigger("settext","TOPLIST");
   },gethome : function(){
     this.select("#menuhome");
     if($(".mymusicview").length == 0){
@@ -60,7 +57,7 @@ var LeftMobileMenu = Backbone.View.extend({
     }
     this.toggle(false,true);
     $("#search").trigger("searchunfocus");
-    $("#header").trigger("settext","YOUR MUSIC");
+    $("#header").trigger("addbrowse",{type: "mymusic"});
   },getsearch : function(){
     this.select("#menusearch");
     this.toggle(false,true);

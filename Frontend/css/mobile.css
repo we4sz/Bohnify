@@ -363,6 +363,7 @@ body, html{
 */
 
 table {
+    table-layout: fixed;
     border-collapse: collapse;
 }
 th, td {
@@ -447,8 +448,7 @@ th, td {
 
   #controlltrackimage{
     height: 100%;
-    width: calc(100% - 40px);
-    margin-left: 20px;
+    width: 100%;
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
@@ -647,6 +647,7 @@ th, td {
   #controllmiddleright{
     text-align: right;
     height: 100%;
+    width: 50px;
   }
 
 
@@ -858,11 +859,16 @@ input[type="range"]:focus {
 
   .contextitem{
     width: 100%;
-    padding: 15px;
+    padding: 20px;
+    margin-left: -20px;
     border-top: 1px solid #acacac;
     border-left: 1px solid #797979;
     border-right: 1px solid #797979;
     background-color: #353535;
+  }
+
+  #contextvolume{
+    width: 100%;
   }
 
 

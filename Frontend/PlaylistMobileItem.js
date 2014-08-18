@@ -73,15 +73,27 @@ var PlaylistMobileItem = Backbone.View.extend({
     }
     return this;
   },show : function(ev){
+    var el = this.$el.find(".playlist");
+    var color = el.css("background-color");
+    this.options.blink = setTimeout(function(){
+      el.css("background-color", color);
+    },300);
+    el.css("background-color", "#333437");
+
     $("#result").trigger("update",{type: "playlist",data: this.model});
     $("#header").trigger("addbrowse",{type: "playlist",data: this.model});
+
+
     return false;
-  },click : function(){
-    this.options.isbig = !this.options.isbig;
-    this.render();
   },expand : function(){
     this.options.isbig = !this.options.isbig;
     this.render();
+    var el = this.$el.find(".playlistfolder");
+    var color = el.css("background-color");
+    this.options.blink = setTimeout(function(){
+      el.css("background-color", color);
+    },300);
+    el.css("background-color", "#333437");
   },play : function(ev){
     if(this.$el.find(".playlistfolder").length > 0){
       this.expand();
