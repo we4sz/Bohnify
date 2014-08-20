@@ -96,11 +96,15 @@
         var ws = new WebSocket('ws://' + host + ':1650/ws');
 
         ws.onclose = function(){
-          document.location.reload(true);
+          setTimeout(function(){
+            document.location.reload(true);
+          },3000);
         }
 
         ws.onerror = function(err){
-          document.location.reload(true);
+          setTimeout(function(){
+            document.location.reload(true);
+          },3000);
         }
 
         ws.onopen = function(){
