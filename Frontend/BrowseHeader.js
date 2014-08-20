@@ -40,7 +40,9 @@ var BrowseHeader = Backbone.View.extend({
       name = this.model.name;
       text = "PLAYLIST";
       var tracks = this.model.tracks;
-      if(tracks.length>0){
+      if(this.model.image){
+        image = imageUrl(this.model.image);
+      }else if(tracks.length>0){
         var covers = [];
         _.each(tracks,function(track){
           if(track.album.cover &&

@@ -26,7 +26,9 @@ var PlaylistMobileItem = Backbone.View.extend({
       var tracks = this.model.tracks;
       var author = this.model.author.nick;
       text = "by "+author+" &#8226; "+tracks.length+" tracks";
-      if(tracks.length>0){
+      if(this.model.image){
+        image = imageUrl(this.model.image);
+      }else if(tracks.length>0){
         var covers = [];
         _.each(tracks,function(track){
           if(track.album.cover &&

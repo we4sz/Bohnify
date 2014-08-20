@@ -34,7 +34,7 @@ class Transformer(object):
             return {"playlists" : arr, "index" : i}
         i = i+1
       return arr
-      
+
     if con.num_listeners(spotify.PlaylistContainerEvent.CONTAINER_LOADED) == 0:
       con.on(spotify.PlaylistContainerEvent.CONTAINER_LOADED ,loaded)
 
@@ -84,6 +84,10 @@ class Transformer(object):
         "collaborative" : pl.collaborative,
         "description": pl.description
       }
+      img = pl.image()
+      if img != None:
+        img.load()
+        playlist["image"] = img.link.uri
       if tracks:
         playlist["tracks"] =  self.tracks(pl.tracks)
         Cache.Instance().addPlaylist(playlist)

@@ -12,7 +12,9 @@ var PlaylistCard = Backbone.View.extend({
     var name = this.model.name;
     var text = this.model.author.nick;
     var tracks = this.model.tracks;
-    if(tracks.length>0){
+    if(this.model.image){
+      image = imageUrl(this.model.image);
+    }else if(tracks.length>0){
       var covers = [];
       _.each(tracks,function(track){
         if(track.album.cover &&
