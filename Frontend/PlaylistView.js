@@ -49,5 +49,6 @@ var PlaylistView = Backbone.View.extend({
       }
       $("#result").scrollTop(scroll);
     }
+    return false;
   }
 });

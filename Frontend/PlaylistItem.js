@@ -140,6 +140,7 @@ var PlaylistItem = Backbone.View.extend({
       this.model = pl;
       this.render();
     }
+    return false;
   }, selectfromuri : function(_,pl,add){
     if(pl.uri == this.model.uri){
       var update = this.$el.hasClass("passiveselected") || this.$el.hasClass("selected");

@@ -97,6 +97,7 @@ var ResultView = Backbone.View.extend({
         this.options.data = data;
         this.render();
     }
+    return false;
   }, newstatus : function(_,status){
     this.options.status = status;
     if(this.options.status){

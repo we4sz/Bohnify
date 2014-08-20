@@ -1,11 +1,13 @@
 var PlaylistCard = Backbone.View.extend({
   events : {
     'click .playlistcardimage' : 'browse',
-    'click .playlistcardname' : 'browse'
+    'click .playlistcardname' : 'browse',
+    'update': 'update'
   },initialize : function (options) {
     this.options = options || {};
   },
   render : function(){
+    this.$el.html("");
     var image = "/images/playlistdefault.png";
     var name = this.model.name;
     var text = this.model.author.nick;
@@ -44,5 +46,11 @@ var PlaylistCard = Backbone.View.extend({
     return this;
   },browse : function(){
     $(".playlistitem").trigger("selectfromuri",[this.model,true]);
+  }, update: function(___,pl){
+    if(pl.uri == this.model.uri){
+      this.model = pl;
+      this.render();
+    }
+    return false;
   }
 });

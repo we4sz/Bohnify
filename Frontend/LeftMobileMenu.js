@@ -10,7 +10,8 @@ var LeftMobileMenu = Backbone.View.extend({
     'selectsearch' : 'selectsearch',
     'touchstart .menuitem' : 'clickselect',
     'touchend .menuitem' : 'clickunselect',
-    'click #leftmenuoverflow' : 'toggle'
+    'click #leftmenuoverflow' : 'toggle',
+    'update': 'update'
   },
   initialize: function(options) {
       this.options = options || {};
@@ -90,7 +91,6 @@ var LeftMobileMenu = Backbone.View.extend({
       this.options.first = true;
     }
   }, clickselect:function(ev){
-    console.log("as")
     var el = $(ev.target);
     while(!el.hasClass("menuitem")){
       el = $(el.parent());
@@ -99,7 +99,23 @@ var LeftMobileMenu = Backbone.View.extend({
     el.toggleClass("click");
   }, clickunselect:function(){
     $(this.options.touched).removeClass("click");
-  }, hide: function(ev){
-    console.log("asdasd")
+  }, update: function(asd,pl){
+    function loop(con){
+      for(var i = 0; i<con.length;i++){
+        var playlist = con[i];
+        if(playlist.playlists){
+          if(loop(playlist.playlists)){
+            break;
+          }
+        }else{
+          if(playlist.uri == pl.uri){
+            con[i] = pl;
+            return true;
+          }
+        }
+      };
+    }
+    loop(this.options.con);
+    return false;
   }
 });

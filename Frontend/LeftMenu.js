@@ -11,7 +11,9 @@ var LeftMenu = Backbone.View.extend({
     'click #toplist' :  'gettoplist',
     'select #toplist' :  'gettoplist',
     "forceselect" : "forceselect",
-    "newcon" : "newcon"
+    "newcon" : "newcon",
+    'update': 'update',
+    'update .playlistitem': 'abort'
   },
   initialize: function(options) {
       this.options = options || {};
@@ -142,5 +144,25 @@ var LeftMenu = Backbone.View.extend({
         this.select("#mymusic",true, passive >= 0);
       }
     }
+  }, update: function(asd,pl){
+    function loop(con){
+      for(var i = 0; i<con.length;i++){
+        var playlist = con[i];
+        if(playlist.playlists){
+          if(loop(playlist.playlists)){
+            break;
+          }
+        }else{
+          if(playlist.uri == pl.uri){
+            con[i] = pl;
+            return true;
+          }
+        }
+      };
+    }
+    loop(this.model);
+    return false;
+  },abort: function(){
+    return false;
   }
 });

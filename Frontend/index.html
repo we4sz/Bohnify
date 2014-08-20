@@ -226,6 +226,8 @@
                 var pl = data.playlistchanged;
                 $(".playlistview").trigger('update',pl);
                 $(".playlistitem").trigger('update',pl);
+                $(".playlistcardview").trigger('update',pl);
+                $("#leftmenu").trigger('update',pl);
               }
           };
         }

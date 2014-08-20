@@ -140,6 +140,7 @@ var PlaylistMobileItem = Backbone.View.extend({
       this.model = pl;
       this.render();
     }
+    return false;
   }, select:function(){
     this.$el.find(".playlistitemitem").toggleClass("click");
   }, unselect:function(){
