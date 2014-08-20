@@ -65,7 +65,7 @@ class Bohnify(object):
       self.loginstatus["login"] = True
       cherrypy.engine.publish('websocket-broadcast', json.dumps({"loginstatus" : self.loginstatus}))
       self.updateStatus()
-      Timer(0, self.getPlaylists, ()).start()
+      self.getPlaylists()
     elif session.connection.state is spotify.ConnectionState.LOGGED_OUT:
       self.loginstatus["logingin"] = False
       self.loginstatus["login"] = False
@@ -77,7 +77,7 @@ class Bohnify(object):
     self.status["track"] = None
     self.updateStatus()
     self.next()
-	
+
   def on_play_token_lost(self, session):
     self.session.player.pause()
     self.status["paused"] = True
@@ -139,7 +139,10 @@ class Bohnify(object):
 
   def toggleRandom(self):
     self.status["random"] = not self.status["random"]
-    self.sortStandardQueue()
+    if self.status["random"]:
+      self.shuffleStandardQueue()
+    else:
+      self.sortStandardQueue()
     self.updateStatus()
     self.updatequeue()
 
@@ -297,10 +300,9 @@ class Bohnify(object):
         self.session.player.load(t)
         self.session.player.play()
         self.status["track"] = Transformer().track(t)
+        self.clearPlaying()
         if self.status["repeat"] and add:
           self.addTrackRepeat(self.status["track"])
-        elif add and not self.status["repeat"]:
-          self.clearPlaying()
         self.status["paused"] = False
         self.updateStatus()
         BohnifyQueue.Instance().history.insert(0, self.status["track"])
@@ -321,7 +323,6 @@ class Bohnify(object):
   def addTrackRepeat(self,track):
     t = self.status["track"]
     t["addedbyrepeat"] = True
-    self.clearPlaying()
     t["playing"] = True
     self.giveNewQueueSpot(t)
     BohnifyQueue.Instance().standardqueue.append(t)
@@ -343,9 +344,11 @@ class Bohnify(object):
 
 
   def getPlaylists(self):
+    def callback(pl):
+      self.cache_playlists = pl
+      cherrypy.engine.publish('websocket-broadcast', json.dumps({"playlists" : self.cache_playlists}))
     container = self.session.playlist_container
-    self.cache_playlists = Transformer().playlistContainer(container,0, self.playlistChanged,self.containerChanged, self.session.get_starred())
-    cherrypy.engine.publish('websocket-broadcast', json.dumps({"playlists" : self.cache_playlists}))
+    Transformer().playlistContainer(container,callback, self.playlistChanged,self.containerChanged, self.session.get_starred())
 
   def browseTrack(self, link,  ws):
     def trackBrowsed(album):
@@ -369,8 +372,12 @@ class Bohnify(object):
     ws.send(json.dumps({"search" : {"type" : "playlist", "data" :playlist, "search":link.uri}}))
 
   def browseUser(self, link,  ws):
-    user = Transformer().user(link.as_user())
-    ws.send(json.dumps({"search" : {"type" : "user", "data" :user, "search":link.uri}}))
+    author = Transformer().author(link.as_user())
+    def callback(pls = None):
+      ws.send(json.dumps({"search" : {"type" : "user", "data" :author, "search":link.uri}}))
+    callback();
+    #Transformer().playlistContainer(self.session.get_published_playlists(author["name"]),callback)
+
 
   def search(self, query,  ws):
     result = self.session.search(query, track_count = 100,album_count=0,artist_count=0,playlist_count=0)
@@ -383,11 +390,6 @@ class Bohnify(object):
     toplist.load()
     tracks = Transformer().tracks(toplist.tracks)
     ws.send(json.dumps({"toplist" : tracks }))
-
-#  def starred(self,ws):
-#    pl = Transformer().playlist(self.session.get_starred())
-#    pl["name"] = "Starred"
-#    ws.send(json.dumps({"starred" : pl }))
 
   def addToManual(self, tracks):
     for track in tracks:
@@ -471,7 +473,6 @@ class Bohnify(object):
     map(clear, BohnifyQueue.Instance().standardqueue)
 
   def sortStandardQueue(self):
-    self.clearAddedByRepeat()
     if self.status["random"]:
       list.sort(BohnifyQueue.Instance().standardqueue, key=lambda track: (track["shuffleround"]*100000+track["shuffle"]))
     else:

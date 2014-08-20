@@ -4,34 +4,40 @@ from bohnifyqueue import BohnifyQueue
 
 class Transformer(object):
 
-  def playlistContainer(self, con, index=0, listener = None, conlistener = None, starred = None):
-    con.load()
-    arr = []
-    i = index
-    if starred != None:
-      pl = self.playlist(starred, True, listener)
-      pl["name"] = "Starred"
-      arr.append(pl)
+  def playlistContainer(self, con,callback, listener = None, listen = False, starred = None):
 
-    while i < len(con):
-      playlist = con[i]
-      if isinstance(playlist, spotify.Playlist):
-        arr.append(self.playlist(playlist, True, listener))
-      elif isinstance(playlist, spotify.PlaylistFolder):
-        if playlist.type == spotify.PlaylistType.START_FOLDER:
-          pls = self.playlistContainer(con,(i+1),listener)
-          arr.append({"name" : playlist.name, "playlists" : pls["playlists"]})
-          i = pls["index"]
-        else:
-          return {"playlists" : arr, "index" : i}
-      i = i+1
+    def loaded(plcon):
+      if not listen:
+        con.off(spotify.PlaylistContainerEvent.CONTAINER_LOADED)
+      callback(browse(plcon,0))
 
-    if conlistener != None and con.num_listeners(spotify.PlaylistContainerEvent.PLAYLIST_ADDED) == 0:
-      con.on(spotify.PlaylistContainerEvent.PLAYLIST_ADDED ,conlistener)
-      con.on(spotify.PlaylistContainerEvent.PLAYLIST_REMOVED ,conlistener)
-      con.on(spotify.PlaylistContainerEvent.PLAYLIST_MOVED ,conlistener)
+    def browse(plcon, index):
+      plcon.load()
+      arr = []
+      i = index
+      if starred != None:
+        pl = self.playlist(starred, True, listener)
+        pl["tracks"].reverse()
+        pl["name"] = "Starred"
+        arr.append(pl)
 
-    return arr
+      while i < len(con):
+        playlist = con[i]
+        if isinstance(playlist, spotify.Playlist):
+          arr.append(self.playlist(playlist, True, listener))
+        elif isinstance(playlist, spotify.PlaylistFolder):
+          if playlist.type == spotify.PlaylistType.START_FOLDER:
+            pls = browse(con,(i+1))
+            arr.append({"name" : playlist.name, "playlists" : pls["playlists"]})
+            i = pls["index"]
+          else:
+            return {"playlists" : arr, "index" : i}
+        i = i+1
+      return arr
+      
+    if con.num_listeners(spotify.PlaylistContainerEvent.CONTAINER_LOADED) == 0:
+      con.on(spotify.PlaylistContainerEvent.CONTAINER_LOADED ,loaded)
+
 
   def author(self,user):
     user.load()
@@ -46,22 +52,24 @@ class Transformer(object):
     Cache.Instance().addUser(u)
     return u
 
-  def user(self, user):
+  def user(self, user, callback):
     user.load()
     u = Cache.Instance().getUser(user.link.uri, True)
     if u != None:
       return u
-    starred = self.playlist(user.starred)
-    starred["name"] =  "Starred"
-    playlists = self.playlistContainer(user.published_playlists)
-    u = {
-      "nick" : user.display_name,
-      "name" :user.canonical_name,
-      "uri" : user.link.uri,
-      "playlists" : playlists
-    }
-    Cache.Instance().addUser(u, True)
-    return u
+
+    def playlistscallback(playlists):
+      u = {
+        "nick" : user.display_name,
+        "name" :user.canonical_name,
+        "uri" : user.link.uri,
+        "playlists" : playlists
+      }
+      Cache.Instance().addUser(u, True)
+      return u
+
+    self.playlistContainer(user.published_playlists, playlistscallback, None, False, user.starred)
+
 
   def playlist(self,pl, tracks = True, listener=None):
     pl.load()
