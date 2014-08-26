@@ -1,33 +1,33 @@
 {
   "name": "Bohnify",
-  "version": "0.1.0",
-  "description": "Remote spotify server",
+  "version": "0.0.0",
+  "description": "Spotify remote application",
   "main": "index.js",
-  "dependencies": {
-    "express": "~4.4.2",
-    "fs-extra": "~0.9.1",
-    "hashmap": "~1.0.1",
-    "request": "~2.36.0",
-    "segfault-handler": "~0.2.1",
-    "ws": "~0.4.31"
-  },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start" : "cd Backend && cd node && xdg-open http://localhost:1650 && node main.js"
+	"start": "python server/server.py"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/we4sz/Bohnify.git"
+    "url": "https://github.com/we4sz/Bohnify.git"
   },
   "keywords": [
-    "spotify",
-    "music",
-    "remote"
+    "Spotify",
+    "Music",
+    "Remote",
+    "Mobile",
+    "Web"
   ],
-  "author": "John Johansson",
+  "author": "John Bohn Johansson",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/we4sz/Bohnify/issues"
+  },
+  "homepage": "https://github.com/we4sz/Bohnify",
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-contrib-concat": "^0.5.0",
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-contrib-uglify": "~0.5.0"
   }
 }

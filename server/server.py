@@ -42,7 +42,7 @@ if __name__ == '__main__':
     cherrypy.quickstart(Root(),"",config={
                             '/': {
                                 'tools.staticdir.on': True,
-                                'tools.staticdir.dir' : "Frontend",
+                                'tools.staticdir.dir' : "",
                                 'tools.staticdir.index': 'index.html'
                             },
                             '/ws': {
