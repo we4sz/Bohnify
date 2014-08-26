@@ -20,13 +20,24 @@ module.exports = function(grunt) {
 		},
 		jshint: {
 			all: ['js/*.js']
-		}
+		},
+		watch: {
+			scripts: {
+				files: ['index.html','js/*.js'],
+				tasks: ['concat','uglify'],
+				options: {
+					interrupt: true,
+					spawn: false
+				},
+			},
+		},
 	});
 
 	// Load the plugin that provides the "uglify" task.
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
+	grunt.loadNpmTasks('grunt-contrib-watch');
 	// Default task(s).
 	grunt.registerTask('default', ['concat','uglify']);
 
