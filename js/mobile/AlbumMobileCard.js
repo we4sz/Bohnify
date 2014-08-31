@@ -19,8 +19,8 @@ var AlbumMobileCard = Backbone.View.extend({
                 + "<div class='albumcardtextcon'>"
                 + "<div class='albumcardname'>"+name+"</div>"
                 + "<div class='albumcardtracks'>"+tracks+"</div>"
-                + "<div class='albumcardyear'>"+year+"</div>"
-                + "</div>";
+                + "</div>"
+                + "<div class='albumcardyear'>"+year+"</div>";
 
     this.$el.append($.parseHTML(html));
     return this;

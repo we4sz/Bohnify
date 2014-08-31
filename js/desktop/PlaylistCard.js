@@ -2,7 +2,7 @@ var PlaylistCard = Backbone.View.extend({
   events : {
     'click .playlistcardimage' : 'browse',
     'click .playlistcardname' : 'browse',
-    'update': 'update'
+    'updateplaylist': 'update'
   },initialize : function (options) {
     this.options = options || {};
   },
@@ -10,7 +10,7 @@ var PlaylistCard = Backbone.View.extend({
     this.$el.html("");
     var image = "/images/playlistdefault.png";
     var name = this.model.name;
-    var text = this.model.author.nick;
+    var text = this.model.tracks.length+" songs &#8226; "+this.model.author.name;
     var tracks = this.model.tracks;
     if(this.model.image){
       image = imageUrl(this.model.image);
@@ -32,7 +32,7 @@ var PlaylistCard = Backbone.View.extend({
                 + "<div class='playlistcardtext'>"+text+"</div>"
                 + "</div>";
 
-    this.$el.append($.parseHTML(html));
+    this.$el.append($.parseHTML(html));  
     return this;
   },browse : function(){
     $(".playlistitem").trigger("selectfromuri",[this.model,true]);

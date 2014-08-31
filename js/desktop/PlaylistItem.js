@@ -10,7 +10,7 @@ var PlaylistItem = Backbone.View.extend({
     "selectplaylist" : "forceselect",
     "passiveselect" : "passiveselect",
     "makeselect" : "select",
-    "update" : "update",
+    "updateplaylist" : "update",
     "selectfromuri" : "selectfromuri"
   },initialize : function (options) {
     this.options = options || {};

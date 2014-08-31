@@ -1,6 +1,6 @@
 var PlaylistView = Backbone.View.extend({
   events : {
-    "update" : "update"
+    "updateplaylist" : "update"
   },
   initialize : function (options) {
     this.options = options || {};

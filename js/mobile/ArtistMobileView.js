@@ -21,7 +21,7 @@ var ArtistMobileView = Backbone.View.extend({
         }
     }.bind(this));
 
-    this.$el.append($.parseHTML("<div id='artistrelated'><p>"+similar+"</p></div>"));
+    this.$el.append($.parseHTML("<div id='artistrelated'>"+similar+"</div>"));
 
 
 
@@ -65,7 +65,10 @@ var ArtistMobileView = Backbone.View.extend({
         }.bind(this));
       }
 
-
+      setTimeout(function(){
+        $("#artistrelated").truncate({multiline : true});
+        $(".albumcardname").truncate({multiline : true});
+      },1);
 
 
       this.$el.append(singlesdiv);

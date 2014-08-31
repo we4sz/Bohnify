@@ -166,10 +166,10 @@
                 $(".track").trigger('votechange',data.votechange);
               }else if(data.playlistchanged){
                 var pl = data.playlistchanged;
-                $(".playlistview").trigger('update',pl);
-                $(".playlistitem").trigger('update',pl);
-                $(".playlistcardview").trigger('update',pl);
-                $("#leftmenu").trigger('update',pl);
+                $(".playlistview").trigger('updateplaylist',pl);
+                $(".playlistitem").trigger('updateplaylist',pl);
+                $(".playlistcardview").trigger('updateplaylist',pl);
+                $("#leftmenu").trigger('updateplaylist',pl);
               }
           };
         }

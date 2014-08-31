@@ -14,6 +14,9 @@ var MyMusicView = Backbone.View.extend({
         this.$el.append((new PlaylistCard({model: pl, ws: this.options.ws})).render().$el);
       }
     }.bind(this));
+    setTimeout(function(){
+      $(".playlistcardname").truncate({multiline : true,assumeSameStyle :true});
+    },1);
     return this;
   }
 });

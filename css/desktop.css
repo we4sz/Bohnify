@@ -325,14 +325,12 @@ body{
 }
 
 .playlistcardname{
-  height: 50px;
+  height: 35px;
   margin-top: 10px;
   margin-left: 10px;
   width: 160px;
   color: #cff2da;
   font-size: 14px;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .playlistcardname:hover{
@@ -341,10 +339,13 @@ body{
 }
 
 .playlistcardtext{
-  margin-top: 10px;
+  margin-top: 20px;
   margin-left: 10px;
   font-size: 14px;
   color: #949595;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /*

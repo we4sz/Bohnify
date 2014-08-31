@@ -75,29 +75,9 @@ td.click{
   border-bottom: solid 10px rgba(0, 0, 0, 0);
   margin-left: 10px;
   width: calc(100% - 20px);
+  max-height: 60px;
 }
 
-#artistrelated p {
-  position:relative;
-  line-height:1.0em;
-  height:3em;
-  margin: 0px;
-}
-#artistrelated p::after {
-  content:"...";
-  font-weight:bold;
-  position:absolute;
-  bottom:0;
-  right:0;
-  padding:0 20px 1px 5px;
-  background-color: #111213;
-}
-
-
-
-#artistrelated p.click::after{
-  background-color: #333437;
-}
 
 
 /*
@@ -1052,6 +1032,7 @@ input[type="range"]:focus {
 
 .albumcardtextcon{
   width: 100%;
+  height: 40px;
 }
 
 .albumcardname{
@@ -1059,10 +1040,8 @@ input[type="range"]:focus {
   font-size: 12px;
   color:#fafafa;
   margin-left: 5px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   margin-top: 5px;
+  max-height: 30px;
 }
 
 

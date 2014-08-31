@@ -14,7 +14,7 @@ module.exports = function(grunt) {
 				separator: '/* \n\n\n*/ \n',
 			},
 			dist: {
-				src: ['js/libs/jquery.js','js/libs/underscore.js','js/libs/backbone.js','js/libs/jquery.dataTables.min.js','js/mobile/*.js','js/desktop/*.js'],
+				src: ['js/libs/jquery.js','js/libs/truncate.js','js/libs/underscore.js','js/libs/backbone.js','js/libs/jquery.dataTables.min.js','js/mobile/*.js','js/desktop/*.js'],
 				dest: 'build/built.js',
 			},
 		},

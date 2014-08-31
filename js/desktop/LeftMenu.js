@@ -12,8 +12,8 @@ var LeftMenu = Backbone.View.extend({
     'select #toplist' :  'gettoplist',
     "forceselect" : "forceselect",
     "newcon" : "newcon",
-    'update': 'update',
-    'update .playlistitem': 'abort'
+    'updateplaylist': 'update',
+    'updateplaylist .playlistitem': 'abort'
   },
   initialize: function(options) {
       this.options = options || {};
