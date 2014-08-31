@@ -286,7 +286,7 @@ var ControllerMobileView = Backbone.View.extend({
       var html =  "<div id='contextmenu'>" +
                   "<div id='contextqueue' class='contextitem'>Queue</div>" +
                   "<div id='contextartist' class='contextitem'>Artist</div>" +
-                  "<div id='contextalbum' class='contextitem'>Albm</div>" +
+                  "<div id='contextalbum' class='contextitem'>Album</div>" +
                   "</div>";
       var el = $($.parseHTML(html));
 
@@ -300,15 +300,19 @@ var ControllerMobileView = Backbone.View.extend({
       });
 
       el.find("#contextartist").click(function(ev){
+        $("#leftmenu").trigger("deselect");
         $("#result").trigger("update",{type: "load"});
         this.options.ws.send({search : "spotify:"+this.model.track.artists[0].uri});
         el.remove();
+        this.close();
       }.bind(this));
 
       el.find("#contextalbum").click(function(ev){
+        $("#leftmenu").trigger("deselect");
         $("#result").trigger("update",{type: "load"});
         this.options.ws.send({search : "spotify:"+this.model.track.album.uri});
         el.remove();
+        this.close();
       }.bind(this));
 
 

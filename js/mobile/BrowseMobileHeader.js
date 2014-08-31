@@ -42,30 +42,18 @@ var BrowseMobileHeader = Backbone.View.extend({
       var tracks = this.model.tracks;
       if(tracks.length>0){
         var covers = [];
-        _.each(tracks,function(track){
-          if(track.album.cover &&
-          track.album.cover != "" &&
-          covers.indexOf(track.album.cover) < 0){
+        tracks.forEach(function(track){
+          if(track.album.cover && track.album.cover != ""){
             covers.push(track.album.cover);
           }
         });
-
-        if(covers.length >= 4){
-          image = imageUrl(covers[0],true)+"'/>" +
-                  "<img class='browseimage' src='"+imageUrl(covers[1],true)+"'/>" +
-                  "<img class='browseimage' src='"+imageUrl(covers[2],true)+"'/>" +
-                  "<img class='browseimage' src='"+imageUrl(covers[3],true);
-        }else{
-          if(covers[0]){
-            image = imageUrl(covers[0]);
-          }
-        }
+        image = imageUrl(covers);
       }
     }else if(this.model.uri.indexOf(":user:")>=0){
 
     }
 
-    
+
     this.$el.addClass("browsehead");
     var html =  "<div class='browseheadtop'>"
                 + "<div class='browseimagecon'>"

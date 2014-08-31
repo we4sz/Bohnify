@@ -66,7 +66,7 @@
           var current = isMobile() ? new CurrentTrackMobileView({el : $("#playtrack"), ws : ws}) : new CurrentTrackView({el : $("#playtrack"), ws : ws});
           var leftmenu = isMobile() ? new LeftMobileMenu({el : $("#leftmenu"), ws : ws}) : new LeftMenu({el : $("#leftmenu"), ws : ws});
           var control = isMobile() ? new ControllerMobileView({el : $("#bottom"), ws : ws}) : new ControllerView({el : $("#bottom"), ws : ws});
-          var suggest = isMobile() ? new SearchSuggestView({el : $("#suggest"), ws : ws}) : new SearchSuggestView({el : $("#suggest"), ws : ws});
+          var suggest = isMobile() ? new SearchSuggestMobileView({el : $("#suggest"), ws : ws}) : new SearchSuggestView({el : $("#suggest"), ws : ws});
           leftmenu.render();
           current.render();
           var lastcommand = {};
@@ -98,9 +98,7 @@
                   loginview.render();
                 }
               }else if(data.suggest){
-                if($("#search").val() == data.suggest.suggest){
-                  $("#suggest").trigger("suggest",data.suggest.data);
-                }
+                $("#suggest").trigger("suggest",data.suggest.data);
               }else if(data.search){
                 if(lastcommand.search && lastcommand.search == data.search.search){
                   var todo = {type:data.search.type};
@@ -158,6 +156,7 @@
                 $("#bottom").trigger('status',[data.status]);
                 $("#playtrack").trigger('status',[data.status]);
                 $("#result").trigger('status',[data.status]);
+                $("#suggest").trigger('status',[data.status]);
               }else if(data.queueupdated){
                 $(".queueview").trigger("update");
               }else if(data.historyupdated){
@@ -213,7 +212,20 @@
         if(small){
           size = 120;
         }
-        var uri = cover.substring(14);
+        var uri = "";
+        var get = 0;
+        if(cover instanceof Array){
+          $.each(cover,function(i,c){
+            var u = c.substring(14);
+            if(uri.indexOf(u)<0){
+              uri += u;
+              get++;
+            }
+            return get < 4;
+          });
+        }else{
+          uri = cover.substring(14);
+        }
         return "https://d3rt1990lpmkn.cloudfront.net/"+size+"/"+uri;
       }
 

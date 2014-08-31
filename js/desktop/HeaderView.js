@@ -6,11 +6,11 @@ var HeaderView = Backbone.View.extend({
     'focusout #search' : 'focusout',
     'keydown #search' : 'tabb',
     'setsearch' : 'setsearch',
-    'addbrowse' : 'add'
+    'addbrowse' : 'add',
+    'input #search' : 'change'
   },initialize : function (options) {
     this.options = options || {};
     $(document).bind("keydown",this.keydownlistener.bind(this));
-    $(document).bind("keyup",this.keyuplistener.bind(this));
     this.options.future = [];
     this.options.history = [];
     this.options.current;
@@ -21,21 +21,18 @@ var HeaderView = Backbone.View.extend({
                   + " <input id='search' results=0 type='search' autocomplete='off' placeholder='Search'  class='head'/>";
       this.$el.html(html);
       return this;
-  },search : function(ev){
-    var val = this.$el.find("#search").val();
-    if(val){
-      $("#suggest").trigger("addsearch",val);
-      $("#result").trigger("update",{type: "load"});
-      this.options.ws.send({search : "spotify:"+val});
-    }
   },change : function(val){
-    clearTimeout(this.options.searchtimeout);
-    if(val.length >= 1){
-      this.options.searchtimeout = setTimeout(function(){
-        this.options.ws.send({suggest : "spotify:"+val});
-      }.bind(this),300);
-    }else{
-      $("#suggest").trigger("clear");
+    var val = this.$el.find("#search").val();
+    if(this.options.oldval != val){
+      this.options.oldval = val;
+      clearTimeout(this.options.searchtimeout);
+      if(val.length >= 1){
+        this.options.searchtimeout = setTimeout(function(){
+          this.options.ws.send({suggest : "spotify:"+val});
+        }.bind(this),300);
+      }else{
+        $("#suggest").trigger("clear");
+      }
     }
   },setsearch:function(_,data){
     this.$el.find("#search").val(data);
@@ -129,14 +126,6 @@ var HeaderView = Backbone.View.extend({
     }else if(this.$el.find("#headfoward").hasClass("active") && ev.keyCode == 39 && ev.altKey){
       this.foward();
       return false;
-    }
-  },keyuplistener : function(ev){
-    if(this.$el.find("#search").is(":focus")){
-      var val = this.$el.find("#search").val();
-      if(this.options.oldval != val){
-        this.options.oldval = val;
-        this.change(val);
-      }
     }
   }, add: function(_, command){
     if(this.options.current){

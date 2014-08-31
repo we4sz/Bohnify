@@ -1,7 +1,9 @@
-var SuggestItem = Backbone.View.extend({
+var SuggestMobileItem = Backbone.View.extend({
   events : {
     'mousedown' : 'browse',
-    'enter': 'browse'
+    'enter': 'browse',
+    'touchstart' : 'select',
+    'touchend' : 'unselect'
   },initialize : function (options) {
     this.options = options || {};
   },
@@ -49,9 +51,7 @@ var SuggestItem = Backbone.View.extend({
           img = imageUrl(covers);
         }
       }
-      html = "<div class='suggestimagecon'>"
-            + "<img class='suggestimage' src='"+img+"'/>"
-            + "</div>"
+      html = "<img class='suggestimage' src='"+img+"'/>"
             + "<div class='suggesttext'>"
             + "<div class='suggestname'>"+name+"</div>"
             + (extra != "" ? ("<div class='suggestextra'>"+extra+"</div>") : "")
@@ -66,17 +66,23 @@ var SuggestItem = Backbone.View.extend({
       $("#result").trigger("update",{type: "load"});
       this.options.ws.send({search : "spotify:"+this.model.uri});
       $("#suggest").trigger("hide");
-      $("#search").blur();
+      $("#header").trigger("searchunfocus");
+      $("#leftmenu").trigger("deselect");
     }else if(this.model.indexOf("Search for: ") == 0){
       var val = $("#search").val();
       $("#suggest").trigger("addsearch",val);
       $("#result").trigger("update",{type: "load"});
       this.options.ws.send({search : "spotify:"+val});
       $("#suggest").trigger("hide");
-      $("#search").blur();
+      $("#header").trigger("searchunfocus");
+      $("#leftmenu").trigger("deselect");
     }else{
       $("#header").trigger("setsearch",this.model);
     }
     return false;
+  }, select:function(){
+    this.$el.toggleClass("click");
+  }, unselect:function(){
+    this.$el.removeClass("click");
   }
 });

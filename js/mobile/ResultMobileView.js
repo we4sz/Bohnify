@@ -17,7 +17,7 @@ var ResultMobileView = Backbone.View.extend({
           }
           this.options.backnext = false;
         }else if(this.options.data.type == "search"){
-          $("#header").trigger("settext","SEARCH");
+          $("#header").trigger("settext","SEARCH FOR: "+this.options.data.search);
           this.$el.html((new SearchMobileView({model : this.options.data.data, ws:this.options.ws})).render().$el);
           if(!this.options.backnext){
             $("#header").trigger("addbrowse",this.options.data);
@@ -41,7 +41,7 @@ var ResultMobileView = Backbone.View.extend({
           }
           this.options.backnext = false;
         }else if(this.options.data.type == "track"){
-          $("#header").trigger("settext", this.options.data.data.name);
+          $("#header").trigger("settext", this.options.data.data.title);
           this.$el.html((new AlbumMobileView({model : this.options.data.data, ws:this.options.ws})).render().$el);
           if(!this.options.backnext){
             $("#header").trigger("addbrowse",this.options.data);

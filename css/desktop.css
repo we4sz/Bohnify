@@ -27,7 +27,7 @@ body{
 
 #suggest{
   position: absolute;
-  width: 235px;
+  width: 300px;
   left: 71px;
   top: 31px;
   max-height: 100%;
@@ -35,6 +35,7 @@ body{
   z-index: 20;
   background-color: #222326;
   border-bottom: 10px solid #222326;
+  overflow-y: auto;
 }
 
 .suggestitem{
@@ -54,13 +55,6 @@ body{
   background-color: #46484e;
 }
 
-.suggestimage:nth-child(1):nth-last-child(4),
-.suggestimage:nth-child(2):nth-last-child(3),
-.suggestimage:nth-child(3):nth-last-child(2),
-.suggestimage:nth-child(4):nth-last-child(1) {
-    width: 25px;
-    height: 25px;
-}
 
 .suggestimagecon{
   float:left;
@@ -251,13 +245,6 @@ body{
   height: 200px;
 }
 
-.browseimage:nth-child(1):nth-last-child(4),
-.browseimage:nth-child(2):nth-last-child(3),
-.browseimage:nth-child(3):nth-last-child(2),
-.browseimage:nth-child(4):nth-last-child(1) {
-    width: 100px;
-    height: 100px;
-}
 
 .browsecon{
   float:left;
@@ -325,14 +312,6 @@ body{
 .playlistcardimage:only-child {
   width: 180px;
   height: 180px;
-}
-
-.playlistcardimage:nth-child(1):nth-last-child(4),
-.playlistcardimage:nth-child(2):nth-last-child(3),
-.playlistcardimage:nth-child(3):nth-last-child(2),
-.playlistcardimage:nth-child(4):nth-last-child(1) {
-    width: 90px;
-    height: 90px;
 }
 
 
@@ -913,7 +892,7 @@ min-height: 30px;
 #search {
   background-color: #dfe0e6;
   border: none;
-  width: 235px;
+  width: 300px;
   margin-left: 19px;
   margin-top: 7px;
   border-radius: 12px;

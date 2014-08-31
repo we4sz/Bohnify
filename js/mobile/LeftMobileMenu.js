@@ -6,6 +6,7 @@ var LeftMobileMenu = Backbone.View.extend({
     'click #menuhome' :  'gethome',
     'click #menusearch' :  'getsearch',
     'click #menutoplist' :  'gettoplist',
+    'deselect' :  'deselect',
     'newcon' :  'newcon',
     'selectsearch' : 'selectsearch',
     'touchstart .menuitem' : 'clickselect',
@@ -72,8 +73,10 @@ var LeftMobileMenu = Backbone.View.extend({
   },getsearch : function(){
     this.select("#menusearch");
     this.toggle(false,true);
-    if($(".searchview").length == 0){
-      $("#search").trigger("searchfocus");
+    $("#search").trigger("searchfocus");
+    if($("#suggest").css("display") != "inline"){
+      $("#header").trigger("setsearch","");
+      $("#suggest").trigger("clear");
       $("#result").trigger("update",{type: "newsearch"});
     }
     return false;
@@ -81,6 +84,9 @@ var LeftMobileMenu = Backbone.View.extend({
     $(".menuitem.selected").removeClass("selected");
     $(".menuitem.passiveselected").removeClass("passiveselected");
     $(target).addClass("selected");
+  }, deselect: function(){
+    $(".menuitem.selected").removeClass("selected");
+    $(".menuitem.passiveselected").removeClass("passiveselected");
   }, selectsearch : function(){
     this.select("#menusearch");
   }, newcon : function(_,con){

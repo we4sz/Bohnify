@@ -16,24 +16,12 @@ var PlaylistCard = Backbone.View.extend({
       image = imageUrl(this.model.image);
     }else if(tracks.length>0){
       var covers = [];
-      _.each(tracks,function(track){
-        if(track.album.cover &&
-        track.album.cover != "" &&
-        covers.indexOf(track.album.cover) < 0){
+      tracks.forEach(function(track){
+        if(track.album.cover && track.album.cover != ""){
           covers.push(track.album.cover);
         }
       });
-
-      if(covers.length >= 4){
-        image = imageUrl(covers[0],true)+"'/>" +
-                "<img class='playlistcardimage' src='"+imageUrl(covers[1],true)+"'/>" +
-                "<img class='playlistcardimage' src='"+imageUrl(covers[2],true)+"'/>" +
-                "<img class='playlistcardimage' src='"+imageUrl(covers[3],true);
-      }else{
-        if(covers[0]){
-          image = imageUrl(covers[0]);
-        }
-      }
+      image = imageUrl(covers);
     }
     this.$el.addClass("playlistcardview");
     var html =    "<div class='playlistcardimagecon'>"

@@ -35,6 +35,14 @@ td.click{
 }
 
 
+.resultloader {
+  width: 100%;
+  height: 100%;
+  background-repeat:no-repeat;
+  background-position:center;
+  background-image: url("/images/ajax-loader-result.gif");
+}
+
 /*
   --------------------------------------------------------------
   Separator Content
@@ -162,13 +170,6 @@ td.click{
   width: 50px;
 }
 
-.playlistitemimage:nth-child(1):nth-last-child(4),
-.playlistitemimage:nth-child(2):nth-last-child(3),
-.playlistitemimage:nth-child(3):nth-last-child(2),
-.playlistitemimage:nth-child(4):nth-last-child(1) {
-    width: 25px;
-    height: 25px;
-}
 
 .playlistitemimage:only-child{
   height: 50px;
@@ -1161,6 +1162,83 @@ input[type="range"]:focus {
     color: #ab11a9;
   }
 
+/*
+  --------------------------------------------------------------
+  suggest
+  --------------------------------------------------------------
+*/
+
+#suggest{
+  position: absolute;
+  width: 100%;
+  left: 0px;
+  top: 59px;
+  bottom: 50px;
+  background-color: #111213;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: none;
+  z-index: 200;
+}
+
+.suggestitem{
+  height: 50px;
+  width: calc(100% - 20px);
+  margin-left: 10px;
+  padding: 5px 0px;
+  border-bottom: 1px solid #2e2f33;
+}
+
+.suggestimage{
+  float: left;
+  width: 50px;
+  height: 50px;
+}
+
+.suggesttext{
+  float: left;
+  width: calc(100% - 60px);
+  margin-left: 5px;
+
+}
+
+.suggestname:only-child{
+  margin-top: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.suggestname{
+  margin-top: 7px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.suggestextra{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.suggestsearch{
+  width: calc(100% - 10px);
+  margin-left: 5px;
+  padding-top: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#suggest .artistseparator:first-child{
+  margin-top: 5px;
+}
+
+#suggest .artistseparator{
+  margin-top: 10px;
+}
+
 
 /*
   --------------------------------------------------------------
@@ -1255,7 +1333,6 @@ input[type="range"]:focus {
 #menuhistory .name{
   background-image: url("/images/history.png");
 }
-
 
 
 #result{
