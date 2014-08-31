@@ -68,7 +68,6 @@ var LeftMobileMenu = Backbone.View.extend({
     }
     this.toggle(false,true);
     $("#search").trigger("searchunfocus");
-    $("#header").trigger("addbrowse",{type: "mymusic"});
     return false;
   },getsearch : function(){
     this.select("#menusearch");

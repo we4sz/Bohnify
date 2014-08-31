@@ -78,7 +78,6 @@ var PlaylistMobileItem = Backbone.View.extend({
     return this;
   },show : function(ev){
     $("#result").trigger("update",{type: "playlist",data: this.model});
-    $("#header").trigger("addbrowse",{type: "playlist",data: this.model});
     return false;
   },expand : function(){
     this.options.isbig = !this.options.isbig;
@@ -123,7 +122,6 @@ var PlaylistMobileItem = Backbone.View.extend({
 
       el.find("#contextbrowse").click(function(ev){
         $("#result").trigger("update",{type: "playlist",data: this.model});
-        $("#header").trigger("addbrowse",{type: "playlist",data: this.model});
         el.remove();
       }.bind(this));
 

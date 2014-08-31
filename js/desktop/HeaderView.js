@@ -1,6 +1,5 @@
 var HeaderView = Backbone.View.extend({
   events : {
-    //'search' : 'search',
     'click #headback.active' : 'back',
     'click #headfoward.active' : 'foward',
     'focusin #search' : 'focus',
@@ -16,22 +15,20 @@ var HeaderView = Backbone.View.extend({
     this.options.history = [];
     this.options.current;
     this.options.searchtimeout;
-  },
-  render : function(){
+  },render : function(){
       var html =  " <div id='headback' class='disable head'></div>"
                   + "<div id='headfoward' class='disable head'></div>"
                   + " <input id='search' results=0 type='search' autocomplete='off' placeholder='Search'  class='head'/>";
       this.$el.html(html);
       return this;
-  },
-  search : function(ev){
+  },search : function(ev){
     var val = this.$el.find("#search").val();
     if(val){
       $("#suggest").trigger("addsearch",val);
       $("#result").trigger("update",{type: "load"});
       this.options.ws.send({search : "spotify:"+val});
     }
-  }, change : function(val){
+  },change : function(val){
     clearTimeout(this.options.searchtimeout);
     if(val.length >= 1){
       this.options.searchtimeout = setTimeout(function(){
@@ -46,25 +43,39 @@ var HeaderView = Backbone.View.extend({
   },back : function(){
     this.options.future.push(this.options.current);
     this.options.current = this.options.history.pop();
-    if(this.options.current.type === "playlist"){
-      $(".playlistitem").trigger("selectfromuri",this.options.current.data);
-    }else if(this.options.current.type === "mymusic"){
-      $("#mymusic").trigger("select",true);
+    $("#result").trigger("backnext");
+    if(this.options.current == "mymusic"){
+      $("#mymusic").click();
+    }else if(this.options.current == "toplist"){
+      $("#toplist").click();
+    }else if(this.options.current == "queue"){
+      $("#queue").click();
+    }else if(this.options.current == "history"){
+      $("#history").click();
     }else{
-      $("#result").trigger("update",{type: "load"});
-      this.options.ws.send(this.options.current,true);
+      if(this.options.current.type=="playlist"){
+        $(".playlistitem").trigger("selectfromuri",this.options.current.data);
+      }
+      $("#result").trigger("update",this.options.current);
     }
     this.fixClasses();
   },foward : function(){
     this.options.history.push(this.options.current);
     this.options.current = this.options.future.pop();
-    if(this.options.current.type === "playlist"){
-      $(".playlistitem").trigger("selectfromuri",this.options.current.data);
-    }else if(this.options.current.type === "mymusic"){
-      $("#mymusic").trigger("select",true);
+    $("#result").trigger("backnext");
+    if(this.options.current == "mymusic"){
+      $("#mymusic").click();
+    }else if(this.options.current == "toplist"){
+      $("#toplist").click();
+    }else if(this.options.current == "queue"){
+      $("#queue").click();
+    }else if(this.options.current == "history"){
+      $("#history").click();
     }else{
-      $("#result").trigger("update",{type: "load"});
-      this.options.ws.send(this.options.current,true);
+      if(this.options.current.type=="playlist"){
+        $(".playlistitem").trigger("selectfromuri",this.options.current.data);
+      }
+      $("#result").trigger("update",this.options.current);
     }
     this.fixClasses();
   },focus : function(){
@@ -132,7 +143,7 @@ var HeaderView = Backbone.View.extend({
       this.options.history.push(this.options.current);
     }
     this.options.current = command;
-    this.options.future = []
+    this.options.future = [];
     this.fixClasses();
   }, fixClasses : function(){
     this.$el.find("#headback").removeClass("disable").removeClass("active").addClass(this.options.history.length > 0 ? "active" : "disable");

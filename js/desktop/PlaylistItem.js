@@ -41,7 +41,6 @@ var PlaylistItem = Backbone.View.extend({
     takeInFocus($("#leftmenu"),this.$el);
     if(!update && this.$el.find(".playlistfolder").length == 0){
       $("#result").trigger("update",{type: "playlist",data: this.model});
-      $("#header").trigger("addbrowse",{type: "playlist",data: this.model});
     }
     return false;
   },click : function(){
@@ -141,7 +140,7 @@ var PlaylistItem = Backbone.View.extend({
       this.render();
     }
     return false;
-  }, selectfromuri : function(_,pl,add){
+  }, selectfromuri : function(_,pl,show){
     if(pl.uri == this.model.uri){
       var update = this.$el.hasClass("passiveselected") || this.$el.hasClass("selected");
       $("#contextmenu").remove();
@@ -149,11 +148,8 @@ var PlaylistItem = Backbone.View.extend({
       $(".playlistitem.passiveselected").removeClass("passiveselected");
       passiveSelectAll(this.$el);
       takeInFocus($("#leftmenu"),this.$el);
-      if(!update && this.$el.find(".playlistfolder").length == 0){
+      if(show){
         $("#result").trigger("update",{type: "playlist",data: this.model});
-        if(add){
-          $("#header").trigger("addbrowse",{type: "playlist",data: this.model})
-        }
       }
       return false;
     }

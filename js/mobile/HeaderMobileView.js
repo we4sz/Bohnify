@@ -9,7 +9,10 @@ var HeaderMobileView = Backbone.View.extend({
     'searchfocus' : 'searchfocus',
     'blur #search' : 'blur',
     'searchunfocus' : 'searchunfocus',
-    'settext' : 'settext'
+    'settext' : 'settext',
+    'click #headback.active': 'back',
+    'click #headfoward.active': 'foward',
+
   },initialize : function (options) {
     this.options = options || {};
     this.options.future = [];
@@ -18,7 +21,9 @@ var HeaderMobileView = Backbone.View.extend({
   },
   render : function(){
       var html =  "<div id='headtext'>Bohnify</div>"
-                  + " <input id='search' results=0 type='search' placeholder='Search'  class='head'/>";
+                  + "<input id='search' results=0 type='search' placeholder='Search'  class='head'/>"
+                  + "<div id='headback' class='disable'></div>"
+                  + "<div id='headfoward' class='disable'></div>";
       this.$el.html(html);
       return this;
   },
@@ -33,32 +38,49 @@ var HeaderMobileView = Backbone.View.extend({
   },back : function(){
     this.options.future.push(this.options.current);
     this.options.current = this.options.history.pop();
-    if(this.options.current.type === "playlist"){
-      $(".playlistitem").trigger("selectfromuri",this.options.current.data);
+    $("#result").trigger("backnext");
+    if(this.options.current == "mymusic"){
+      $("#menuhome").click();
+    }else if(this.options.current == "toplist"){
+      $("#menutoplist").click();
+    }else if(this.options.current == "queue"){
+      $("#menuqueue").click();
+    }else if(this.options.current == "history"){
+      $("#menuhistory").click();
     }else{
-      $("#result").trigger("update",{type: "load"});
-      this.options.ws.send(this.options.current,true);
+      if(this.options.current.type=="playlist"){
+        $(".playlistitem").trigger("selectfromuri",this.options.current.data);
+      }
+      $("#result").trigger("update",this.options.current);
     }
+    this.fixClasses();
   },foward : function(){
     this.options.history.push(this.options.current);
     this.options.current = this.options.future.pop();
-    if(this.options.current.type === "playlist"){
-      $(".playlistitem").trigger("selectfromuri",this.options.current.data);
-    }else if(this.options.current.type === "mymusic"){
-      $("#mymusic").trigger("select",true);
+    $("#result").trigger("backnext");
+    if(this.options.current == "mymusic"){
+      $("#menuhome").click();
+    }else if(this.options.current == "toplist"){
+      $("#menutoplist").click();
+    }else if(this.options.current == "queue"){
+      $("#menuqueue").click();
+    }else if(this.options.current == "history"){
+      $("#menuhistory").click();
     }else{
-      $("#result").trigger("update",{type: "load"});
-      this.options.ws.send(this.options.current,true);
+      if(this.options.current.type=="playlist"){
+        $(".playlistitem").trigger("selectfromuri",this.options.current.data);
+      }
+      $("#result").trigger("update",this.options.current);
     }
     this.fixClasses();
   },add: function(_, command){
-    var host = window.document.location.host.replace(/:.*/, '');
-
     if(this.options.current){
       this.options.history.push(this.options.current);
     }
     this.options.current = command;
-    this.options.future = []
+    this.options.future = [];
+    this.fixClasses();
+    console.log(this.options.history)
   },toggleleftmenu : function(){
     $("#leftmenu").trigger("toggle");
   }, focus : function(){
@@ -67,11 +89,11 @@ var HeaderMobileView = Backbone.View.extend({
     //$("#search").css("visibility","hidden");
   }, searchfocus : function(){
     $("#search").css("visibility","visible");
-    $("#headtext").css("width","100px");
+    $("#headtext").css("width","80px");
     $("#search").focus();
   }, searchunfocus: function(){
     $("#search").css("visibility","hidden");
-    $("#headtext").css({"max-width": "calc(100% - 40px)",
+    $("#headtext").css({"max-width": "calc(100% - 120px)",
                         "width" : ""});
     $("#search").blur();
   }, settext: function(_,text){
@@ -80,6 +102,9 @@ var HeaderMobileView = Backbone.View.extend({
     this.$el.find("#headtext").toggleClass("click");
   }, unselect:function(){
     this.$el.find("#headtext").removeClass("click");
+  }, fixClasses : function(){
+    this.$el.find("#headback").removeClass("disable").removeClass("active").addClass(this.options.history.length > 0 ? "active" : "disable");
+    this.$el.find("#headfoward").removeClass("active").removeClass("disable").addClass(this.options.future.length > 0 ? "active" : "disable");
   }
 
 });

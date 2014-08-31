@@ -1,7 +1,8 @@
 var ResultView = Backbone.View.extend({
   events : {
     'update' : 'update',
-    'status' : 'newstatus'
+    'status' : 'newstatus',
+    'backnext': 'backnext'
   },initialize : function (options) {
     this.options = options || {};
     $(document).bind("keydown",this.keyevent.bind(this));
@@ -11,15 +12,36 @@ var ResultView = Backbone.View.extend({
         if(this.options.data.type == "playlist"){
           var playlist = this.options.data.data;
           this.$el.html((new PlaylistView({model : playlist, ws:this.options.ws})).render().$el);
+          if(!this.options.backnext){
+            $("#header").trigger("addbrowse",this.options.data);
+          }
+          this.options.backnext = false;
         }else if(this.options.data.type == "search"){
           this.$el.html((new SearchView({model : this.options.data.data, ws:this.options.ws})).render().$el);
+          if(!this.options.backnext){
+            $("#header").trigger("addbrowse",this.options.data);
+          }
+          this.options.backnext = false;
         }else if(this.options.data.type == "album"){
           this.$el.html((new AlbumView({model : this.options.data.data, ws:this.options.ws})).render().$el);
+          if(!this.options.backnext){
+            $("#header").trigger("addbrowse",this.options.data);
+          }
+          this.options.backnext = false;
         }else if(this.options.data.type == "artist"){
           this.$el.html((new ArtistView({model : this.options.data.data, ws:this.options.ws})).render().$el);
+          if(!this.options.backnext){
+            $("#header").trigger("addbrowse",this.options.data);
+          }
+          this.options.backnext = false;
         }else if(this.options.data.type == "track"){
           this.$el.html((new AlbumView({model : this.options.data.data, ws:this.options.ws})).render().$el);
-          $(".track").trigger("selecturi",this.options.data.search)
+          $(".track").trigger("selecturi",this.options.data.search);
+
+          if(!this.options.backnext){
+            $("#header").trigger("addbrowse",this.options.data);
+          }
+          this.options.backnext = false;
         }else if(this.options.data.type == "user"){
 
         }else if(this.options.data.type == "queue"){
@@ -28,14 +50,26 @@ var ResultView = Backbone.View.extend({
           }else{
             $(".queueview").trigger("newqueue",[this.options.data.data]);
           }
+          if(!this.options.backnext){
+            $("#header").trigger("addbrowse","queue");
+          }
+          this.options.backnext = false;
         }else if(this.options.data.type == "toplist"){
           this.$el.html((new ToplistView({model : this.options.data.data, ws:this.options.ws})).render().$el);
+          if(!this.options.backnext){
+            $("#header").trigger("addbrowse","toplist");
+          }
+          this.options.backnext = false;
         }else if(this.options.data.type == "history"){
           if($(".historyview").length == 0){
             this.$el.html((new HistoryView({model : this.options.data.data, ws:this.options.ws})).render().$el);
           }else{
             $(".historyview").trigger("newhistory",[this.options.data.data]);
           }
+          if(!this.options.backnext){
+            $("#header").trigger("addbrowse","history");
+          }
+          this.options.backnext = false;
         }else if(this.options.data.type == "load"){
           var html = "<div class='resultloader'></div>";
           this.$el.html(html);
@@ -43,6 +77,10 @@ var ResultView = Backbone.View.extend({
           this.$el.html("");
         }else if(this.options.data.type == "mymusic"){
           this.$el.html((new MyMusicView({model : this.options.data.data, ws:this.options.ws})).render().$el);
+          if(!this.options.backnext){
+            $("#header").trigger("addbrowse","mymusic");
+          }
+          this.options.backnext = false;
         }
       }
       if(this.options.status){
@@ -103,5 +141,7 @@ var ResultView = Backbone.View.extend({
     if(this.options.status){
       this.$el.find(".track").trigger('markcurrent',[this.options.status]);
     }
+  },backnext: function(){
+    this.options.backnext = true;
   }
 });

@@ -71,36 +71,16 @@
           current.render();
           var lastcommand = {};
           ws.origSend = ws.send;
-          ws.send = function(sendingobject, preventHistory, preventLastCommand){
+          ws.send = function(sendingobject){
             if(sendingobject.search){
-              if(!preventLastCommand){
-                lastcommand = jQuery.extend({}, sendingobject);
-                lastcommand.search = lastcommand.search.substring(lastcommand.search.indexOf(":")+1);
-              }
-              if(!preventHistory){
-                $("#header").trigger("addbrowse",sendingobject);
-              }
+              lastcommand = jQuery.extend({}, sendingobject);
+              lastcommand.search = lastcommand.search.substring(lastcommand.search.indexOf(":")+1);
             }else if(sendingobject.gethistory){
               lastcommand = sendingobject;
-              if(!preventHistory){
-                $("#header").trigger("addbrowse",sendingobject)
-              }else{
-                $("#leftmenu").trigger("forceselect", $("#history"));
-              }
             }else if(sendingobject.getqueue){
               lastcommand = sendingobject;
-              if(!preventHistory){
-                $("#header").trigger("addbrowse",sendingobject)
-              }else{
-                $("#leftmenu").trigger("forceselect", $("#queue"));
-              }
             }else if(sendingobject.gettoplist){
               lastcommand = sendingobject;
-              if(!preventHistory){
-                $("#header").trigger("addbrowse",sendingobject)
-              }else{
-                $("#leftmenu").trigger("forceselect", $("#toplist"));
-              }
             }
             ws.origSend(JSON.stringify(sendingobject));
           }

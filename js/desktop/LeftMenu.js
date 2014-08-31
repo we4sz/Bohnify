@@ -109,13 +109,10 @@ var LeftMenu = Backbone.View.extend({
       $("#result").trigger("update",{type: "load"});
       this.options.ws.send({gettoplist : true});
     }
-  },getmymusic : function(_,dontadd){
+  },getmymusic : function(){
     this.select("#mymusic",true);
     if($(".mymusicview").length == 0){
       $("#result").trigger("update",{type: "mymusic", data:this.model});
-      if(!dontadd){
-        $("#header").trigger("addbrowse",{type: "mymusic"});
-      }
     }
   }, select : function(target,first,passive){
     $(".playlistitem.selected").removeClass("selected");

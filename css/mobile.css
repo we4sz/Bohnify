@@ -985,7 +985,7 @@ input[type="range"]:focus {
   float: left;
   background-color: #dfe0e6;
   border: none;
-  width: calc(100% - 140px);
+  width: calc(100% - 200px);
   border-radius: 12px;
   margin-top: 10px;
   height: 40px;
@@ -997,6 +997,37 @@ input[type="range"]:focus {
   outline: none;
 }
 
+#headback{
+  position: absolute;
+  right: 40px;
+  top:0px;
+  width: 40px;
+  height: 60px;
+  background-image: url("/images/headback.png");
+  background-position: center;
+  background-size: 30px 30px;
+  background-repeat: no-repeat;
+}
+
+#headback.disable{
+  opacity: 0.2;
+}
+
+#headfoward{
+  position: absolute;
+  right: 0px;
+  top:0px;
+  width: 40px;
+  height: 60px;
+  background-image: url("/images/headforward.png");
+  background-position: center;
+  background-size: 30px 30px;
+  background-repeat: no-repeat;
+}
+
+#headfoward.disable{
+  opacity: 0.2;
+}
 
 /*
   --------------------------------------------------------------
