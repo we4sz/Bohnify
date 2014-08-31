@@ -22,25 +22,33 @@ class SocketHandler(WebSocket):
 
 
     def received_message(self, m):
+      try:
         cmd = json.loads(m.data)
         print(cmd)
         if "login" in cmd:
           Bohnify.Instance().login(cmd["login"]["username"],cmd["login"]["password"])
         elif "search" in cmd:
           if cmd["search"].find("spotify:") == 0:
-            link = Bohnify.Instance().session.get_link(cmd["search"])
-            if link.type == spotify.LinkType.ARTIST:
-              Bohnify.Instance().browseArtist(link,self)
-            elif link.type == spotify.LinkType.ALBUM:
-              Bohnify.Instance().browseAlbum(link,self)
-            elif link.type == spotify.LinkType.TRACK:
-              Bohnify.Instance().browseTrack(link,self)
-            elif link.type == spotify.LinkType.PLAYLIST:
-              Bohnify.Instance().browsePlaylist(link,self)
-            elif link.type == spotify.LinkType.PROFILE:
-              Bohnify.Instance().browseUser(link,self)
-          else:
-            Bohnify.Instance().search(cmd["search"],self)
+            search = cmd["search"][8:]
+            print search
+            if search.find("spotify:") == 0:
+              link = Bohnify.Instance().session.get_link(search)
+              if link.type == spotify.LinkType.ARTIST:
+                Bohnify.Instance().browseArtist(link,self)
+              elif link.type == spotify.LinkType.ALBUM:
+                Bohnify.Instance().browseAlbum(link,self)
+              elif link.type == spotify.LinkType.TRACK:
+                Bohnify.Instance().browseTrack(link,self)
+              elif link.type == spotify.LinkType.PLAYLIST:
+                Bohnify.Instance().browsePlaylist(link,self)
+              elif link.type == spotify.LinkType.PROFILE:
+                Bohnify.Instance().browseUser(link,self)
+            else:
+              Bohnify.Instance().search(search,self),
+        elif "suggest" in cmd:
+          if cmd["suggest"].find("spotify:") == 0:
+            suggest = cmd["suggest"][8:]
+            Bohnify.Instance().suggest(suggest,self)
         elif "gettoplist" in cmd:
           Bohnify.Instance().toplist(self)
         elif "getqueue" in cmd:
@@ -92,8 +100,9 @@ class SocketHandler(WebSocket):
           Bohnify.Instance().decreaseVolume()
         else:
           print("else")
+      except IOError, e:
+        print "error"
 
-        #cherrypy.engine.publish('websocket-broadcast', m)
 
     def closed(self, code, reason="A client left the room without a proper explanation."):
         print("asd")

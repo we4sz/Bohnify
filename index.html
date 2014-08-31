@@ -1,7 +1,7 @@
 <html>
 
 <head>
-  <script type="text/javascript" src="build/Bohnify.min.js"></script>
+  <script type="text/javascript" src="build/built.js"></script>
   <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
    <script>
 
@@ -27,7 +27,7 @@
           $('head').append('<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />');
           $('head').append('<link rel="stylesheet" type="text/css" href="css/mobile.css">');
         }else{
-          $('head').append('<link rel="stylesheet" type="text/css" href="css/style.css">');
+          $('head').append('<link rel="stylesheet" type="text/css" href="css/desktop.css">');
         }
 
         var removeContextEvent = function(ev){
@@ -66,6 +66,7 @@
           var current = isMobile() ? new CurrentTrackMobileView({el : $("#playtrack"), ws : ws}) : new CurrentTrackView({el : $("#playtrack"), ws : ws});
           var leftmenu = isMobile() ? new LeftMobileMenu({el : $("#leftmenu"), ws : ws}) : new LeftMenu({el : $("#leftmenu"), ws : ws});
           var control = isMobile() ? new ControllerMobileView({el : $("#bottom"), ws : ws}) : new ControllerView({el : $("#bottom"), ws : ws});
+          var suggest = isMobile() ? new SearchSuggestView({el : $("#suggest"), ws : ws}) : new SearchSuggestView({el : $("#suggest"), ws : ws});
           leftmenu.render();
           current.render();
           var lastcommand = {};
@@ -73,7 +74,8 @@
           ws.send = function(sendingobject, preventHistory, preventLastCommand){
             if(sendingobject.search){
               if(!preventLastCommand){
-                lastcommand = sendingobject;
+                lastcommand = jQuery.extend({}, sendingobject);
+                lastcommand.search = lastcommand.search.substring(lastcommand.search.indexOf(":")+1);
               }
               if(!preventHistory){
                 $("#header").trigger("addbrowse",sendingobject);
@@ -114,6 +116,10 @@
                 }else{
                   loginview.options.loginstatus = data.loginstatus;
                   loginview.render();
+                }
+              }else if(data.suggest){
+                if($("#search").val() == data.suggest.suggest){
+                  $("#suggest").trigger("suggest",data.suggest.data);
                 }
               }else if(data.search){
                 if(lastcommand.search && lastcommand.search == data.search.search){
@@ -275,6 +281,7 @@
 <body onload="init();">
 <div id="bohnifycontainer">
   <div id="header"></div>
+  <div id="suggest"></div>
   <div id="leftmenu" class="big"></div>
   <div id="playtrack" class="small"></div>
   <div id="result"></div>

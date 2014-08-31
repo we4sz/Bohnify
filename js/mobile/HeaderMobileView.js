@@ -28,7 +28,7 @@ var HeaderMobileView = Backbone.View.extend({
     if(val){
       $("#leftmenu").trigger("selectsearch");
       $("#result").trigger("update",{type: "load"});
-      this.options.ws.send({search : val});
+      this.options.ws.send({search : "spotify:"+val});
     }
   },back : function(){
     this.options.future.push(this.options.current);

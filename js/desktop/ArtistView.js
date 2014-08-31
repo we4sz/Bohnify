@@ -82,7 +82,7 @@ var ArtistView = Backbone.View.extend({
             this.$el.append((new ArtistAppearsView({model: album, ws : this.options.ws})).render().$el);
         }.bind(this));
       }
-
+      $(this.$el.find(".tracksview").get(0)).trigger("selectfirst");
       return this;
   },show : function(_,notChange){
 

@@ -58,10 +58,10 @@ var CurrentTrackView = Backbone.View.extend({
     $("#result").trigger("update",{type: "load"});
     var index = parseInt($(e.target).index()/2);
     var uri = this.options.track.artists[index].uri;
-    this.options.ws.send({search : uri});
+    this.options.ws.send({search : "spotify:"+uri});
   }, browsetrack : function(){
     $("#result").trigger("update",{type: "load"});
     var uri = this.options.track.uri;
-    this.options.ws.send({search : uri});
+    this.options.ws.send({search : "spotify:"+uri});
   }
 });

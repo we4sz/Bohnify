@@ -385,6 +385,17 @@ class Bohnify(object):
     tracks = Transformer().tracks(result.tracks)
     ws.send(json.dumps({"search" : {"type" : "search", "data" :tracks, "search":query, "suggestion" : result.did_you_mean}}))
 
+  def suggest(self, query,  ws):
+    result = self.session.search(query, track_count = 3,album_count=3,artist_count=3,playlist_count=3,search_type=spotify.SearchType.SUGGEST)
+    result.load()
+    data = {}
+    data["tracks"] = Transformer().tracks(result.tracks)
+    data["albums"] = Transformer().albums(result.albums)
+    data["artists"] = Transformer().artists(result.artists)
+    data["playlists"] = Transformer().search_playlists(result.playlists)
+    ws.send(json.dumps({"suggest" : {"data" :data, "suggest":query}}))
+
+
   def toplist(self,ws):
     toplist = self.session.get_toplist(type=spotify.ToplistType.TRACKS, region = "SE")
     toplist.load()

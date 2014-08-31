@@ -26,7 +26,7 @@ var ArtistAlbumHeader = Backbone.View.extend({
     return this;
   },browse : function(){
     $("#result").trigger("update",{type: "load"});
-    this.options.ws.send({search : this.model.uri});
+    this.options.ws.send({search : "spotify:"+this.model.uri});
   }, play : function(){
     var tracks = this.model.tracks;
     tracks = tracks.map(function(t){

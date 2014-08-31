@@ -7,8 +7,8 @@ var BrowseHeader = Backbone.View.extend({
   },
   render : function(){
     var image = "/images/playlistdefault.png";
-    var text = "PLAYLIST";
-    var name = "FÄÄST!";
+    var text = "";
+    var name = "";
     var addCreated = false;
 
     if(this.model.uri.indexOf(":track:")>=0){

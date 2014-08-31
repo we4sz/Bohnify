@@ -26,7 +26,7 @@ var AlbumMobileCard = Backbone.View.extend({
     return this;
   },browse : function(){
     $("#result").trigger("update",{type: "load"});
-    this.options.ws.send({search : this.model.uri});
+    this.options.ws.send({search : "spotify:"+this.model.uri});
   }, select:function(){
     this.$el.toggleClass("click");
   }, unselect:function(){

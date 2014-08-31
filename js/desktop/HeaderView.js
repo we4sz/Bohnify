@@ -1,31 +1,48 @@
 var HeaderView = Backbone.View.extend({
   events : {
-    'search' : 'search',
+    //'search' : 'search',
     'click #headback.active' : 'back',
     'click #headfoward.active' : 'foward',
     'focusin #search' : 'focus',
+    'focusout #search' : 'focusout',
     'keydown #search' : 'tabb',
+    'setsearch' : 'setsearch',
     'addbrowse' : 'add'
   },initialize : function (options) {
     this.options = options || {};
-    $(document).bind("keydown",this.takefocus.bind(this));
+    $(document).bind("keydown",this.keydownlistener.bind(this));
+    $(document).bind("keyup",this.keyuplistener.bind(this));
     this.options.future = [];
     this.options.history = [];
     this.options.current;
+    this.options.searchtimeout;
   },
   render : function(){
       var html =  " <div id='headback' class='disable head'></div>"
                   + "<div id='headfoward' class='disable head'></div>"
-                  + " <input id='search' results=0 type='search' placeholder='Search'  class='head'/>";
+                  + " <input id='search' results=0 type='search' autocomplete='off' placeholder='Search'  class='head'/>";
       this.$el.html(html);
       return this;
   },
   search : function(ev){
     var val = this.$el.find("#search").val();
     if(val){
+      $("#suggest").trigger("addsearch",val);
       $("#result").trigger("update",{type: "load"});
-      this.options.ws.send({search : val});
+      this.options.ws.send({search : "spotify:"+val});
     }
+  }, change : function(val){
+    clearTimeout(this.options.searchtimeout);
+    if(val.length >= 1){
+      this.options.searchtimeout = setTimeout(function(){
+        this.options.ws.send({suggest : "spotify:"+val});
+      }.bind(this),300);
+    }else{
+      $("#suggest").trigger("clear");
+    }
+  },setsearch:function(_,data){
+    this.$el.find("#search").val(data);
+    this.options.ws.send({suggest : "spotify:"+data});
   },back : function(){
     this.options.future.push(this.options.current);
     this.options.current = this.options.history.pop();
@@ -53,6 +70,15 @@ var HeaderView = Backbone.View.extend({
   },focus : function(){
     passiveSelectAll();
     this.$el.find("#search").select();
+    $("#suggest").trigger("show");
+    var val = this.$el.find("#search").val();
+    if(val.length >= 1){
+      this.options.ws.send({suggest : "spotify:"+val});
+    }else{
+      $("#suggest").trigger("clear");
+    }
+  },focusout : function(){
+    $("#suggest").trigger("hide");
   },tabb : function(ev){
     if(ev.keyCode == 9){
       ev.preventDefault();
@@ -81,7 +107,7 @@ var HeaderView = Backbone.View.extend({
       return false;
     }
 
-  },takefocus : function(ev){
+  },keydownlistener : function(ev){
     if(ev.keyCode == 76 && ev.ctrlKey){
       ev.preventDefault();
       this.$el.find("#search").focus();
@@ -92,6 +118,14 @@ var HeaderView = Backbone.View.extend({
     }else if(this.$el.find("#headfoward").hasClass("active") && ev.keyCode == 39 && ev.altKey){
       this.foward();
       return false;
+    }
+  },keyuplistener : function(ev){
+    if(this.$el.find("#search").is(":focus")){
+      var val = this.$el.find("#search").val();
+      if(this.options.oldval != val){
+        this.options.oldval = val;
+        this.change(val);
+      }
     }
   }, add: function(_, command){
     if(this.options.current){

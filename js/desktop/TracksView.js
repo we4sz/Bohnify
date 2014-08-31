@@ -7,7 +7,9 @@ var TracksView = Backbone.View.extend({
     'mouseup' : 'stopresize',
     'resize' : 'setresize',
     "repainttracks" : "repaint",
-    "passiveselectfirst" : "passiveselectfirst"
+    "passiveselectfirst" : "passiveselectfirst",
+    "selectfirst" : "selectfirst"
+
   },
   tagName: 'div',
   initialize : function (options) {
@@ -195,7 +197,10 @@ var TracksView = Backbone.View.extend({
     if(selectIndex >= 0){
       $(this.$el.find(".track").get(selectIndex)).trigger("select");
     }
-  }, passiveselectfirst: function(){
+  },passiveselectfirst: function(){
     $(this.$el.find(".track").get(0)).addClass("passiveselected");
+  },selectfirst: function(){
+    passiveSelectAll();
+    $(this.$el.find(".track").get(0)).addClass("selected");
   }
 });

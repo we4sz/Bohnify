@@ -5,8 +5,8 @@ module.exports = function(grunt) {
 		pkg: grunt.file.readJSON('package.json'),
 		uglify: {
 			build: {
-				src: 'dist/built.js',
-				dest: 'build/<%= pkg.name %>.min.js'
+				src: 'build/built.js',
+				dest: 'build/built.js'
 			}
 		},
 		concat: {
@@ -15,16 +15,16 @@ module.exports = function(grunt) {
 			},
 			dist: {
 				src: ['js/libs/jquery.js','js/libs/underscore.js','js/libs/backbone.js','js/libs/jquery.dataTables.min.js','js/mobile/*.js','js/desktop/*.js'],
-				dest: 'dist/built.js',
+				dest: 'build/built.js',
 			},
 		},
 		jshint: {
-			all: ['js/*.js']
+			all: ['js/mobile/*.js','js/desktop/*.js']
 		},
 		watch: {
 			scripts: {
 				files: ['index.html','js/**/*.js'],
-				tasks: ['default'],
+				tasks: ['concat'],
 				options: {
 					interrupt: true,
 					spawn: false

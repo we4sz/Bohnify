@@ -69,13 +69,13 @@ var TrackView = Backbone.View.extend({
     this.$el.addClass("passiveselected");
   },browsealbum : function(){
     $("#result").trigger("update",{type: "load"});
-    var ob = {search : this.model.album.uri};
+    var ob = {search : "spotify:"+this.model.album.uri};
     this.options.ws.send(ob);
   },browseartist : function(e){
     $("#result").trigger("update",{type: "load"});
     var index = parseInt($(e.target).index()/2);
     var uri = this.model.artists[index].uri;
-    var ob = {search : uri};
+    var ob = {search : "spotify:"+uri};
     this.options.ws.send(ob);
   }, currenttrack : function(_,status){
     if(status.track){

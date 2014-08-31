@@ -34,13 +34,13 @@ var TrackMobileView = Backbone.View.extend({
     this.$el.parent().trigger("play",[this.options.index]);
   },browsealbum : function(){
     $("#result").trigger("update",{type: "load"});
-    var ob = {search : this.model.album.uri};
+    var ob = {search : "spotify:"+this.model.album.uri};
     this.options.ws.send(ob);
   },browseartist : function(e){
     $("#result").trigger("update",{type: "load"});
     var index = parseInt($(e.target).index()/2);
     var uri = this.model.artists[index].uri;
-    var ob = {search : uri};
+    var ob = {search : "spotify:"+uri};
     this.options.ws.send(ob);
   }, currenttrack : function(_,status){
     if(status.track){
@@ -79,13 +79,13 @@ var TrackMobileView = Backbone.View.extend({
 
       el.find("#contextartist").click(function(ev){
         $("#result").trigger("update",{type: "load"});
-        this.options.ws.send({search : this.model.artists[0].uri});
+        this.options.ws.send({search : "spotify:"+this.model.artists[0].uri});
         el.remove();
       }.bind(this));
 
       el.find("#contextalbum").click(function(ev){
         $("#result").trigger("update",{type: "load"});
-        this.options.ws.send({search : this.model.album.uri});
+        this.options.ws.send({search : "spotify:"+this.model.album.uri});
         el.remove();
       }.bind(this));
 

@@ -70,6 +70,25 @@ class Transformer(object):
 
     self.playlistContainer(user.published_playlists, playlistscallback, None, False, user.starred)
 
+  def search_playlists(self,pls):
+    arr = []
+    for pl in pls:
+      arr.append(self.playlist(pl.playlist))
+      if len(arr) == 3:
+        return arr
+    return arr
+
+  def search_playlist(self,pl):
+    playlist = Cache.Instance().getPlaylist(pl.uri,True)
+    if playlist != None:
+      return playlist
+    else:
+      playlist = {
+        "name" : pl.name,
+        "uri" : pl.uri,
+        "image" : pl.image_uri
+      }
+      return playlist
 
   def playlist(self,pl, tracks = True, listener=None):
     pl.load()
@@ -154,10 +173,17 @@ class Transformer(object):
       a = {
         "uri" : album.link.uri,
         "title" : album.name,
+        "artist" : self.artist(album.artist),
         "cover" : cover
       }
       Cache.Instance().addAlbum(a)
       return a
+
+  def albums(self,albums):
+    arr = []
+    for album in albums:
+      arr.append(self.album(album))
+    return arr
 
   def albums_b(self,albums, callback, artist):
     arr = []
