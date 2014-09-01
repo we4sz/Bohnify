@@ -13,6 +13,7 @@ from random import randint
 from volume import Volume
 from bohnifyqueue import BohnifyQueue
 from cache import Cache
+import bohnifysink
 
 @Singleton
 class Bohnify(object):
@@ -37,18 +38,30 @@ class Bohnify(object):
     "party": False
   }
 
+  def musiclistener(self,audio_format, frames, num_frames):
+    def sendAudio():
+      def sendToListener(l):
+        l.got_music(audio_format, frames, num_frames)
+      for lisener in self.listeners:
+        Timer(0, sendToListener, [lisener]).start()
+    Timer(0, sendAudio, ()).start()
 
+  def startlisten(self,listener):
+    self.listeners.append(listener)
+
+  def stoplisten(self,listener):
+    self.listeners.remove(listener)
 
   def __init__(self):
     print("init bohnify")
-
+    self.listeners = []
     self.session = spotify.Session()
     self.session.on(spotify.SessionEvent.CONNECTION_STATE_UPDATED, self.on_connection_state_changed)
     self.session.on(spotify.SessionEvent.END_OF_TRACK, self.on_end_of_track)
     self.session.on(spotify.SessionEvent.PLAY_TOKEN_LOST, self.on_play_token_lost)
     self.session.preferred_bitrate(spotify.Bitrate.BITRATE_160k)
     try:
-      self.audio_driver = spotify.AlsaSink(self.session)
+      self.audio_driver = bohnifysink.BohnifyAlsaSink(self.session,self.musiclistener)
     except ImportError:
       self.logger.warning('No audio sink found; audio playback unavailable.')
 

@@ -100,10 +100,9 @@ class SocketHandler(WebSocket):
           Bohnify.Instance().decreaseVolume()
         else:
           print("else")
-      except IOError, e:
+      except Error, e:
         print "error"
 
 
     def closed(self, code, reason="A client left the room without a proper explanation."):
-        print("asd")
-      #cherrypy.engine.publish('websocket-broadcast', TextMessage(reason))
+      pass
