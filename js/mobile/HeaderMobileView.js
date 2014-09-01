@@ -105,7 +105,7 @@ var HeaderMobileView = Backbone.View.extend({
   }, fixClasses : function(){
     this.$el.find("#headback").removeClass("disable").removeClass("active").addClass(this.options.history.length > 0 ? "active" : "disable");
     this.$el.find("#headfoward").removeClass("active").removeClass("disable").addClass(this.options.future.length > 0 ? "active" : "disable");
-  }, change: function(val){
+  }, change: function(){
     var val = this.$el.find("#search").val();
     if(this.options.oldval != val){
       this.options.oldval = val;
@@ -120,9 +120,7 @@ var HeaderMobileView = Backbone.View.extend({
     }
   },setsearch:function(_,data){
     this.$el.find("#search").val(data);
-    if(data.length >= 1){
-      this.options.ws.send({suggest : "spotify:"+data});
-    }
+    this.change();
   }
 
 });

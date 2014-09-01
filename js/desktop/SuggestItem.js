@@ -64,6 +64,7 @@ var SuggestItem = Backbone.View.extend({
   },browse: function(){
     if(this.model.uri){
       $("#result").trigger("update",{type: "load"});
+      $("#suggest").trigger("addsearch",$("#search").val());
       this.options.ws.send({search : "spotify:"+this.model.uri});
       $("#suggest").trigger("hide");
       $("#search").blur();

@@ -13,7 +13,13 @@ var MyMusicView = Backbone.View.extend({
       }
     }.bind(this));
     setTimeout(function(){
-      $(".playlistcardname").truncate({multiline : true,assumeSameStyle :true});
+      $(".playlistcardname").each(function(i){
+        if($(this).html().length > 30){
+          setTimeout(function(){
+            $(this).truncate({multiline : true,assumeSameStyle :true});
+          }.bind(this),1);
+        }
+      })
     },1);
     return this;
   }

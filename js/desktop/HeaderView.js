@@ -21,7 +21,7 @@ var HeaderView = Backbone.View.extend({
                   + " <input id='search' results=0 type='search' autocomplete='off' placeholder='Search'  class='head'/>";
       this.$el.html(html);
       return this;
-  },change : function(val){
+  },change : function(){
     var val = this.$el.find("#search").val();
     if(this.options.oldval != val){
       this.options.oldval = val;
@@ -36,7 +36,7 @@ var HeaderView = Backbone.View.extend({
     }
   },setsearch:function(_,data){
     this.$el.find("#search").val(data);
-    this.options.ws.send({suggest : "spotify:"+data});
+    this.change();
   },back : function(){
     this.options.future.push(this.options.current);
     this.options.current = this.options.history.pop();

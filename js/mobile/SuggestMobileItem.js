@@ -65,6 +65,7 @@ var SuggestMobileItem = Backbone.View.extend({
     if(this.model.uri){
       $("#result").trigger("update",{type: "load"});
       this.options.ws.send({search : "spotify:"+this.model.uri});
+      $("#suggest").trigger("addsearch",$("#search").val());
       $("#suggest").trigger("hide");
       $("#header").trigger("searchunfocus");
       $("#leftmenu").trigger("deselect");
