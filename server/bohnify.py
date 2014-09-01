@@ -456,6 +456,7 @@ class Bohnify(object):
     else:
       t = queue.pop(0)
     self.playFromUri(t,queue)
+    self.updateStatus()
 
 
   def setStandard(self, tracks):

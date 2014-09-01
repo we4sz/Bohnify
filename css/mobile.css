@@ -54,6 +54,7 @@ td.click{
   margin-top: 30px;
   width: calc(100% - 20px);
   border-bottom: 1px solid #222326;
+  text-align:left;
 }
 
 .artistseparatortext{
@@ -69,7 +70,8 @@ td.click{
   --------------------------------------------------------------
 */
 
-#artistrelated{
+.artistrelated{
+  text-align:left;
   overflow: hidden;
   border-top: solid 10px rgba(0, 0, 0, 0);
   border-bottom: solid 10px rgba(0, 0, 0, 0);
@@ -1010,6 +1012,19 @@ input[type="range"]:focus {
   opacity: 0.2;
 }
 
+
+/*
+  --------------------------------------------------------------
+  Artistview Content
+  --------------------------------------------------------------
+*/
+
+.artistview{
+  width: 100%;
+  text-align:center;
+}
+
+
 /*
   --------------------------------------------------------------
   Albumcard Content
@@ -1020,9 +1035,10 @@ input[type="range"]:focus {
 .albumcard{
   width: 150px;
   background-color: #222326;
-  float:left;
+  display: inline-block;
   margin-top: 10px;
   margin-left: 10px;
+  text-align:left;
 }
 
 .albumcardimage{
@@ -1084,6 +1100,7 @@ input[type="range"]:focus {
 */
 
   .track{
+    text-align:left;
     width: calc(100% - 20px);
     margin-left: 10px;
     border-bottom: 1px solid #2e2f33;

@@ -291,6 +291,18 @@ body{
 
 /*
   --------------------------------------------------------------
+  My Music Content
+  --------------------------------------------------------------
+*/
+
+
+.mymusicview{
+  width: 100%;
+  text-align:center;
+}
+
+/*
+  --------------------------------------------------------------
   playlistcard Content
   --------------------------------------------------------------
 */
@@ -298,11 +310,13 @@ body{
 
 
 .playlistcardview{
-  float: left;
-  margin-top: 10px;
+  margin-top: 30px;
   width: 180px;
-  margin-left: 10px;
+  margin-left: 15px;
+  margin-right: 15px;
   background-color: #222326;
+  display: inline-block;
+  text-align:left;
 }
 
 .playlistcardimagecon{
@@ -347,6 +361,8 @@ body{
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+
 
 /*
   --------------------------------------------------------------
@@ -417,19 +433,25 @@ body{
   float:left;
   margin-left: 10px;
   margin-top: 10px;
-  width: calc(100% - 120px);
+  max-width: calc(100% - 120px);
 }
 
 .artistalbumtext{
   color: #84898c;
   font-size: 12px;
+  max-width: 100%;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .artistalbumname{
   margin-top: 10px;
   color: #dfe0e6;
   font-size: 30px;
-  width: 100%;
+  max-width: 100%;
+  display: inline-block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -440,6 +462,8 @@ body{
   cursor: pointer;
 }
 
+
+
 .artistalbumplay{
   margin-top: 12px;
   width: 97px;
@@ -448,6 +472,12 @@ body{
   border-radius: 10px;
   border: none;
   color : #dfe0e6;
+}
+
+
+.artistalbumplay:hover{
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .artistalbummenu{
@@ -461,7 +491,13 @@ body{
   color : #dfe0e6;
 }
 
+.artistalbummenu:hover{
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .artistseparator{
+  text-align:left;
   width: 100%;
   margin-top: 40px;
   border-bottom: 1px solid #222326;

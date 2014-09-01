@@ -16,8 +16,8 @@ var ArtistAlbumHeader = Backbone.View.extend({
     this.$el.addClass("artistalbumhead");
     var html =  "<img class='artistalbumimage' src='"+image+"'/>"
                 + "<div class='artistalbumcon'>"
-                + "<div class='artistalbumtext'>"+text+"</div>"
-                + "<div class='artistalbumname'>"+name+"</div>"
+                + "<div class='artistalbumtext'>"+text+"</div></br>"
+                + "<div class='artistalbumname'>"+name+"</div></br>"
                 + "<button class='artistalbumplay'>Play</button>"
                 + "<button class='artistalbummenu'>...</button>"
                 + "</div>";
