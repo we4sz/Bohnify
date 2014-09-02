@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+#from __future__ import unicode_literals
 import cherrypy
 import cmd
 import logging
@@ -14,12 +14,14 @@ from volume import Volume
 from bohnifyqueue import BohnifyQueue
 from cache import Cache
 import bohnifysink
+from array import *
 
 @Singleton
 class Bohnify(object):
 
   _instance = None
-
+  time = 0
+  position = 0
   loginstatus = {
     "login" : False,
     "logingin" : False,
@@ -37,31 +39,41 @@ class Bohnify(object):
     "volume" : 33,
     "party": False
   }
+  frames = array('c')
 
   def musiclistener(self,audio_format, frames, num_frames):
     def sendAudio():
-      def sendToListener(l):
-        l.got_music(audio_format, frames, num_frames)
       for lisener in self.listeners:
-        Timer(0, sendToListener, [lisener]).start()
-    Timer(0, sendAudio, ()).start()
+        lisener.got_music(frames)
+    if len(self.listeners) > 0:
+      Timer(0, sendAudio, ()).start()
+
+  def addtime(self, frames):
+    self.position = self.position + ((frames*1000)/44100) 
+    	
+  def endprogram(self):
+    self.audio_driver.stop() 	
+
 
   def startlisten(self,listener):
     self.listeners.append(listener)
 
   def stoplisten(self,listener):
-    self.listeners.remove(listener)
-
+    try:
+      self.listeners.remove(listener)
+    except:
+      pass 
+  
   def __init__(self):
     print("init bohnify")
     self.listeners = []
     self.session = spotify.Session()
     self.session.on(spotify.SessionEvent.CONNECTION_STATE_UPDATED, self.on_connection_state_changed)
-    self.session.on(spotify.SessionEvent.END_OF_TRACK, self.on_end_of_track)
+    #self.session.on(spotify.SessionEvent.END_OF_TRACK, self.on_end_of_track)
     self.session.on(spotify.SessionEvent.PLAY_TOKEN_LOST, self.on_play_token_lost)
     self.session.preferred_bitrate(spotify.Bitrate.BITRATE_160k)
     try:
-      self.audio_driver = bohnifysink.BohnifyAlsaSink(self.session,self.musiclistener)
+      self.audio_driver = bohnifysink.BohnifyAlsaSink(self.session,self)
     except ImportError:
       self.logger.warning('No audio sink found; audio playback unavailable.')
 
@@ -70,6 +82,7 @@ class Bohnify(object):
     self.volumeController = Volume.Instance()
     self.volumeController.setListener(self)
     self.status["volume"] = self.volumeController.getVolume()
+
 
 
   def on_connection_state_changed(self, session):
@@ -84,14 +97,17 @@ class Bohnify(object):
       self.loginstatus["login"] = False
       cherrypy.engine.publish('websocket-broadcast', json.dumps({"loginstatus" : {"loginerror": "Bad username or password!"}}))
 
-  def on_end_of_track(self, session):
+  def end_of_track(self):
     self.session.player.pause()
     self.status["paused"] = True
     self.status["track"] = None
     self.updateStatus()
+    self.time = 0
+    self.position = 0
     self.next()
 
   def on_play_token_lost(self, session):
+    self.audio_driver.pause()
     self.session.player.pause()
     self.status["paused"] = True
     cherrypy.engine.publish('websocket-broadcast', json.dumps({"playtoken" : True}))
@@ -134,16 +150,21 @@ class Bohnify(object):
     self.volumeController.setVolume(v if v >= 0 else 0)
     self.volumeChange(self.volumeController.getVolume())
 
+  def get_position(self):
+    return (self.position + self.time)
+
   def updateStatus(self):
-    self.status["position"] = 0 #self.session.player.get_position()
+    self.status["position"] = self.get_position()
     cherrypy.engine.publish('websocket-broadcast', json.dumps({"status" : self.status }))
 
   def togglePause(self):
     self.status["paused"] = not self.status["paused"]
     if self.status["paused"]:
       self.session.player.pause()
+      self.audio_driver.pause()
     else:
       self.session.player.play()
+      self.audio_driver.resume()
     self.updateStatus()
 
   def volumeChange(self,volume):
@@ -214,7 +235,7 @@ class Bohnify(object):
         self.updatequeue()
 
   def prev(self):
-    if False:#self.session.player.get_position() > 3000:
+    if self.get_position() > 3000:
       self.seek(0)
     else:
       track = None
@@ -306,10 +327,13 @@ class Bohnify(object):
 
   def play(self, track, add=True):
     def startTrack(t):
-      if False: #self.session.player.get_position() < 3000 and len(BohnifyQueue.Instance().history) > 0:
+      if self.get_position() < 3000 and len(BohnifyQueue.Instance().history) > 0:
         BohnifyQueue.Instance().history.pop(0)
       self.session.player.unload()
       try:
+        self.time = 0
+        self.position = 0
+        self.audio_driver.new_track()
         self.session.player.load(t)
         self.session.player.play()
         self.status["track"] = Transformer().track(t)
@@ -342,8 +366,11 @@ class Bohnify(object):
     self.sortStandardQueue()
     self.updatequeue()
 
-  def seek(self,pos):
+  def seek(self,pos):   
     self.session.player.seek(int(pos))
+    self.audio_driver.new_track()
+    self.time = int(pos)
+    self.position = 0
     self.updateStatus()
 
   def volume(self,value):

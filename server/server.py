@@ -19,6 +19,7 @@ class Root(object):
         print("start")
 
     def stop(self):
+	Bohnify.Instance().endprogram()
         Volume.Instance().stop()
         print("end")
 

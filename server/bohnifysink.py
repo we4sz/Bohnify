@@ -1,9 +1,8 @@
-from __future__ import unicode_literals
-
 import sys
-
+from threading import *
+import time
 import spotify
-
+from array import *
 __all__ = [
     'BohnifyAlsaSink',
     'BohnifyPortAudioSink',
@@ -88,45 +87,83 @@ class BohnifyAlsaSink(BohnifySink):
         issue #16 <https://sourceforge.net/p/pyalsaaudio/bugs/16/>`_.
     """
 
-    def __init__(self, session, listener = None, card='default'):
+    def __init__(self, session, listener, card='default'):
         self._session = session
         self._card = card
         self._listener = listener
         import alsaaudio  # Crash early if not available
         self._alsaaudio = alsaaudio
         self._device = None
-
+        self._device = self._alsaaudio.PCM(mode=self._alsaaudio.PCM_NONBLOCK, card=self._card)
+        if sys.byteorder == 'little':
+          self._device.setformat(self._alsaaudio.PCM_FORMAT_S16_LE)
+        else:
+          self._device.setformat(self._alsaaudio.PCM_FORMAT_S16_BE)          
+        self._device.setrate(44100)
+        self._device.setchannels(2)
+        self._device.setperiodsize(2048*4)
+        self.buffer = []
+        self.run = True
+        self.lock = Lock() 
+        self.paused = False
+        Timer(0.1, self.start_this, ()).start()
         self.on()
 
-    def _on_music_delivery(self, session, audio_format, frames, num_frames):
-        if self._listener != None:
-          self._listener(audio_format, frames, num_frames)
+    def stop(self):
+      self.run = False
 
-        assert (
-            audio_format.sample_type == spotify.SampleType.INT16_NATIVE_ENDIAN)
+    def pause(self):
+      self.paused = True
+      self._listener.musiclistener(None, "pause", 0)
+      self._device.pause(1)
 
-        if self._device is None:
-            self._device = self._alsaaudio.PCM(
-                mode=self._alsaaudio.PCM_NONBLOCK, card=self._card)
-            if sys.byteorder == 'little':
-                self._device.setformat(self._alsaaudio.PCM_FORMAT_S16_LE)
-            else:
-                self._device.setformat(self._alsaaudio.PCM_FORMAT_S16_BE)
-            print audio_format.sample_rate
-            print audio_format.channels
-            print audio_format.frame_size()
-            print num_frames
+    def resume(self):
+      self.paused = False
+      self._listener.musiclistener(None, "resume", 0)
+      self._device.pause(0)
+
+    def new_track(self):
+      self.lock.acquire()
+      self.buffer = []
+      self._listener.musiclistener(None, "new", 0)
+      self.lock.release()
+
+    def start_this(self):
+      while(self.run):
+        self.lock.acquire()
+        if(not self.paused and len(self.buffer) > 0):
+          frames = self.buffer.pop(0)
+          if frames == "end":
+            self.lock.release()
+            self._listener.end_of_track()
+          else:
+            i = self._device.write(frames.tostring())
+            self._listener.addtime(i)
+            if i == 0:
+              self.buffer.insert(0,frames)
+            self.lock.release()
+            time.sleep(i/44100)
+	else:
+          self.lock.release()
+          time.sleep(0.01)
+        
             
-            self._device.setrate(audio_format.sample_rate)
-            self._device.setchannels(audio_format.channels)
-            self._device.setperiodsize(num_frames * audio_format.frame_size())
-
-        return self._device.write(frames)
+    def _on_music_delivery(self, session, audio_format, frames, num_frames):
+        arr = array('c')
+        arr.fromstring(frames)
+        self.lock.acquire()
+        if num_frames == 22050:
+          self.buffer.append("end")
+        elif num_frames > 0:
+          self.buffer.append(arr)
+          self._listener.musiclistener(audio_format, frames, num_frames)
+        self.lock.release()
+        return num_frames
 
     def _close(self):
-        if self._device is not None:
-            self._device.close()
-            self._device = None
+      if self._device is not None:
+        self._device.close()
+        self._device = None
 
 
 class BohnifyPortAudioSink(BohnifySink):

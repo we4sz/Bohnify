@@ -10,22 +10,29 @@ from threading import Timer
 class SocketAudioHandler(WebSocket):
 
     def opened(self):
+      self.open = True
       print "open"
       Timer(1, self.start_this, ()).start()
 
     def start_this(self):
-      Bohnify.Instance().startlisten(self)
+      if self.open:
+        Bohnify.Instance().startlisten(self)
 
-    def got_music(self,audio_format, frames, num_frames):
-      self.send(frames,True)
+    def got_music(self,frames):
+      try:
+        self.send(frames,True)
+      except:
+       pass
 
     def received_message(self, m):
       print "msg"
       try:
         pass
-      except Error, e:
+      except:
         print "error"
 
 
     def closed(self, code, reason="A client left the room without a proper explanation."):
+      self.open = False
+      print reason
       Bohnify.Instance().stoplisten(self)

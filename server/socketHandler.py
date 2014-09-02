@@ -100,7 +100,7 @@ class SocketHandler(WebSocket):
           Bohnify.Instance().decreaseVolume()
         else:
           print("else")
-      except Error, e:
+      except:
         print "error"
 
 
