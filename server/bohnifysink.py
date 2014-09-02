@@ -112,6 +112,11 @@ class BohnifyAlsaSink(BohnifySink):
                 self._device.setformat(self._alsaaudio.PCM_FORMAT_S16_LE)
             else:
                 self._device.setformat(self._alsaaudio.PCM_FORMAT_S16_BE)
+            print audio_format.sample_rate
+            print audio_format.channels
+            print audio_format.frame_size()
+            print num_frames
+            
             self._device.setrate(audio_format.sample_rate)
             self._device.setchannels(audio_format.channels)
             self._device.setperiodsize(num_frames * audio_format.frame_size())
