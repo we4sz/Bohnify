@@ -98,65 +98,78 @@ class BohnifyAlsaSink(BohnifySink):
         if sys.byteorder == 'little':
           self._device.setformat(self._alsaaudio.PCM_FORMAT_S16_LE)
         else:
-          self._device.setformat(self._alsaaudio.PCM_FORMAT_S16_BE)          
+          self._device.setformat(self._alsaaudio.PCM_FORMAT_S16_BE)
         self._device.setrate(44100)
         self._device.setchannels(2)
         self._device.setperiodsize(2048*4)
         self.buffer = []
         self.run = True
-        self.lock = Lock() 
-        self.paused = False
-        Timer(0.1, self.start_this, ()).start()
+        self.isend = False
+        self.thread = Thread(target = self.start_this)
+        self.lock = Lock()
         self.on()
 
     def stop(self):
       self.run = False
+      while self.thread.is_alive():
+        pass
+      self._close()
 
     def pause(self):
-      self.paused = True
-      self._listener.musiclistener(None, "pause", 0)
-      self._device.pause(1)
+      self.run = False
+      Thread(target = self._listener.musiclistener, args = (None, "pause",0)).start()
 
     def resume(self):
-      self.paused = False
-      self._listener.musiclistener(None, "resume", 0)
-      self._device.pause(0)
+      while self.thread.is_alive():
+        pass
+      self.run = True
+      self.thread = Thread(target = self.start_this)
+      self.thread.start()
+      Thread(target = self._listener.musiclistener, args = (None, "resume",0)).start()
 
     def new_track(self):
+      self.run = False
       self.lock.acquire()
       self.buffer = []
-      self._listener.musiclistener(None, "new", 0)
+      Thread(target = self._listener.musiclistener, args = (None, "new",0)).start()
+      while self.thread.is_alive():
+        pass
+      self.run = True
+      self.thread = Thread(target = self.start_this)
+      self.thread.start()
       self.lock.release()
 
     def start_this(self):
       while(self.run):
         self.lock.acquire()
-        if(not self.paused and len(self.buffer) > 0):
+        if(self.run and len(self.buffer) > 0):
           frames = self.buffer.pop(0)
+          self.lock.release()
           if frames == "end":
-            self.lock.release()
-            self._listener.end_of_track()
+            Thread(target = self._listener.end_of_track).start()
+            self.run = False
           else:
             i = self._device.write(frames.tostring())
             self._listener.addtime(i)
             if i == 0:
               self.buffer.insert(0,frames)
-            self.lock.release()
             time.sleep(i/44100)
-	else:
+        else:
           self.lock.release()
           time.sleep(0.01)
-        
-            
+
+
     def _on_music_delivery(self, session, audio_format, frames, num_frames):
         arr = array('c')
         arr.fromstring(frames)
         self.lock.acquire()
-        if num_frames == 22050:
+        if num_frames == 22050 and not self.isend:
+          self.isend = True
           self.buffer.append("end")
         elif num_frames > 0:
+          self.isend = False
           self.buffer.append(arr)
-          self._listener.musiclistener(audio_format, frames, num_frames)
+          Thread(target = self._listener.musiclistener, args = (audio_format, frames, num_frames)).start()
         self.lock.release()
         return num_frames
 
@@ -194,39 +207,74 @@ class BohnifyPortAudioSink(BohnifySink):
     """
 
     def __init__(self, session, listener = None):
-        self._session = session
-        self._listener = listener
-        import pyaudio  # Crash early if not available
-        self._pyaudio = pyaudio
-        self._device = self._pyaudio.PyAudio()
-        self._stream = None
+      self._session = session
+      self._listener = listener
+      import pyaudio  # Crash early if not available
+      self._pyaudio = pyaudio
+      self._device = self._pyaudio.PyAudio()
+      self._stream = self._device.open(
+        format=self._pyaudio.paInt16, channels=2,
+        rate=44100, output=True, frames_per_buffer=2048)
+      self.buffer = []
+      self.run = True
+      self.lock = Lock()
+      self.paused = False
+      Timer(0.1, self.start_this, ()).start()
+      self.on()
 
-        self.on()
+    def stop(self):
+      self.run = False
+
+    def pause(self):
+      self.paused = True
+      self._listener.musiclistener(None, "pause", 0)
+
+    def resume(self):
+      self.paused = False
+      self._listener.musiclistener(None, "resume", 0)
+
+    def new_track(self):
+      self.lock.acquire()
+      self.buffer = []
+      self._listener.musiclistener(None, "new", 0)
+      self.lock.release()
+
+
+    def start_this(self):
+      while(self.run):
+        self.lock.acquire()
+        if(not self.paused and len(self.buffer) > 0):
+          frames = self.buffer.pop(0)
+          self.lock.release()
+          if frames == "end":
+            print "hear"
+            self._listener.end_of_track()
+          else:
+            self._stream.write(frames.tostring())
+            self._listener.addtime(len(frames)/4)
+            time.sleep(len(frames.tostring())/4/44100)
+        else:
+          self.lock.release()
+          time.sleep(0.01)
+
+
+
 
     def _on_music_delivery(self, session, audio_format, frames, num_frames):
-        if self._listener != None:
-          self._listener(audio_format, frames, num_frames)
+      arr = array('c')
+      arr.fromstring(frames)
+      self.lock.acquire()
+      if num_frames == 22050:
+        self.buffer.append("end")
+      elif num_frames > 0:
+        self.buffer.append(arr)
+        self._listener.musiclistener(audio_format, frames, num_frames)
+      print "got data"
+      self.lock.release()
+      return num_frames
 
-        assert (
-            audio_format.sample_type == spotify.SampleType.INT16_NATIVE_ENDIAN)
-
-        if self._stream is None:
-            self._stream = self._device.open(
-                format=self._pyaudio.paInt16, channels=audio_format.channels,
-                rate=audio_format.sample_rate, output=True)
-
-        # XXX write() is a blocking call. There are two non-blocking
-        # alternatives:
-        # 1) Only feed write() with the number of frames returned by
-        # self._stream.get_write_available() on each call. This causes buffer
-        # underruns every third or fourth write().
-        # 2) Let pyaudio call a callback function when it needs data, but then
-        # we need to introduce a thread safe buffer here which is filled when
-        # libspotify got data and drained when pyaudio needs data.
-        self._stream.write(frames, num_frames=num_frames)
-        return num_frames
 
     def _close(self):
-        if self._stream is not None:
-            self._stream.close()
-            self._stream = None
+      if self._stream is not None:
+        self._stream.close()
+        self._stream = None

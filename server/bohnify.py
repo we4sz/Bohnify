@@ -42,17 +42,14 @@ class Bohnify(object):
   frames = array('c')
 
   def musiclistener(self,audio_format, frames, num_frames):
-    def sendAudio():
-      for lisener in self.listeners:
-        lisener.got_music(frames)
-    if len(self.listeners) > 0:
-      Timer(0, sendAudio, ()).start()
+    for lisener in self.listeners:
+      lisener.got_music(frames)
 
   def addtime(self, frames):
-    self.position = self.position + ((frames*1000)/44100) 
-    	
+    self.position = self.position + ((frames*1000)/44100)
+
   def endprogram(self):
-    self.audio_driver.stop() 	
+    self.audio_driver.stop()
 
 
   def startlisten(self,listener):
@@ -62,8 +59,8 @@ class Bohnify(object):
     try:
       self.listeners.remove(listener)
     except:
-      pass 
-  
+      pass
+
   def __init__(self):
     print("init bohnify")
     self.listeners = []
@@ -75,7 +72,7 @@ class Bohnify(object):
     try:
       self.audio_driver = bohnifysink.BohnifyAlsaSink(self.session,self)
     except ImportError:
-      self.logger.warning('No audio sink found; audio playback unavailable.')
+      print ('No audio sink found; audio playback unavailable.')
 
     self.event_loop = spotify.EventLoop(self.session)
     self.event_loop.start()
@@ -366,7 +363,7 @@ class Bohnify(object):
     self.sortStandardQueue()
     self.updatequeue()
 
-  def seek(self,pos):   
+  def seek(self,pos):
     self.session.player.seek(int(pos))
     self.audio_driver.new_track()
     self.time = int(pos)
