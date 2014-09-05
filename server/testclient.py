@@ -23,10 +23,11 @@ class BohnifyAlsaSink(object):
       self._device.setchannels(2)
       self._device.setperiodsize(2048 * 4)
       self.run = True
-      self.paused = False       
+      self.paused = False
       self.buffer = []
-      self.lock = Lock() 
-      Timer(0.1, self.start_this, ()).start()
+      self.lock = Lock()
+      self.thread = Thread(target = self.start_this)
+      self.thread.start()
 
     def music_delivery(self,frames):
       if frames == "new":
@@ -43,39 +44,50 @@ class BohnifyAlsaSink(object):
         self.lock.release()
 
 
-    def close(self):
+    def stop(self):
+      self.run = False
+      while self.thread.is_alive():
+        pass
+      self._close()
+
+    def pause(self):
+      self.run = False
+
+    def resume(self):
+      while self.thread.is_alive():
+        pass
+      self.run = True
+      self.thread = Thread(target = self.start_this)
+      self.thread.start()
+
+    def _close(self):
       if self._device is not None:
         self._device.close()
         self._device = None
 
-    def stop(self):
-      self.run = False
-
-    def pause(self):
-      self.paused = True
-      self._device.pause(1)
-
-    def resume(self):
-      self.paused = False
-      self._device.pause(0)
-
     def new_track(self):
+      self.run = False
       self.lock.acquire()
       self.buffer = []
+      while self.thread.is_alive():
+        pass
+      self.run = True
+      self.thread = Thread(target = self.start_this)
+      self.thread.start()
       self.lock.release()
 
 
     def start_this(self):
       while(self.run):
         self.lock.acquire()
-        if(not self.paused and len(self.buffer) > 0):
+        if(self.run and len(self.buffer) > 0):
           frames = self.buffer.pop(0)
+          self.lock.release()
           i = self._device.write(frames.tostring())
           if i == 0:
             self.buffer.insert(0,frames)
-          self.lock.release()
           time.sleep(i/44100)
-	else:
+        else:
           self.lock.release()
           time.sleep(0.01)
 
@@ -102,4 +114,5 @@ if __name__ == '__main__':
       ws.connect()
       ws.run_forever()
     except KeyboardInterrupt:
+      BohnifyAlsaSink.Instance().stop()
       ws.close()
