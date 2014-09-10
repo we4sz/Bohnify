@@ -2,7 +2,8 @@ var ResultView = Backbone.View.extend({
   events : {
     'update' : 'update',
     'status' : 'newstatus',
-    'backnext': 'backnext'
+    'backnext': 'backnext',
+    'play': 'play'
   },initialize : function (options) {
     this.options = options || {};
     $(document).bind("keydown",this.keyevent.bind(this));
@@ -17,7 +18,7 @@ var ResultView = Backbone.View.extend({
           }
           this.options.backnext = false;
         }else if(this.options.data.type == "search"){
-          this.$el.html((new SearchView({model : this.options.data.data, ws:this.options.ws})).render().$el);
+          this.$el.html((new SearchView({model : this.options.data, ws:this.options.ws})).render().$el);
           if(!this.options.backnext){
             $("#header").trigger("addbrowse",this.options.data);
           }
@@ -143,5 +144,18 @@ var ResultView = Backbone.View.extend({
     }
   },backnext: function(){
     this.options.backnext = true;
+  }, play : function(ev,context,index,dontplay){
+      var start = true;
+      if(dontplay){
+        start = false;
+      }
+      var ob = {play : {uri: context,start:start}};
+      if(index >=0){
+        ob.play.track = index;
+      }
+      this.options.ws.send(ob);
+      ev.stopPropagation();
+      ev.stopImmediatePropagation();
+      return false;
   }
 });

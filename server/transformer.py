@@ -17,8 +17,6 @@ class Transformer(object):
       i = index
       if starred != None:
         pl = self.playlist(starred, True, listener)
-        pl["tracks"].reverse()
-        pl["name"] = "Starred"
         arr.append(pl)
 
       while i < len(con):
@@ -97,7 +95,7 @@ class Transformer(object):
       return playlist
     else:
       playlist = {
-        "name" : pl.name,
+        "name" : "Starred" if "starred" in pl.link.uri else pl.name,
         "uri" : pl.link.uri,
         "author" : self.author(pl.owner),
         "collaborative" : pl.collaborative,
@@ -108,40 +106,45 @@ class Transformer(object):
         img.load()
         playlist["image"] = img.link.uri
       if tracks:
-        playlist["tracks"] =  self.tracks(pl.tracks)
+        tracks = pl.tracks[::-1] if "starred" in pl.link.uri else pl.tracks
+        playlist["tracks"] =  self.tracks(tracks,pl.link.uri)
         Cache.Instance().addPlaylist(playlist)
 
-      if listener != None and pl.num_listeners(spotify.PlaylistEvent.TRACKS_ADDED) == 0:
-        pl.on(spotify.PlaylistEvent.TRACKS_ADDED, listener)
-        pl.on(spotify.PlaylistEvent.TRACKS_REMOVED, listener)
-        pl.on(spotify.PlaylistEvent.TRACKS_MOVED, listener)
-        pl.on(spotify.PlaylistEvent.PLAYLIST_RENAMED, listener)
+      if listener != None and pl.num_listeners(spotify.PlaylistEvent.PLAYLIST_UPDATE_IN_PROGRESS) == 0:
+        #pl.on(spotify.PlaylistEvent.TRACKS_ADDED, listener)
+        #pl.on(spotify.PlaylistEvent.TRACKS_REMOVED, listener)
+        #pl.on(spotify.PlaylistEvent.TRACKS_MOVED, listener)
+        #pl.on(spotify.PlaylistEvent.PLAYLIST_RENAMED, listener)
         #pl.on(spotify.PlaylistEvent.PLAYLIST_STATE_CHANGED, listener)
         #pl.on(spotify.PlaylistEvent.PLAYLIST_METADATA_UPDATED, listener)
-        pl.on(spotify.PlaylistEvent.DESCRIPTION_CHANGED, listener)
-        pl.on(spotify.PlaylistEvent.IMAGE_CHANGED, listener)
+        #pl.on(spotify.PlaylistEvent.DESCRIPTION_CHANGED, listener)
+        pl.on(spotify.PlaylistEvent.PLAYLIST_UPDATE_IN_PROGRESS, listener)
       return playlist
 
 
-  def tracks(self, tracks):
+  def tracks(self, tracks, context):
     arr = []
-    for t in tracks:
-      track = self.track(t)
+    for tindex in range(len(tracks)):
+      track = self.track(tracks[tindex],context)
       if(track != None):
+        track = track.copy()
+        track["origindex"] = tindex
         arr.append(track)
     return arr
 
 
-  def track(self,track):
+  def track(self,track,context):
     track.load()
     t = Cache.Instance().getTrack(track.link.uri)
     if t != None:
       BohnifyQueue.Instance().setVoteToTrack(t)
+      t["context"] = "spotify:"+context
       return t
     else:
       t = BohnifyQueue.Instance().getTrackIfIsAnyQueue(track.link.uri)
       if t != None:
         BohnifyQueue.Instance().setVoteToTrack(t)
+        t["context"] = "spotify:"+context
         return t
       else:
         if track.availability == spotify.TrackAvailability.AVAILABLE:
@@ -155,6 +158,7 @@ class Transformer(object):
           }
           Cache.Instance().addTrack(t)
           BohnifyQueue.Instance().setVoteToTrack(t)
+          t["context"] = "spotify:"+context
           return t
         else:
           return None
@@ -236,7 +240,7 @@ class Transformer(object):
           "year" : album.album.year
         }
         if artist == None or artist == album.artist.link.uri:
-          a["tracks"] = self.tracks(album.tracks)
+          a["tracks"] = self.tracks(album.tracks,album.album.link.uri)
           Cache.Instance().addAlbum(a, True)
         else:
           a["type"] = 4
@@ -287,7 +291,7 @@ class Transformer(object):
           "uri" : artist.artist.link.uri,
           "portrait" : por,
           "bio" : artist.biography,
-          "toptracks" : self.tracks(artist.tophit_tracks),
+          "toptracks" : self.tracks(artist.tophit_tracks,artist.artist.link.uri),
           "similar" : self.artists(artist.similar_artists)
         }
         def albumsBrowsed(albums):

@@ -56,7 +56,7 @@ var TrackView = Backbone.View.extend({
     this.$el.html(html);
     return this;
   },play : function(){
-    this.$el.parent().trigger("play",[this.options.index]);
+    this.$el.trigger("play",[this.model.context,this.model.origindex]);
   },select: function(){
     $(".track.selected").removeClass("selected");
     $(".track.passiveselected").removeClass("passiveselected");
@@ -106,7 +106,7 @@ var TrackView = Backbone.View.extend({
     var el = $($.parseHTML(html));
 
     el.find("#contextqueue").click(function(ev){
-      this.options.ws.send({manualqueue: [this.model.uri]});
+      this.options.ws.send({manualqueue: {context: this.model.context, indices:[this.model.origindex]}});
       el.remove();
     }.bind(this));
 

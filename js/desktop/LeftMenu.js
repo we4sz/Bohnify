@@ -157,7 +157,9 @@ var LeftMenu = Backbone.View.extend({
         }
       };
     }
-    loop(this.model);
+    if(this.model){
+      loop(this.model);
+    }
     return false;
   },abort: function(){
     return false;

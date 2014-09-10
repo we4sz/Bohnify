@@ -66,15 +66,16 @@ var QueueView = Backbone.View.extend({
   }, delete : function(){
     var selectedTrack = $(".track.selected");
     if(selectedTrack){
+      var track = null;
         if(selectedTrack.hasClass("manualtrack")){
           track = this.model[this.options.manual].queue[selectedTrack.index()];
-          this.options.ws.send({removemanualqueue : [track.uri]});
         }else if(selectedTrack.hasClass("standardtrack")){
           track = this.model[this.options.standard].queue[selectedTrack.index()];
-          this.options.ws.send({removestandardqueue : [track.uri]});
         }else if(selectedTrack.hasClass("votetrack")){
           track = this.model[this.options.vote].queue[selectedTrack.index()];
-          this.options.ws.send({removemanualqueue : [track.uri]});
+        }
+        if(track){
+          this.options.ws.send({removeFromQueue : [{context:track.context, index:track.origindex}]});
         }
     }
   }

@@ -34,6 +34,7 @@ var HeaderMobileView = Backbone.View.extend({
   search : function(ev){
     this.$el.find("#search").blur();
   },back : function(){
+    $("#suggest").trigger("hide");
     this.options.future.push(this.options.current);
     this.options.current = this.options.history.pop();
     $("#result").trigger("backnext");
@@ -53,6 +54,7 @@ var HeaderMobileView = Backbone.View.extend({
     }
     this.fixClasses();
   },foward : function(){
+    $("#suggest").trigger("hide");
     this.options.history.push(this.options.current);
     this.options.current = this.options.future.pop();
     $("#result").trigger("backnext");

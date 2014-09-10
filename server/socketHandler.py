@@ -34,36 +34,69 @@ class SocketHandler(WebSocket):
             if search.find("spotify:") == 0:
               link = Bohnify.Instance().session.get_link(search)
               if link.type == spotify.LinkType.ARTIST:
-                Bohnify.Instance().browseArtist(link,self)
+                def artistBrowsed(artist):
+                  self.send(json.dumps({"search" : {"type" : "artist", "data" :artist, "search":link.uri}}))
+                Bohnify.Instance().browseArtist(link,artistBrowsed)
               elif link.type == spotify.LinkType.ALBUM:
-                Bohnify.Instance().browseAlbum(link,self)
+                def albumBrowsed(album):
+                  self.send(json.dumps({"search" : {"type" : "album", "data" :album, "search":link.uri}}))
+                Bohnify.Instance().browseAlbum(link,albumBrowsed)
               elif link.type == spotify.LinkType.TRACK:
-                Bohnify.Instance().browseTrack(link,self)
+                def trackBrowsed(album):
+                  self.send(json.dumps({"search" : {"type" : "track", "data" :album, "search":link.uri}}))
+                Bohnify.Instance().browseTrack(link,trackBrowsed)
               elif link.type == spotify.LinkType.PLAYLIST:
-                Bohnify.Instance().browsePlaylist(link,self)
+                def playlistBrowsed(playlist):
+                  self.send(json.dumps({"search" : {"type" : "playlist", "data" :playlist, "search":link.uri}}))
+                Bohnify.Instance().browsePlaylist(link,playlistBrowsed)
               elif link.type == spotify.LinkType.PROFILE:
-                Bohnify.Instance().browseUser(link,self)
+                pass
+                #Bohnify.Instance().browseUser(link,self)
             else:
-              Bohnify.Instance().search(search,self),
+              def searchDone(tracks):
+                self.send(json.dumps({"search" : {"type" : "search", "data" :tracks, "search":search}}))
+              Bohnify.Instance().search(search,searchDone)
         elif "suggest" in cmd:
           if cmd["suggest"].find("spotify:") == 0:
+            def suggestDone(data):
+              self.send(json.dumps({"suggest" : {"data" :data, "suggest":suggest}}))
             suggest = cmd["suggest"][8:]
-            Bohnify.Instance().suggest(suggest,self)
+            Bohnify.Instance().suggest(suggest,suggestDone)
         elif "gettoplist" in cmd:
-          Bohnify.Instance().toplist(self)
+          def toplistDone(tracks):
+            self.send(json.dumps({"toplist" : tracks }))
+          Bohnify.Instance().toplist(toplistDone)
         elif "getqueue" in cmd:
+          vote = BohnifyQueue.Instance().votequeue[:]
+          manual = BohnifyQueue.Instance().manualqueue[:]
+          standard = BohnifyQueue.Instance().standardqueue[:]
+
+          for t in vote:
+            t["context"] = "spotify:get:queue:vote"
+
+          for t in manual:
+            t["context"] = "spotify:get:queue:manual"
+
+          for t in standard:
+            t["context"] = "spotify:get:queue:standard"
+
           if Bohnify.Instance().status["party"]:
             self.send(json.dumps({"queues" : [
-              {"type" : "vote", "queue" : BohnifyQueue.Instance().votequeue},
-              {"type" : "standard", "queue" : BohnifyQueue.Instance().standardqueue}
+              {"type" : "vote", "queue" : vote},
+              {"type" : "standard", "queue" : standard}
             ]}))
           else:
             self.send(json.dumps({"queues" : [
-              {"type" : "manual", "queue" : BohnifyQueue.Instance().manualqueue},
-              {"type" : "standard", "queue" : BohnifyQueue.Instance().standardqueue}
+              {"type" : "manual", "queue" : manual},
+              {"type" : "standard", "queue" : standard}
             ]}))
         elif "gethistory" in cmd:
-          self.send(json.dumps({"history":BohnifyQueue.Instance().history}))
+          history = BohnifyQueue.Instance().history[:]
+
+          for t in history:
+            t["context"] = "spotify:get:history"
+
+          self.send(json.dumps({"history":history}))
         elif "prev" in cmd:
           if not Bohnify.Instance().status["party"]:
             Bohnify.Instance().prev()
@@ -71,7 +104,9 @@ class SocketHandler(WebSocket):
           if not Bohnify.Instance().status["party"]:
             Bohnify.Instance().next()
         elif "play" in cmd:
-            Bohnify.Instance().playFromUri(cmd["play"]["track"],cmd["play"]["queue"])
+            track = cmd["play"]["track"] if "track" in cmd["play"] else None
+            start = cmd["play"]["start"] if "start" in cmd["play"] else False
+            Bohnify.Instance().playContent(cmd["play"]["uri"],track ,start)
         elif "party" in cmd:
           Bohnify.Instance().toggleParty()
         elif "random" in cmd:
@@ -79,15 +114,9 @@ class SocketHandler(WebSocket):
         elif "repeat" in cmd:
           Bohnify.Instance().toggleRepeat()
         elif "manualqueue" in cmd:
-          Bohnify.Instance().addToManual(cmd["manualqueue"])
-        elif "removemanualqueue" in cmd:
-          Bohnify.Instance().removeFromManual(cmd["removemanualqueue"])
-        elif "standardqueue" in cmd:
-          Bohnify.Instance().setStandard(cmd["standardqueue"])
-        elif "startqueue" in cmd:
-          Bohnify.Instance().startQueue(cmd["startqueue"])
-        elif "removestandardqueue" in cmd:
-          Bohnify.Instance().removeFromStandard(cmd["removestandardqueue"])
+          Bohnify.Instance().addToManual(cmd["manualqueue"]["context"],cmd["manualqueue"]["indices"])
+        elif "removefromqueue" in cmd:
+          Bohnify.Instance().removeFromQueue(cmd["tracks"])
         elif "seek" in cmd:
           Bohnify.Instance().seek(cmd["seek"])
         elif "volume" in cmd:
@@ -100,8 +129,8 @@ class SocketHandler(WebSocket):
           Bohnify.Instance().decreaseVolume()
         else:
           print("else")
-      except:
-        print "error"
+      except StandardError as e:
+        print e
 
 
     def closed(self, code, reason="A client left the room without a proper explanation."):

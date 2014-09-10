@@ -1,6 +1,5 @@
 var TracksMobileView = Backbone.View.extend({
   events : {
-    'play': 'play',
     "repainttracks" : "repaint"
   },
   initialize : function (options) {
@@ -16,15 +15,6 @@ var TracksMobileView = Backbone.View.extend({
         }
       }.bind(this));
       return this;
-  },play : function(_,index){
-    var tracks = this.model.slice(0);
-    var track = tracks[index].uri;
-    tracks.splice(index,1);
-    tracks = tracks.map(function(t){
-      return t.uri;
-    });
-    var ob = {play : {track : track,queue:tracks}};
-    this.options.ws.send(ob);
   }, repaint : function(){
     var scroll = this.$el.scrollTop();
     this.render();

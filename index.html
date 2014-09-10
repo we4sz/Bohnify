@@ -47,22 +47,45 @@
 
         var host = window.document.location.host.replace(/:.*/, '');
         var ws = new WebSocket('ws://' + host + ':1650/ws');
-        /*
-        var aws = new WebSocket('ws://' + host + ':1650/audio');
 
-        var audio = $("audio").get(0);
-
+        /*var aws = new WebSocket('ws://' + host + ':1650/audio');
+        var startTime = 0;
         aws.onopen = function(){
-            aws.onmessage = function (msg) {
-              try{
-                var url = URL.createObjectURL(msg.data);
-                audio.src=url;
-                audio.play();
-                console.log(audio)
-              }catch(e){
+          var audioCtx = new AudioContext();
+          var audioBuffer = audioCtx.createBuffer(2, 8192, 44100);
 
+            aws.onmessage = function (msg) {
+              if(msg.data.size == 8192){
+                var reader = new FileReader();
+                reader.addEventListener("loadend", function() {
+                  var audio = new Int16Array(reader.result);
+                  var right = new Float32Array(audio.length);
+
+                  for (var i = 0; i < audio.length; ) {
+                      var normalizedRight =  audio[i] ;
+
+                      i = i + 1;
+                      right[channleCounter] = normalizedRight;
+
+                      channleCounter++;
+                  }
+
+
+                  var source = audioCtx.createBufferSource();
+                  audioBuffer.getChannelData(0).set(right);
+                  source.buffer = audioBuffer;
+                  source.connect(audioCtx.destination);
+                  source.start(startTime);
+                  startTime += audioBuffer.duration;
+                  console.log(startTime)
+                });
+
+                setTimeout(function(){
+                  //reader.readAsArrayBuffer(msg.data);
+                },1);
+              }else{
+                audioCtx.stop();
               }
-              console.log(url);
             };
 
             aws.onerror = function(e){
@@ -73,7 +96,7 @@
               console.log("close")
             };
         };
-        */
+*/
         ws.onclose = function(){
           setTimeout(function(){
             document.location.reload(true);

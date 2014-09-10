@@ -27,12 +27,8 @@ var ArtistAlbumHeader = Backbone.View.extend({
   },browse : function(){
     $("#result").trigger("update",{type: "load"});
     this.options.ws.send({search : "spotify:"+this.model.uri});
-  }, play : function(){
-    var tracks = this.model.tracks;
-    tracks = tracks.map(function(t){
-      return t.uri;
-    });
-    this.options.ws.send({startqueue : tracks})
+  }, play : function(ev, dontplay){
+    this.$el.parent().trigger("play",[-1,dontplay]);
   }, menu : function(ev){
     $("#contextmenu").remove();
     var x = ev.clientX;
@@ -45,12 +41,7 @@ var ArtistAlbumHeader = Backbone.View.extend({
     var el = $($.parseHTML(html));
 
     el.find("#contextqueue").click(function(ev){
-
-      var tracks = this.model.tracks;
-      tracks = tracks.map(function(t){
-        return t.uri;
-      });
-      this.options.ws.send({standardqueue: tracks});
+      this.play(_,true);
       el.remove();
     }.bind(this));
 

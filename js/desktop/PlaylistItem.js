@@ -53,17 +53,11 @@ var PlaylistItem = Backbone.View.extend({
     $(".playlistitem.passiveselected").removeClass("passiveselected");
     passiveSelectAll(this.$el);
     takeInFocus($("#leftmenu"),this.$el);
-  },play : function(ev){
+  },play : function(ev,dontplay){
     if(this.$el.find(".playlistfolder").length > 0){
       this.expand();
     }else{
-      var tracks = this.model.tracks;
-      tracks = tracks.map(function(t){
-        return t.uri;
-      });
-      var ob = {startqueue : tracks};
-      this.options.ws.send(ob);
-      return false;
+      $("#result").trigger("play",["spotify"+this.model.uri, null,dontplay]);
     }
   }, opencontext : function(ev){
     this.show();
@@ -78,11 +72,7 @@ var PlaylistItem = Backbone.View.extend({
     var el = $($.parseHTML(html));
 
     el.find("#contextqueue").click(function(ev){
-      var tracks = this.model.tracks;
-      tracks = tracks.map(function(t){
-        return t.uri;
-      });
-      this.options.ws.send({standardqueue: tracks});
+      this.play(_,true);
       el.remove();
     }.bind(this));
 

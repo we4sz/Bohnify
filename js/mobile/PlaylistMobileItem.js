@@ -71,17 +71,11 @@ var PlaylistMobileItem = Backbone.View.extend({
   },expand : function(){
     this.options.isbig = !this.options.isbig;
     this.render();
-  },play : function(ev){
+  },play : function(ev,dontplay){
     if(this.$el.find(".playlistfolder").length > 0){
       this.expand();
     }else{
-      var tracks = this.model.tracks;
-      tracks = tracks.map(function(t){
-        return t.uri;
-      });
-      var ob = {startqueue : tracks};
-      this.options.ws.send(ob);
-      return false;
+      this.$el.parent().trigger("play",["spotify:"+this.model.uri,-1,dontplay])
     }
   }, opencontext : function(ev){
     var add = $("#contextmenu").length == 0;
@@ -95,11 +89,7 @@ var PlaylistMobileItem = Backbone.View.extend({
       var el = $($.parseHTML(html));
 
       el.find("#contextqueue").click(function(ev){
-        var tracks = this.model.tracks;
-        tracks = tracks.map(function(t){
-          return t.uri;
-        });
-        this.options.ws.send({standardqueue: tracks});
+        this.play(_,true)
         el.remove();
       }.bind(this));
 

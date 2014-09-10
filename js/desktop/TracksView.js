@@ -1,6 +1,5 @@
 var TracksView = Backbone.View.extend({
   events : {
-    'play': 'play',
     'mousedown th' : 'resize',
     'mousemove th' : 'fixcursor',
     'mousemove' : 'fixresize',
@@ -9,7 +8,6 @@ var TracksView = Backbone.View.extend({
     "repainttracks" : "repaint",
     "passiveselectfirst" : "passiveselectfirst",
     "selectfirst" : "selectfirst"
-
   },
   tagName: 'div',
   initialize : function (options) {
@@ -96,15 +94,6 @@ var TracksView = Backbone.View.extend({
       child.bind("DOMNodeInsertedIntoDocument",this.setsize.bind(this));
       this.$el.append(child);
       return this;
-  },play : function(_,index){
-    var tracks = this.model.slice(0);
-    var track = tracks[index].uri;
-    tracks.splice(index,1);
-    tracks = tracks.map(function(t){
-      return t.uri;
-    });
-    var ob = {play : {track : track,queue:tracks}};
-    this.options.ws.send(ob);
   },fixresize:function(ev){
     if(this.options.resize){
       var next = $(this.options.nextclass);

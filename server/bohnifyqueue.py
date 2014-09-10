@@ -7,6 +7,7 @@ class BohnifyQueue(object):
   manualqueue = [];
   votequeue = [];
   history = [];
+  removedstandard = [];
 
   def getTrackIfIsAnyQueue(self, uri):
     for track in self.standardqueue:

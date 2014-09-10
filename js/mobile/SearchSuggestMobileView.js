@@ -8,7 +8,8 @@ var SearchSuggestMobileView = Backbone.View.extend({
     'click .suggestartist' : 'artist',
     'click .suggestalbum' : 'album',
     'clear' : 'clear',
-    'status':'status'
+    'status':'status',
+    'play':'play'
   },initialize : function (options) {
     this.options = options || {};
     this.options.searches = [];
@@ -76,5 +77,8 @@ var SearchSuggestMobileView = Backbone.View.extend({
     if(this.options.status){
       this.$el.find(".track").trigger('markcurrent',[this.options.status]);
     }
+  },
+  play : function(ev,context,index,dontplay){
+    $("#result").trigger("play",[context,index,dontplay])
   }
 });
