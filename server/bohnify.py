@@ -339,7 +339,7 @@ class Bohnify(object):
         elif link.type == spotify.LinkType.PLAYLIST:
           self.browsePlaylist(link,playlistDone)
         elif link.type == spotify.LinkType.STARRED:
-          playlistDone(Transformer().playlist(self.session.get_starred()))
+          self.browseStarred(playlistDone)
       elif search.find("get:toplist") == 0:
         self.toplist(searchDone)
       elif search.find("get:history") == 0:
@@ -449,6 +449,10 @@ class Bohnify(object):
 
   def browsePlaylist(self, link,  cb):
     playlist = Transformer().playlist(link.as_playlist())
+    cb(playlist)
+
+  def browseStarred(self, cb):
+    playlist = Transformer().playlist(self.session.get_starred())
     cb(playlist)
 
   def browseUser(self, link,  cb):

@@ -9,15 +9,17 @@ class Transformer(object):
     def loaded(plcon):
       if not listen:
         con.off(spotify.PlaylistContainerEvent.CONTAINER_LOADED)
-      callback(browse(plcon,0))
+      arr = browse(plcon,0)
+      if starred != None:
+        pl = self.playlist(starred, True, listener)
+        arr.insert(0,pl)
+      callback(arr)
 
     def browse(plcon, index):
       plcon.load()
       arr = []
       i = index
-      if starred != None:
-        pl = self.playlist(starred, True, listener)
-        arr.append(pl)
+
 
       while i < len(con):
         playlist = con[i]

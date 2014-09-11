@@ -81,43 +81,43 @@
 
         $( window ).on("hashchange",hashChange);
 
-        /*var aws = new WebSocket('ws://' + host + ':1650/audio');
+        var aws = {}// new WebSocket('ws://' + host + ':1650/audio');
         var startTime = 0;
         aws.onopen = function(){
           var audioCtx = new AudioContext();
           var audioBuffer = audioCtx.createBuffer(2, 8192, 44100);
+          var first = true;
+          var buffer = [];
+          var time = 0;
+          var play = function(){
+            if(buffer.length>0){
+              var audio = buffer.shift();
+              var source = audioCtx.createBufferSource();
+              audioBuffer.getChannelData(0).set(audio);
+              source.buffer = audioBuffer;
+              source.connect(audioCtx.destination);
+              source.start(time);
+              time += audioBuffer.duration;
+              setTimeout(play,10)
+            }else{
+              setTimeout(play,10)
+            }
 
+
+          }
             aws.onmessage = function (msg) {
               if(msg.data.size == 8192){
                 var reader = new FileReader();
                 reader.addEventListener("loadend", function() {
-                  var audio = new Int16Array(reader.result);
-                  var right = new Float32Array(audio.length);
-
-                  for (var i = 0; i < audio.length; ) {
-                      var normalizedRight =  audio[i] ;
-
-                      i = i + 1;
-                      right[channleCounter] = normalizedRight;
-
-                      channleCounter++;
+                  buffer.push(new Float32Array(reader.result));
+                  if(first){
+                    play();
+                    first = false;
                   }
-
-
-                  var source = audioCtx.createBufferSource();
-                  audioBuffer.getChannelData(0).set(right);
-                  source.buffer = audioBuffer;
-                  source.connect(audioCtx.destination);
-                  source.start(startTime);
-                  startTime += audioBuffer.duration;
-                  console.log(startTime)
                 });
-
-                setTimeout(function(){
-                  //reader.readAsArrayBuffer(msg.data);
-                },1);
+                reader.readAsArrayBuffer(msg.data);
               }else{
-                audioCtx.stop();
+
               }
             };
 
@@ -129,7 +129,7 @@
               console.log("close")
             };
         };
-*/
+
         ws.onclose = function(){
           setTimeout(function(){
             document.location.reload(true);

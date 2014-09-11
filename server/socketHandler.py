@@ -51,7 +51,10 @@ class SocketHandler(WebSocket):
                 Bohnify.Instance().browsePlaylist(link,playlistBrowsed)
               elif link.type == spotify.LinkType.PROFILE:
                 pass
-                #Bohnify.Instance().browseUser(link,self)
+              elif link.type == spotify.LinkType.STARRED:
+                def playlistBrowsed(playlist):
+                  self.send(json.dumps({"search" : {"type" : "playlist", "data" :playlist, "search":link.uri}}))
+                Bohnify.Instance().browseStarred(playlistBrowsed)
             else:
               def searchDone(tracks):
                 self.send(json.dumps({"search" : {"type" : "search", "data" :tracks, "search":search}}))
