@@ -27,8 +27,8 @@ var ResultView = Backbone.View.extend({
           window.location.assign("#"+this.options.data.data.uri);
           this.$el.html((new ArtistView({model : this.options.data.data, ws:this.options.ws})).render().$el);
         }else if(this.options.data.type == "track"){
-          window.currentview = this.options.data.data.search;
-          window.location.assign("#"+this.options.data.data.search);
+          window.currentview = this.options.data.search;
+          window.location.assign("#"+this.options.data.search);
           this.$el.html((new AlbumView({model : this.options.data.data, ws:this.options.ws})).render().$el);
           $(".track").trigger("selecturi",this.options.data.search);
         }else if(this.options.data.type == "user"){

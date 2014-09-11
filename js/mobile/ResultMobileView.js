@@ -33,8 +33,8 @@ var ResultMobileView = Backbone.View.extend({
           $("#header").trigger("settext", this.options.data.data.name);
           this.$el.html((new ArtistMobileView({model : this.options.data.data, ws:this.options.ws})).render().$el);
         }else if(this.options.data.type == "track"){
-          window.currentview = this.options.data.data.search;
-          window.location.assign("#"+this.options.data.data.search);
+          window.currentview = this.options.data.search;
+          window.location.assign("#"+this.options.data.search);
           $("#header").trigger("settext", this.options.data.data.title);
           this.$el.html((new AlbumMobileView({model : this.options.data.data, ws:this.options.ws})).render().$el);
         }else if(this.options.data.type == "user"){
