@@ -67,6 +67,10 @@ class SocketHandler(WebSocket):
             self.send(json.dumps({"toplist" : tracks }))
           Bohnify.Instance().toplist(toplistDone)
         elif "getqueue" in cmd:
+          vote = []
+          manual = []
+          standard = []
+
           for t in BohnifyQueue.Instance().votequeue:
             track = t.copy()
             track["context"] = "spotify:get:queue:vote"
