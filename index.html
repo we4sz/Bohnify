@@ -152,6 +152,8 @@
           var suggest = isMobile() ? new SearchSuggestMobileView({el : $("#suggest"), ws : ws}) : new SearchSuggestView({el : $("#suggest"), ws : ws});
           leftmenu.render();
           current.render();
+          header.render();
+          control.render();
           var lastcommand = {};
           ws.origSend = ws.send;
           ws.send = function(sendingobject){
@@ -173,8 +175,6 @@
               console.log(data);
               if(data.loginstatus){
                 if(data.loginstatus.login){
-                  header.render();
-                  control.render();
                   loginview.remove();
                   if(data.loginstatus.playlists){
                     $("#leftmenu").trigger("newcon",[data.loginstatus.playlists]);
