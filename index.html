@@ -6,6 +6,16 @@
   <link rel="shortcut icon" href="images/icon.ico">
    <script>
 
+
+
+
+
+     function closeEditorWarning(){
+          return 'Are you sure you want to leave this page?'
+      }
+
+      window.onbeforeunload = closeEditorWarning
+
       $.fn.textWidth = function(){
           var self = $(this),
               children = self.children(),
@@ -47,6 +57,29 @@
 
         var host = window.document.location.host.replace(/:.*/, '');
         var ws = new WebSocket('ws://' + host + ':1650/ws');
+
+        var hashChange = function(){
+          var hash = location.hash.substring(1);
+          if(window.currentview != hash && ws.readyState == 1){
+            if(hash == "spotify:queue"){
+              $("#menuqueue").click();
+            }else if(hash == "spotify:toplist"){
+              $("#menutoplist").click();
+            }else if(hash == "spotify:history"){
+              $("#menuhistory").click();
+            }else if(hash.indexOf("spotify:search:")==0){
+              $("#result").trigger("update",{type: "load"});
+              ws.send({search : "spotify:"+hash.substring(15)});
+            }else if(hash == "spotify:mymusic" || hash.length == 0){
+              $("#menumymusic").click();
+            }else if(hash.indexOf("spotify:")==0){
+              $("#result").trigger("update",{type: "load"});
+              ws.send({search : "spotify:"+hash});
+            }
+          }
+        }
+
+        $( window ).on("hashchange",hashChange);
 
         /*var aws = new WebSocket('ws://' + host + ':1650/audio');
         var startTime = 0;
@@ -143,6 +176,15 @@
                   header.render();
                   control.render();
                   loginview.remove();
+                  if(data.loginstatus.playlists){
+                    $("#leftmenu").trigger("newcon",[data.loginstatus.playlists]);
+                    var hash = location.hash.substring(1);
+                    if(hash.length > 0){
+                      hashChange();
+                    }else{
+                      $("#menumymusic").click();
+                    }
+                  }
                 }else{
                   loginview.options.loginstatus = data.loginstatus;
                   loginview.render();
@@ -176,8 +218,6 @@
                     }
                   }
                 }
-              }else if(data.playlists){
-                $("#leftmenu").trigger("newcon",[data.playlists]);
               }else if(data.queues){
                 if(lastcommand.getqueue){
                   data.queues.forEach(function(queue){

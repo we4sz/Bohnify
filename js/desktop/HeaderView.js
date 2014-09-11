@@ -6,18 +6,14 @@ var HeaderView = Backbone.View.extend({
     'focusout #search' : 'focusout',
     'keydown #search' : 'tabb',
     'setsearch' : 'setsearch',
-    'addbrowse' : 'add',
     'input #search' : 'change'
   },initialize : function (options) {
     this.options = options || {};
     $(document).bind("keydown",this.keydownlistener.bind(this));
-    this.options.future = [];
-    this.options.history = [];
-    this.options.current;
     this.options.searchtimeout;
   },render : function(){
-      var html =  " <div id='headback' class='disable head'></div>"
-                  + "<div id='headfoward' class='disable head'></div>"
+      var html =  " <div id='headback' class='active head'></div>"
+                  + "<div id='headfoward' class='active head'></div>"
                   + " <input id='search' results=0 type='search' autocomplete='off' placeholder='Search'  class='head'/>";
       this.$el.html(html);
       return this;
@@ -38,43 +34,9 @@ var HeaderView = Backbone.View.extend({
     this.$el.find("#search").val(data);
     this.change();
   },back : function(){
-    this.options.future.push(this.options.current);
-    this.options.current = this.options.history.pop();
-    $("#result").trigger("backnext");
-    if(this.options.current == "mymusic"){
-      $("#mymusic").click();
-    }else if(this.options.current == "toplist"){
-      $("#toplist").click();
-    }else if(this.options.current == "queue"){
-      $("#queue").click();
-    }else if(this.options.current == "history"){
-      $("#history").click();
-    }else{
-      if(this.options.current.type=="playlist"){
-        $(".playlistitem").trigger("selectfromuri",this.options.current.data);
-      }
-      $("#result").trigger("update",this.options.current);
-    }
-    this.fixClasses();
+    window.history.back();
   },foward : function(){
-    this.options.history.push(this.options.current);
-    this.options.current = this.options.future.pop();
-    $("#result").trigger("backnext");
-    if(this.options.current == "mymusic"){
-      $("#mymusic").click();
-    }else if(this.options.current == "toplist"){
-      $("#toplist").click();
-    }else if(this.options.current == "queue"){
-      $("#queue").click();
-    }else if(this.options.current == "history"){
-      $("#history").click();
-    }else{
-      if(this.options.current.type=="playlist"){
-        $(".playlistitem").trigger("selectfromuri",this.options.current.data);
-      }
-      $("#result").trigger("update",this.options.current);
-    }
-    this.fixClasses();
+    window.history.forward();
   },focus : function(){
     passiveSelectAll();
     this.$el.find("#search").select();
@@ -127,15 +89,9 @@ var HeaderView = Backbone.View.extend({
       this.foward();
       return false;
     }
-  }, add: function(_, command){
-    if(this.options.current){
-      this.options.history.push(this.options.current);
-    }
-    this.options.current = command;
-    this.options.future = [];
-    this.fixClasses();
-  }, fixClasses : function(){
-    this.$el.find("#headback").removeClass("disable").removeClass("active").addClass(this.options.history.length > 0 ? "active" : "disable");
-    this.$el.find("#headfoward").removeClass("active").removeClass("disable").addClass(this.options.future.length > 0 ? "active" : "disable");
+  },
+   fixClasses : function(){
+  //  this.$el.find("#headback").removeClass("disable").removeClass("active").addClass(this.options.history.length > 0 ? "active" : "disable");
+  //  this.$el.find("#headfoward").removeClass("active").removeClass("disable").addClass(this.options.future.length > 0 ? "active" : "disable");
   }
 });

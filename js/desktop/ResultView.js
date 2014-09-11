@@ -2,7 +2,6 @@ var ResultView = Backbone.View.extend({
   events : {
     'update' : 'update',
     'status' : 'newstatus',
-    'backnext': 'backnext',
     'play': 'play'
   },initialize : function (options) {
     this.options = options || {};
@@ -12,76 +11,57 @@ var ResultView = Backbone.View.extend({
       if(this.options.data){
         if(this.options.data.type == "playlist"){
           var playlist = this.options.data.data;
+          window.currentview = playlist.uri;
+          window.location.assign("#"+playlist.uri);
           this.$el.html((new PlaylistView({model : playlist, ws:this.options.ws})).render().$el);
-          if(!this.options.backnext){
-            $("#header").trigger("addbrowse",this.options.data);
-          }
-          this.options.backnext = false;
         }else if(this.options.data.type == "search"){
+          window.currentview = this.options.data.search;
+          window.location.assign("#spotify:search:"+this.options.data.search);
           this.$el.html((new SearchView({model : this.options.data, ws:this.options.ws})).render().$el);
-          if(!this.options.backnext){
-            $("#header").trigger("addbrowse",this.options.data);
-          }
-          this.options.backnext = false;
         }else if(this.options.data.type == "album"){
+          window.currentview = this.options.data.data.uri;
+          window.location.assign("#"+this.options.data.data.uri);
           this.$el.html((new AlbumView({model : this.options.data.data, ws:this.options.ws})).render().$el);
-          if(!this.options.backnext){
-            $("#header").trigger("addbrowse",this.options.data);
-          }
-          this.options.backnext = false;
         }else if(this.options.data.type == "artist"){
+          window.currentview = this.options.data.data.uri;
+          window.location.assign("#"+this.options.data.data.uri);
           this.$el.html((new ArtistView({model : this.options.data.data, ws:this.options.ws})).render().$el);
-          if(!this.options.backnext){
-            $("#header").trigger("addbrowse",this.options.data);
-          }
-          this.options.backnext = false;
         }else if(this.options.data.type == "track"){
+          window.currentview = this.options.data.data.search;
+          window.location.assign("#"+this.options.data.data.search);
           this.$el.html((new AlbumView({model : this.options.data.data, ws:this.options.ws})).render().$el);
           $(".track").trigger("selecturi",this.options.data.search);
-
-          if(!this.options.backnext){
-            $("#header").trigger("addbrowse",this.options.data);
-          }
-          this.options.backnext = false;
         }else if(this.options.data.type == "user"){
 
         }else if(this.options.data.type == "queue"){
           if($(".queueview").length == 0){
+            window.currentview = "spotify:queue";
+            window.location.assign("#spotify:queue");
             this.$el.html((new QueueView({model : this.options.data.data, ws:this.options.ws})).render().$el);
           }else{
             $(".queueview").trigger("newqueue",[this.options.data.data]);
           }
-          if(!this.options.backnext){
-            $("#header").trigger("addbrowse","queue");
-          }
-          this.options.backnext = false;
         }else if(this.options.data.type == "toplist"){
+          window.currentview = "spotify:toplist";
+          window.location.assign("#spotify:toplist");
           this.$el.html((new ToplistView({model : this.options.data.data, ws:this.options.ws})).render().$el);
-          if(!this.options.backnext){
-            $("#header").trigger("addbrowse","toplist");
-          }
-          this.options.backnext = false;
         }else if(this.options.data.type == "history"){
           if($(".historyview").length == 0){
+            window.currentview = "spotify:history";
+            window.location.assign("#spotify:history");
             this.$el.html((new HistoryView({model : this.options.data.data, ws:this.options.ws})).render().$el);
           }else{
             $(".historyview").trigger("newhistory",[this.options.data.data]);
           }
-          if(!this.options.backnext){
-            $("#header").trigger("addbrowse","history");
-          }
-          this.options.backnext = false;
         }else if(this.options.data.type == "load"){
           var html = "<div class='resultloader'></div>";
           this.$el.html(html);
         }else if(this.options.data.type == "clear"){
           this.$el.html("");
         }else if(this.options.data.type == "mymusic"){
+          window.currentview = "spotify:mymusic";
+          window.location.assign("#spotify:mymusic");
           this.$el.html((new MyMusicView({model : this.options.data.data, ws:this.options.ws})).render().$el);
-          if(!this.options.backnext){
-            $("#header").trigger("addbrowse","mymusic");
-          }
-          this.options.backnext = false;
         }
       }
       if(this.options.status){
@@ -142,8 +122,6 @@ var ResultView = Backbone.View.extend({
     if(this.options.status){
       this.$el.find(".track").trigger('markcurrent',[this.options.status]);
     }
-  },backnext: function(){
-    this.options.backnext = true;
   }, play : function(ev,context,index,dontplay){
       var start = true;
       if(dontplay){

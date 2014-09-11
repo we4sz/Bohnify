@@ -3,7 +3,7 @@ var LeftMobileMenu = Backbone.View.extend({
     'toggle' : 'toggle',
     'click #menuqueue' :  'getqueue',
     'click #menuhistory' :  'gethistory',
-    'click #menuhome' :  'gethome',
+    'click #menumymusic' :  'gethome',
     'click #menusearch' :  'getsearch',
     'click #menutoplist' :  'gettoplist',
     'deselect' :  'deselect',
@@ -21,7 +21,7 @@ var LeftMobileMenu = Backbone.View.extend({
       this.$el.html(
                   "<div id='leftmenumenu'>" +
                   "<div class='menuitem' id='menusearch'><div class='name'>Search</div></div>" +
-                  "<div class='menuitem' id='menuhome'><div class='name'>Your music</div></div>" +
+                  "<div class='menuitem' id='menumymusic'><div class='name'>Your music</div></div>" +
                   "<div class='menuitem' id='menutoplist'><div class='name'>Toplist</div></div>" +
                   "<div class='menuitem' id='menuqueue'><div class='name'>Queue</div></div>" +
                   "<div class='menuitem' id='menuhistory'><div class='name'>History</div></div>" +
@@ -63,7 +63,7 @@ var LeftMobileMenu = Backbone.View.extend({
     $("#search").trigger("searchunfocus");
     return false;
   },gethome : function(){
-    this.select("#menuhome");
+    this.select("#menumymusic");
     if($(".mymusicview").length == 0){
       $("#result").trigger("update",{type: "mymusic", data:this.options.con});
     }
@@ -92,7 +92,7 @@ var LeftMobileMenu = Backbone.View.extend({
   }, newcon : function(_,con){
     this.options.con = con;
     if(!this.options.first){
-      $("#menuhome").click();
+      $("#menumymusic").click();
       this.options.first = true;
     }
   }, clickselect:function(ev){

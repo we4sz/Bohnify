@@ -2,14 +2,14 @@ var LeftMenu = Backbone.View.extend({
   events : {
     'makesmall' : 'makesmall',
     'makebig' : 'makebig',
-    'click #queue' :  'getqueue',
-    'select #queue' :  'getqueue',
-    'click #history' :  'gethistory',
-    'select #history' :  'gethistory',
-    'click #mymusic' :  'getmymusic',
-    'select #mymusic' :  'getmymusic',
-    'click #toplist' :  'gettoplist',
-    'select #toplist' :  'gettoplist',
+    'click #menuqueue' :  'getqueue',
+    'select #menuqueue' :  'getqueue',
+    'click #menuhistory' :  'gethistory',
+    'select #menuhistory' :  'gethistory',
+    'click #menumymusic' :  'getmymusic',
+    'select #menumymusic' :  'getmymusic',
+    'click #menutoplist' :  'gettoplist',
+    'select #menutoplist' :  'gettoplist',
     "forceselect" : "forceselect",
     "newcon" : "newcon",
     'updateplaylist': 'update',
@@ -24,10 +24,10 @@ var LeftMenu = Backbone.View.extend({
   render: function() {
       this.$el.html("")
       this.$el.append((new ArtistViewSeparator({model : "MAIN"})).render().$el);
-      var html =  "<div class='playlistitem menuitem' id='mymusic'><div class='playlistname'>My Music</div></div>" +
-                  "<div class='playlistitem menuitem' id='toplist'><div class='playlistname'>Toplist</div></div>" +
-                  "<div class='playlistitem menuitem' id='queue'><div class='playlistname'>Queue</div></div>" +
-                  "<div class='playlistitem menuitem' id='history'><div class='playlistname'>History</div></div>";
+      var html =  "<div class='playlistitem menuitem' id='menumymusic'><div class='playlistname'>My Music</div></div>" +
+                  "<div class='playlistitem menuitem' id='menutoplist'><div class='playlistname'>Toplist</div></div>" +
+                  "<div class='playlistitem menuitem' id='menuqueue'><div class='playlistname'>Queue</div></div>" +
+                  "<div class='playlistitem menuitem' id='menuhistory'><div class='playlistname'>History</div></div>";
       this.$el.append($.parseHTML(html));
       this.$el.append((new ArtistViewSeparator({model : "YOUR MUSIC"})).render().$el);
     	_.each(this.model, function(playlist, i) {
@@ -92,25 +92,25 @@ var LeftMenu = Backbone.View.extend({
   },makesmall : function(){
     this.$el.removeClass("big").addClass("small");
   },getqueue : function(){
-    this.select("#queue",true);
+    this.select("#menuqueue",true);
     if($(".queueview").length == 0 ){
       $("#result").trigger("update",{type: "load"});
       this.options.ws.send({getqueue : true});
     }
   },gethistory : function(){
-    this.select("#history");
+    this.select("#menuhistory");
     if($(".historyview").length == 0){
       $("#result").trigger("update",{type: "load"});
       this.options.ws.send({gethistory : true});
     }
   },gettoplist : function(){
-    this.select("#toplist",true);
+    this.select("#menutoplist",true);
     if($(".toplistview").length == 0){
       $("#result").trigger("update",{type: "load"});
       this.options.ws.send({gettoplist : true});
     }
   },getmymusic : function(){
-    this.select("#mymusic",true);
+    this.select("#menumymusic",true);
     if($(".mymusicview").length == 0){
       $("#result").trigger("update",{type: "mymusic", data:this.model});
     }
@@ -129,17 +129,12 @@ var LeftMenu = Backbone.View.extend({
     passive = passive - (passive > 5 ? 2 : 1);
     this.model = pl;
     this.render();
-    if(!this.options.first){
-      $("#mymusic").click();
-      this.options.first = true;
+    if(selected >= 0 && selected < this.model.length){
+      this.select($(this.$el.find(".playlistitem").get(selected)),selected == 0);
+    }else if(passive >= 0 && passive < this.model.length){
+      this.select($(this.$el.find(".playlistitem").get(passive)),passive == 0,true);
     }else{
-      if(selected >= 0 && selected < this.model.length){
-        this.select($(this.$el.find(".playlistitem").get(selected)),selected == 0);
-      }else if(passive >= 0 && passive < this.model.length){
-        this.select($(this.$el.find(".playlistitem").get(passive)),passive == 0,true);
-      }else{
-        this.select("#mymusic",true, passive >= 0);
-      }
+      this.select("#menumymusic",true, passive >= 0);
     }
   }, update: function(asd,pl){
     function loop(con){

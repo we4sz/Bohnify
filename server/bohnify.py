@@ -25,7 +25,8 @@ class Bohnify(object):
   loginstatus = {
     "login" : False,
     "logingin" : False,
-    "user" : None
+    "user" : None,
+    "playlists" : None
   };
 
   context = ""
@@ -85,10 +86,6 @@ class Bohnify(object):
 
   def on_connection_state_changed(self, session):
     if session.connection.state is spotify.ConnectionState.LOGGED_IN:
-      self.loginstatus["logingin"] = False
-      self.loginstatus["login"] = True
-      cherrypy.engine.publish('websocket-broadcast', json.dumps({"loginstatus" : self.loginstatus}))
-      self.updateStatus()
       self.getPlaylists()
     elif session.connection.state is spotify.ConnectionState.LOGGED_OUT:
       self.loginstatus["logingin"] = False
@@ -430,8 +427,12 @@ class Bohnify(object):
 
   def getPlaylists(self):
     def callback(pl):
-      self.cache_playlists = pl
-      cherrypy.engine.publish('websocket-broadcast', json.dumps({"playlists" : self.cache_playlists}))
+      if self.loginstatus["login"] == False:
+        self.loginstatus["logingin"] = False
+        self.loginstatus["login"] = True
+        self.updateStatus()
+      self.loginstatus["playlists"] = pl
+      cherrypy.engine.publish('websocket-broadcast', json.dumps({"loginstatus" : self.loginstatus}))
     container = self.session.playlist_container
     Transformer().playlistContainer(container,callback, self.playlistChanged,self.containerChanged, self.session.get_starred())
 

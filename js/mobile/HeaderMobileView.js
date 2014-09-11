@@ -26,60 +26,17 @@ var HeaderMobileView = Backbone.View.extend({
   render : function(){
       var html =  "<div id='headtext'>Bohnify</div>"
                   + "<input id='search' results=0 type='search' placeholder='Search'  class='head'/>"
-                  + "<div id='headback' class='disable'></div>"
-                  + "<div id='headfoward' class='disable'></div>";
+                  + "<div id='headback' class='active'></div>"
+                  + "<div id='headfoward' class='active'></div>";
       this.$el.html(html);
       return this;
   },
   search : function(ev){
     this.$el.find("#search").blur();
   },back : function(){
-    $("#suggest").trigger("hide");
-    this.options.future.push(this.options.current);
-    this.options.current = this.options.history.pop();
-    $("#result").trigger("backnext");
-    if(this.options.current == "mymusic"){
-      $("#menuhome").click();
-    }else if(this.options.current == "toplist"){
-      $("#menutoplist").click();
-    }else if(this.options.current == "queue"){
-      $("#menuqueue").click();
-    }else if(this.options.current == "history"){
-      $("#menuhistory").click();
-    }else{
-      if(this.options.current.type=="playlist"){
-        $(".playlistitem").trigger("selectfromuri",this.options.current.data);
-      }
-      $("#result").trigger("update",this.options.current);
-    }
-    this.fixClasses();
+    window.history.back();
   },foward : function(){
-    $("#suggest").trigger("hide");
-    this.options.history.push(this.options.current);
-    this.options.current = this.options.future.pop();
-    $("#result").trigger("backnext");
-    if(this.options.current == "mymusic"){
-      $("#menuhome").click();
-    }else if(this.options.current == "toplist"){
-      $("#menutoplist").click();
-    }else if(this.options.current == "queue"){
-      $("#menuqueue").click();
-    }else if(this.options.current == "history"){
-      $("#menuhistory").click();
-    }else{
-      if(this.options.current.type=="playlist"){
-        $(".playlistitem").trigger("selectfromuri",this.options.current.data);
-      }
-      $("#result").trigger("update",this.options.current);
-    }
-    this.fixClasses();
-  },add: function(_, command){
-    if(this.options.current){
-      this.options.history.push(this.options.current);
-    }
-    this.options.current = command;
-    this.options.future = [];
-    this.fixClasses();
+    window.history.forward();
   },toggleleftmenu : function(){
     $("#leftmenu").trigger("toggle");
   }, focus : function(){
