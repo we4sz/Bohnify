@@ -91,10 +91,6 @@ var LeftMobileMenu = Backbone.View.extend({
     this.select("#menusearch");
   }, newcon : function(_,con){
     this.options.con = con;
-    if(!this.options.first){
-      $("#menumymusic").click();
-      this.options.first = true;
-    }
   }, clickselect:function(ev){
     var el = $(ev.target);
     while(!el.hasClass("menuitem")){
