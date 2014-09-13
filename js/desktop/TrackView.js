@@ -26,29 +26,38 @@ var TrackView = Backbone.View.extend({
     var artists = "";
     this.$el.addClass("track");
     this.$el.addClass(this.options.extraclass);
-    _.each(this.model.artists, function(artist, i) {
-        artists += "<span class='trackartist'>"+artist.name+"</span><span class='trackartistsseparator'>,&nbsp;</span>";
-    });
-    artists = artists.substring(0,artists.length-50);
+    if(!this.options.artist){
+      this.model.artists.splice(0,1);
+    }
+    this.model.artists.forEach(function(artist, i) {
+        artists += "<span class='trackartist'>"+artist.name+"</span>";
+        if(i<this.model.artists.length-1){
+          artists += "<span class='trackartistsseparator'>,&nbsp;</span>";
+        }
+    }.bind(this));
     var html ="<td><div class='trackindex'>"+(this.options.index+1)+"</div></td>";
     if(this.options.vote){
-      html += "<td><div class='resize trackvote'>"+this.model.vote+"</div></td>";
+      html += "<td><div class='trackvote'>"+this.model.vote+"</div></td>";
     }
     if(this.options.image){
       var image = imageUrl(this.model.album.cover);
-      html += "<td><div class='resize trackimage'><img src='"+image+"'/></td>";
+      html += "<td><div class='trackimage'><img src='"+image+"'/></td>";
     }
     if(this.options.title){
-      html += "<td><div class='resize tracktitle'>"+this.model.title+"</div></td>";
+      html += "<td><div class='tracktitle'>"+this.model.title;
+      if(!this.options.artist && artists.length > 0){
+        html+= " - "+artists;
+      }
+      html += "</div></td>";
     }
     if(this.options.artist){
-      html += "<td><div class='resize trackartists'>"+artists+"</div></td>";
+      html += "<td><div class='trackartists'>"+artists+"</div></td>";
     }
     if(this.options.duration){
       html += "<td><div class='trackduration'>"+toMinutesAndSeconds(this.model.duration/1000)+"</div></td>";
     }
     if(this.options.album){
-      html += "<td><div class='resize trackalbum'><span class='trackalbumtext'>"+this.model.album.title+"</span></div></td>";
+      html += "<td><div class='trackalbum'><span class='trackalbumtext'>"+this.model.album.title+"</span></div></td>";
     }
     if(this.options.popularity){
       html += "<td><div class='trackpopularity'>"+this.model.popularity+"</div></td>";

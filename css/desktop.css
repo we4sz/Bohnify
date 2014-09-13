@@ -785,6 +785,10 @@ th{
   cursor: pointer;
 }
 
+.tracktitle .trackartist{
+  font-size: 10px;
+}
+
 .trackartist:hover{
   text-decoration: underline;
   cursor: pointer;

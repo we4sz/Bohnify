@@ -1,17 +1,13 @@
 var TracksView = Backbone.View.extend({
   events : {
-    'mousedown th' : 'resize',
-    'mousemove th' : 'fixcursor',
-    'mousemove' : 'fixresize',
-    'mouseup' : 'stopresize',
-    'resize' : 'setresize',
+    'resize' : 'setsize',
     "repainttracks" : "repaint",
     "passiveselectfirst" : "passiveselectfirst",
     "selectfirst" : "selectfirst"
   },
   tagName: 'div',
   initialize : function (options) {
-    $(window).on("resize", this.setresize.bind(this));
+    $(window).on("resize", this.setsize.bind(this));
     this.options = options || {};
 
     this.options.title = typeof options.title !== 'undefined' ? options.title : true;
@@ -35,12 +31,12 @@ var TracksView = Backbone.View.extend({
         var html ="<thead><tr><th class='trackindex'><span>#</span></th>";
         this.options.sizes.push({classname : "trackindex", size : "40px"});
         if(this.options.vote){
-          html += "<th class='trackvote resizable-false'><span>V</span></th>";
+          html += "<th class='trackvote'><span>V</span></th>";
           this.options.sizes.push({classname : "trackvote", size : "40px"});
         }
 
         if(this.options.image){
-          html += "<th class='trackimage resizable-false'><span></span></th>";
+          html += "<th class='trackimage'><span></span></th>";
           this.options.sizes.push({classname : "trackimage", size : "40px"});
         }
         if(this.options.title){
@@ -52,14 +48,14 @@ var TracksView = Backbone.View.extend({
           this.options.sizes.push({classname : "trackartists", size : "25%"});
         }
         if(this.options.duration){
-          html += "<th class='trackduration resizable-false'><span>TIME</span></th>";
+          html += "<th class='trackduration'><span>TIME</span></th>";
           this.options.sizes.push({classname : "trackduration", size : "70px"});
         }
         if(this.options.album){
           html += "<th class='trackalbum'><span>ALBUM</span></th>";
           this.options.sizes.push({classname : "trackalbum", size : "20%"});
         }if(this.options.popularity){
-          html += "<th class='trackpopularity resizable-false'><span>Rank</span></th>";
+          html += "<th class='trackpopularity'><span>Rank</span></th>";
           this.options.sizes.push({classname : "trackpopularity", size : "60px"});
         }
         html+="</tr></thead>";
@@ -82,6 +78,7 @@ var TracksView = Backbone.View.extend({
           }
       }.bind(this));
       child.append($.parseHTML("</tbody></table>"));
+
       if(this.options.header){
         this.options.dt = child.dataTable( {
           dom : 't',
@@ -94,73 +91,25 @@ var TracksView = Backbone.View.extend({
       child.bind("DOMNodeInsertedIntoDocument",this.setsize.bind(this));
       this.$el.append(child);
       return this;
-  },fixresize:function(ev){
-    if(this.options.resize){
-      var next = $(this.options.nextclass);
-      var curr = $(this.options.class);
-      var w = curr.innerWidth()-2;
-      var d = ev.screenX - this.options.startx;
-      this.options.startx = ev.screenX;
-      var nw = w + d;
-      var nextw = next.innerWidth() -2 -d;
-      if(nextw > this.options.nextwidth && nw > this.options.currwidth && nextw > 40 && nw > 40){
-        $(this.options.nextclass).css("width",(nextw+"px"));
-        $(this.options.class).css("width",(nw+"px"));
-      }
-    }
-  },fixcursor: function(ev){
-    if(!this.options.resize){
-      var target = $(ev.target);
-      if(target.is("th")){
-        var w = target.outerWidth();
-        var ox = ev.offsetX;
-        if(ox > w - 5){
-          $("#result").css("cursor","ew-resize");
-        }else{
-          $("#result").css("cursor","");
-        }
-      }
-    }
-  },resize:function(ev){
-    if($(ev.target).css("cursor") == "ew-resize"){
-      this.options.resize = true;
-      this.options.startx = ev.screenX;
-      $(ev.target).attr("class").split(" ").forEach(function(cl){
-          if(cl.indexOf("track")>=0){
-            this.options.class = "."+cl;
-          }
-      }.bind(this));
-      $("th"+this.options.class).next().attr("class").split(" ").forEach(function(cl){
-          if(cl.indexOf("track")>=0){
-            this.options.nextclass = "."+cl;
-          }
-      }.bind(this))
-      this.options.nextwidth = $("th"+this.options.nextclass).textWidth() + 30;
-      this.options.currwidth = $("th"+this.options.class).textWidth() + 30;
-    }else{
-      this.options.resize = false;
-    }
-    return false;
-  },stopresize : function(ev){
-    this.options.resize = false;
-    $("#result").css("cursor","");
-    return false;
   },setsize : function(sizes){
     var hw = 0;
     var ps = 0;
+
     this.options.sizes.forEach(function(size){
       if(size.size.indexOf("px")>0){
         var w = parseInt(size.size.substring(0,size.size.length-2));
         hw += w;
         this.$el.find("."+size.classname).css("width",size.size);
-        var s = $("."+size.classname).css("width");
+        //var s = $("."+size.classname).css("width");
       }else{
         var p = parseInt(size.size.substring(0,size.size.length-1));
         ps += p;
       }
     }.bind(this));
-    this.options.width = this.$el.parent().innerWidth();
-    var mw = this.options.width-12-hw;
+
+    var width = this.$el.parent().innerWidth();
+    var scrollWidth = 12;
+    var mw = width-scrollWidth-hw;
     var mul = 100/ps;
     this.options.sizes.forEach(function(size){
       if(size.size.indexOf("%")>0){
@@ -169,15 +118,6 @@ var TracksView = Backbone.View.extend({
         a.css("width",p+"px");
       }
     }.bind(this));
-  },setresize : function(ev){
-    if(this.$el.parent().innerWidth() != this.options.width){
-      var w = this.$el.parent().innerWidth();
-      this.options.sizes.forEach(function(size){
-        var a = this.$el.find("."+size.classname).innerWidth()/w;
-        size.size = (a*100)+"%";
-      }.bind(this));
-    }
-    this.setsize();
   }, repaint : function(){
     var selectIndex = $(".track.selected").index();
     this.options.vote = window.lateststatus && window.lateststatus.party;
